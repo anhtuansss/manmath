@@ -1,10 +1,10 @@
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const Exam = require('../models/Exam');
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import Exam from '../models/Exam';
 
 dotenv.config({ path: '../../../.env' }); // Trỏ đúng về file .env ở root project
 
-const examData = {
+const examData: any = {
   "title": "Đề chính thức kỳ thi tốt nghiệp THPT năm 2025 môn Toán",
   "durationMinutes": 90,
   "parts": [
@@ -53,9 +53,9 @@ const examData = {
   ]
 };
 
-const seedDB = async () => {
+const seedDB = async (): Promise<void> => {
     try {
-        await mongoose.connect(process.env.MONGODB_URI);
+        await mongoose.connect(process.env.MONGODB_URI as string);
         console.log('MongoDB Connected for Seeding');
         
         await Exam.deleteMany(); // Xóa data cũ (nếu có)
