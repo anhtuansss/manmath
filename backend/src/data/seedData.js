@@ -1,3 +1,9 @@
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const Exam = require('../models/Exam');
+
+dotenv.config({ path: '../../../.env' }); // Trỏ đúng về file .env ở root project
+
 const examData = {
   "title": "Đề chính thức kỳ thi tốt nghiệp THPT năm 2025 môn Toán",
   "durationMinutes": 90,
@@ -46,3 +52,21 @@ const examData = {
     }
   ]
 };
+
+const seedDB = async () => {
+    try {
+        await mongoose.connect(process.env.MONGODB_URI);
+        console.log('MongoDB Connected for Seeding');
+        
+        await Exam.deleteMany(); // Xóa data cũ (nếu có)
+        await Exam.create(examData); // Đẩy data mới
+        
+        console.log('Data Seeded Successfully!');
+        process.exit();
+    } catch (error) {
+        console.error('Error seeding data:', error);
+        process.exit(1);
+    }
+};
+
+seedDB();
