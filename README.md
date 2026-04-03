@@ -1,15 +1,14 @@
 # ManMath
 
 ## Tech stack
-- Frontend: Next.js
-- Backend: Node.js (Express)
-- Database: MongoDB
+* Frontend: Next.js + TypeScript
+* Backend: Node.js (Express) + TypeScript
+* Database: PostgreSQL
+* ORM: Prisma
 
 ## Features
-- OCR bài toán
-- Chấm điểm tự động
-
-## Run project
-1. Thêm URI MongoDB vào file `.env`
-2. Chạy Backend: `cd backend && npm install && npm start`
-3. Chạy Frontend: `cd frontend && npm install && npm run dev`
+* Làm đề Toán THPT online
+* Chấm điểm tự động
+* Timer thi thật
+* Autosave bài làm
+* (Planned) OCR bài toán từ PDF
