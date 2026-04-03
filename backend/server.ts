@@ -2,8 +2,8 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client'; 
-import { Pool } from 'pg'; // Import thêm Pool từ thư viện pg
-import { PrismaPg } from '@prisma/adapter-pg'; // Import adapter của Prisma
+import { Pool } from 'pg'; 
+import { PrismaPg } from '@prisma/adapter-pg'; 
 
 // Cấu hình biến môi trường
 dotenv.config();
@@ -37,6 +37,20 @@ app.get('/api/exams', async (req: Request, res: Response): Promise<void> => {
             error: error.message 
         });
     }
+});
+
+// Dữ liệu giả
+app.get("/api/exam", (req: Request, res: Response) => {
+    res.json({
+        question: [
+            {
+                id: 1,
+                question: "1 + 1 = ?",
+                choices: ["A.1", "B.2", "C.3", "D.4"],
+                answer: "B.2"
+            }
+        ]
+    });
 });
 
 const PORT = process.env.PORT || 5000;
