@@ -1,30 +1,35 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import connectDB from './src/config/db';
-import Exam from './src/models/Exam';
+import { PrismaClient } from '@prisma/client'; 
+import { Pool } from 'pg'; // Import thêm Pool từ thư viện pg
+import { PrismaPg } from '@prisma/adapter-pg'; // Import adapter của Prisma
 
-// Chỉ cần 1 dòng này để cấu hình biến môi trường
-dotenv.config({ path: '../.env' }); 
+// Cấu hình biến môi trường
+dotenv.config();
 
 const app = express();
+
+// Khởi tạo connection pool bằng thư viện pg
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg(pool);
+
+// Khởi tạo PrismaClient với adapter (chuẩn Prisma 7)
+const prisma = new PrismaClient({ adapter }); 
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// Kết nối Database
-connectDB();
-
 // Routes
 app.get('/api/health', (req: Request, res: Response) => {
-    res.json({ status: 'ok', message: 'ManMath API is running' });
+    res.json({ status: 'ok', message: 'ManMath API is running (PostgreSQL Edition)' });
 });
 
-// Lấy danh sách đề thi (Đã thêm kiểu dữ liệu trả về cho chuẩn TS)
+// Lấy danh sách đề thi
 app.get('/api/exams', async (req: Request, res: Response): Promise<void> => {
     try {
-        const exams = await Exam.find();
+        const exams = await prisma.exam.findMany(); 
         res.json(exams);
     } catch (error: any) {
         res.status(500).json({ 
@@ -36,5 +41,5 @@ app.get('/api/exams', async (req: Request, res: Response): Promise<void> => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`🚀 Server đang chạy tại: http://localhost:${PORT}`);
+    console.log(`Server đang chạy tại: http://localhost:${PORT}`);
 });
