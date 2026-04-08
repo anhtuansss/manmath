@@ -12,3 +12,7 @@
 * Timer thi thật
 * Autosave bài làm
 * (Planned) OCR bài toán từ PDF
+
+## Chạy frontend - backend
+* Mở terminal
+* Chạy npm run dev

@@ -38,22 +38,3 @@ app.get('/api/exams', async (req: Request, res: Response): Promise<void> => {
         });
     }
 });
-
-// Dữ liệu giả
-app.get("/api/exam", (req: Request, res: Response) => {
-    res.json({
-        question: [
-            {
-                id: 1,
-                question: "1 + 1 = ?",
-                choices: ["A.1", "B.2", "C.3", "D.4"],
-                answer: "B.2"
-            }
-        ]
-    });
-});
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`Server đang chạy tại: http://localhost:${PORT}`);
-});
