@@ -1,18 +1,35 @@
 # ManMath
 
-## Tech stack
-* Frontend: Next.js + TypeScript
-* Backend: Node.js (Express) + TypeScript
-* Database: PostgreSQL
-* ORM: Prisma
+ManMath is a web app for practicing Vietnamese high school math exams.
 
-## Features
-* Làm đề Toán THPT online
-* Chấm điểm tự động
-* Timer thi thật
-* Autosave bài làm
-* (Planned) OCR bài toán từ PDF
+## Tech Stack
 
-## Chạy frontend - backend
-* Mở terminal
-* Chạy npm run dev
+- Frontend: Next.js App Router + TypeScript + Tailwind CSS
+- Backend: Express + TypeScript
+- Database: PostgreSQL
+
+## MVP Features
+
+- Exam list
+- Exam detail
+- Timer
+- Answer selection
+- Submit exam
+- Score calculation
+- Review answers
+
+## How to Run
+
+## Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+
+## Backend
+
+```bash
+cd backend
+npm install
+npm run dev
