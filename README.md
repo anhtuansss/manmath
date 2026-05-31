@@ -26,6 +26,7 @@ ManMath is a web app for practicing Vietnamese high school math exams.
 cd frontend
 npm install
 npm run dev
+```
 
 ## Backend
 
@@ -33,3 +34,4 @@ npm run dev
 cd backend
 npm install
 npm run dev
+```
