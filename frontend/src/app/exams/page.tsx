@@ -1,6 +1,6 @@
-import { ExamListClient } from '../components/exam/ExamListClient';
+import { ExamListClient } from '../../components/exam/ExamListClient';
 
-export default function HomePage() {
+export default function ExamsPage() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950">
       <ExamListClient />
