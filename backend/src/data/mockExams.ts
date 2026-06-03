@@ -37,7 +37,7 @@ export const mockExams: Exam[] = [
     examTitle: 'De luyen thi THPT Quoc gia so 1',
     description:
       'Bo de mock dung de kiem tra flow lam bai hien tai: chon dap an, luu nhap, tinh gio va nop bai.',
-    durationMinutes: 90,
+    durationMinutes: 5,
     subject: 'Toan',
     difficulty: 'medium',
     year: 2026,

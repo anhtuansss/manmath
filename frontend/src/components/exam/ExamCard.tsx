@@ -19,8 +19,8 @@ const difficultyLabels: Record<ExamListItem['difficulty'], string> = {
 
 export function ExamCard({ exam }: ExamCardProps) {
   return (
-    <article className="group flex min-h-[260px] flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:border-blue-200 hover:shadow-md">
-      <div className="mb-4 flex items-start justify-between gap-3">
+    <article className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-5 transition-colors hover:border-slate-300">
+      <div className="mt-5 flex flex-wrap items-center gap-3">
         <span
           className={`rounded-full border px-3 py-1 text-xs font-semibold ${difficultyStyles[exam.difficulty]}`}
         >
@@ -41,20 +41,20 @@ export function ExamCard({ exam }: ExamCardProps) {
           {exam.description}
         </p>
 
-        <div className="mt-5 grid gap-3 text-sm text-slate-600">
-          <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
+        <div className="mt-4 space-y-2 text-sm">
+          <div className="flex items-center justify-between text-slate-600">
             <span>Thời lượng</span>
-            <span className="font-semibold text-slate-950">
+            <span className="font-medium text-slate-950">
               {exam.durationMinutes} phút
             </span>
           </div>
-          <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
+          <div className="flex items-center justify-between text-slate-600">
             <span>Số câu</span>
             <span className="font-semibold text-slate-950">
               {exam.totalQuestions} câu
             </span>
           </div>
-          <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
+          <div className="flex items-center justify-between text-slate-600">
             <span>Môn</span>
             <span className="font-semibold text-slate-950">{exam.subject}</span>
           </div>
@@ -67,7 +67,7 @@ export function ExamCard({ exam }: ExamCardProps) {
         </span>
         <Link
           href={exam.href}
-          className="ml-auto rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 active:bg-blue-800"
+          className="inline-flex rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
         >
           Bắt đầu làm bài
         </Link>

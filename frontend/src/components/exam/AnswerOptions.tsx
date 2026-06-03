@@ -25,10 +25,10 @@ export function AnswerOptions({
             disabled={isTimeUp}
             onClick={() => onSelectAnswer(question.id, choiceIndex)}
             className={`
-              flex w-full items-start gap-3 rounded-lg border p-4 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-60
+              flex w-full items-start gap-3 rounded-xl border p-4 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-60
               ${isSelected
-                ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-200'
-                : 'border-slate-200 bg-white hover:border-blue-300 hover:bg-slate-50'
+                ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-100'
+                : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
               }
             `}
           >

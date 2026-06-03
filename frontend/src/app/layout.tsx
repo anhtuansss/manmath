@@ -1,4 +1,9 @@
 import './globals.css';
+import { Inter } from 'next/font/google';
+
+const inter = Inter({
+  subsets: ['latin'],
+});
 
 export default function RootLayout({
   children,
@@ -7,7 +12,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="vi">
-      <body>{children}</body>
+      <body className={`${inter.className} bg-slate-50 text-slate-950 antialiased`}>
+        {children}
+      </body>
     </html>
   );
 }

@@ -10,14 +10,17 @@ const formatTime = (totalSeconds: number) => {
 };
 
 export function TimerDisplay({ remainingSeconds }: TimerDisplayProps) {
-  const isTimeWarning = remainingSeconds > 0 && remainingSeconds < 300;
-
+  const isTimeDanger = remainingSeconds > 0 && remainingSeconds < 60;
+  const isTimeWarning = remainingSeconds >= 60 && remainingSeconds < 300;
+  
   return (
     <div
       className={`rounded-lg px-3 py-1.5 ${
-        isTimeWarning
+        isTimeDanger
           ? 'bg-red-50 text-red-700'
-          : 'bg-slate-100 text-slate-950'
+          : isTimeWarning
+            ? 'bg-amber-50 text-amber-700'
+            : 'bg-slate-100 text-slate-950'
       }`}
     >
       <span className="font-mono text-lg font-semibold">

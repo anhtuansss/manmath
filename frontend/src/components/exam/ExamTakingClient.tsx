@@ -25,6 +25,7 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
   const [error, setError] = useState<string | null>(null);
   const [remainingSeconds, setRemainingSeconds] = useState<number>(0);
   const [submitResult, setSubmitResult] = useState<SubmitResult | null>(null);
+  const [currentQuestionId, setCurrentQuestionId] = useState<number | null>(null);
   const isTimeUp = remainingSeconds === 0;
   const answerStorageKey = `exam-answers-${examId}`;
 
@@ -47,6 +48,7 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
         setExam(null);
         setSubmitResult(null);
         setRemainingSeconds(0);
+        setCurrentQuestionId(null);
 
         const response = await fetch(`${API_BASE_URL}/api/exams/${examId}`);
 
@@ -97,6 +99,49 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
     return () => window.clearInterval(timerId);
   }, [exam]);
 
+  useEffect(() => {
+    if (!exam?.questions.length) return;
+
+    const syncCurrentQuestion = () => {
+      const stickyHeaderOffset = 120;
+      let nextQuestionId = exam.questions[0].id;
+
+      for (const question of exam.questions) {
+        const element = document.getElementById(`question-${question.id}`);
+
+        if (!element) continue;
+
+        const rect = element.getBoundingClientRect();
+
+        if (rect.top <= stickyHeaderOffset) {
+          nextQuestionId = question.id;
+          continue;
+        }
+
+        break;
+      }
+
+      setCurrentQuestionId(nextQuestionId);
+    };
+
+    let frameId = 0;
+
+    const onScroll = () => {
+      window.cancelAnimationFrame(frameId);
+      frameId = window.requestAnimationFrame(syncCurrentQuestion);
+    };
+
+    syncCurrentQuestion();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, [exam]);
+
   const handleSelectAnswer = (questionId: number, optionIndex: number) => {
     const newAnswers = {
       ...answers,
@@ -128,6 +173,13 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
     } catch (submitError) {
       console.error('Submit error:', submitError);
     }
+  };
+
+  const handleQuestionNavigate = (questionId: number) => {
+    setCurrentQuestionId(questionId);
+    document
+      .getElementById(`question-${questionId}`)
+      ?.scrollIntoView({ behavior: 'auto', block: 'start' });
   };
 
   if (loading) {
@@ -163,12 +215,13 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
     <div className="min-h-screen bg-slate-50 text-slate-950">
       <ExamHeader
         examTitle={exam?.examTitle}
+        questionCount={exam?.questions.length ?? 0}
         remainingSeconds={remainingSeconds}
         isTimeUp={isTimeUp}
         onSubmit={handleSubmit}
       />
       <main className="mx-auto max-w-6xl px-4 py-6">
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
+        <div className="flex flex-col-reverse gap-6 lg:grid lg:grid-cols-[minmax(0,1fr)_280px]">
           <QuestionList
             questions={exam?.questions}
             answers={answers}
@@ -180,6 +233,8 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
             answers={answers}
             isTimeUp={isTimeUp}
             submitResult={submitResult}
+            onQuestionClick={handleQuestionNavigate}
+            currentQuestionId={currentQuestionId}
           />
         </div>
       </main>
