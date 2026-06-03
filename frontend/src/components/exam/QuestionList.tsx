@@ -38,15 +38,16 @@ export function QuestionList({
       </div>
       {questions?.map((question, index) => (
         <div
+          id={`question-${question.id}`}
           key={question.id}
-          className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+          className="scroll-mt-24 rounded-2xl border border-slate-200 bg-white p-7"
         >
           <div className="mb-6">
             <span className="inline-block rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
               Câu {index + 1}/{totalQuestions}
             </span>
           </div>
-          <p className="mb-8 text-lg leading-relaxed text-slate-900">
+          <p className="mb-8 text-[17px] leading-8 text-slate-900">
             {question.question}
           </p>
           <AnswerOptions

@@ -33,17 +33,24 @@ export function ResultSummary({ result }: ResultSummaryProps) {
       : 0;
 
   return (
-    <div className="mt-4 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-      <div className="bg-blue-50 p-5 text-center">
-        <p className="mb-1 text-sm font-medium text-slate-500">Kết quả bài làm</p>
-        <p className={`text-5xl font-bold ${getScoreColorClass(result.score)}`}>
-          {result.score.toFixed(1)}
-        </p>
-        <span
-          className={`mt-2 inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${getScoreBadgeClass(result.score)}`}
-        >
-          {getScoreLabel(result.score)}
-        </span>
+    <div className="mt-4 border-t border-slate-200 pt-4">
+      <div className="rounded-lg bg-slate-50 p-3">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-xs uppercase tracking-wide text-slate-500">
+              Kết quả
+            </p>
+            <p className={`text-3xl font-semibold ${getScoreColorClass(result.score)}`}>
+              {result.score.toFixed(1)}
+            </p>
+          </div>
+
+          <span
+            className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${getScoreBadgeClass(result.score)}`}
+          >
+            {getScoreLabel(result.score)}
+          </span>
+        </div>
       </div>
 
       <div className="space-y-4 p-4">
