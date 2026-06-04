@@ -41,3 +41,13 @@ export type ExamListItem = {
 };
 
 export type ExamListApiItem = Omit<ExamListItem, 'href'>;
+
+export type ExamResultSession = {
+  examId: string;
+  examTitle: string;
+  submmitedAt: string;
+  answers: Answers;
+  submitResult: SubmitResult;
+};
+
+
