@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { ExamHeader } from './ExamHeader';
 import { ExamSidebar } from './ExamSidebar';
 import { QuestionList } from './QuestionList';
+import { useRouter } from 'next/navigation';
+
 import type {
   Answers,
   ExamResponse,
@@ -28,6 +30,7 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
   const [currentQuestionId, setCurrentQuestionId] = useState<number | null>(null);
   const isTimeUp = remainingSeconds === 0;
   const answerStorageKey = `exam-answers-${examId}`;
+  const router = useRouter();
 
   useEffect(() => {
     const savedData = localStorage.getItem(answerStorageKey);
@@ -39,6 +42,8 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
 
     setAnswers({});
   }, [answerStorageKey]);
+
+  const resultStorageKey = `exam-result-${examId}`;
 
   useEffect(() => {
     const fetchExam = async () => {
@@ -169,7 +174,17 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
 
       const result: SubmitResult = await response.json();
       setSubmitResult(result);
-      console.log('Submit result:', result);
+
+      const resultSession = {
+        examId: exam.id,
+        examTitle: exam.examTitle,
+        submittedAt: new Date().toISOString(),
+        answers,
+        submitResult: result,
+      };
+
+      sessionStorage.setItem(resultStorageKey, JSON.stringify(resultSession));
+      router.push(`/exam/${examId}/result`);
     } catch (submitError) {
       console.error('Submit error:', submitError);
     }
