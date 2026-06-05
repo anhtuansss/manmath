@@ -16,11 +16,11 @@
 
 ## Next Technical Cleanup
 
-- [ ] Move frontend API base URL into a small env/config helper.
-- [ ] Create a small storage helper for answer autosave and result persistence.
+- [x] Move frontend API base URL into a small env/config helper.
+- [x] Create a small storage helper for answer autosave and result persistence.
 - [ ] Standardize DTO naming between backend mock data and frontend types.
 - [ ] Add lightweight backend validation for submit payloads.
-- [ ] Clean up old Prisma `seedData.ts` that still uses `MathProblem`.
+- [x] Legacy Prisma seed file is renamed and seed script is disabled.
 - [ ] Update smoke test notes after each MVP flow change.
 
 ## PostgreSQL Preparation

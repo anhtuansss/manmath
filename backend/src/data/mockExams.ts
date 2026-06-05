@@ -1,25 +1,28 @@
+/**
+ * Mục đích:
+ * Mock data đề thi cho backend MVP. File này đóng vai trò nguồn dữ liệu tạm thời
+ * trước khi thay bằng PostgreSQL/Prisma.
+ *
+ * Luồng dữ liệu:
+ * server.ts đọc mockExams, trả ExamSummaryDto cho màn danh sách và ExamDetailDto
+ * cho màn làm bài. Submit endpoint dùng cùng dữ liệu này để chấm điểm.
+ *
+ * File liên quan:
+ * backend/server.ts
+ * frontend/src/components/exam/types.ts
+ */
 export type ExamDifficulty = 'easy' | 'medium' | 'hard';
 
-export type Question = {
+export type QuestionDto = {
   id: number;
   question: string;
   options: string[];
   correctAnswer: string;
 };
 
-export type Exam = {
-  id: string;
-  examTitle: string;
-  description: string;
-  durationMinutes: number;
-  questions: Question[];
-  subject: string;
-  difficulty: ExamDifficulty;
-  year?: number;
-  statusLabel: string;
-};
+export type Question = QuestionDto;
 
-export type ExamSummary = {
+export type ExamSummaryDto = {
   id: string;
   title: string;
   description: string;
@@ -31,7 +34,27 @@ export type ExamSummary = {
   statusLabel: string;
 };
 
-export const mockExams: Exam[] = [
+export type ExamDetailDto = {
+  id: string;
+  examTitle: string;
+  durationMinutes: number;
+  questions: QuestionDto[];
+};
+
+export type ExamMock = ExamDetailDto & {
+  description: string;
+  subject: string;
+  difficulty: ExamDifficulty;
+  year?: number;
+  statusLabel: string;
+};
+
+// Dữ liệu đề giả lập có thêm metadata cho list UI; DTO detail chỉ gửi phần cần cho làm bài.
+export type Exam = ExamMock;
+
+export type ExamSummary = ExamSummaryDto;
+
+export const mockExams: ExamMock[] = [
   {
     id: 'thpt-mock-01',
     examTitle: 'De luyen thi THPT Quoc gia so 1',
@@ -126,7 +149,10 @@ export const mockExams: Exam[] = [
   },
 ];
 
-export const getExamSummaries = (): ExamSummary[] =>
+/**
+ * Chuyển đề giả lập đầy đủ sang ExamSummaryDto cho trang danh sách đề.
+ */
+export const getExamSummaries = (): ExamSummaryDto[] =>
   mockExams.map((exam) => ({
     id: exam.id,
     title: exam.examTitle,
@@ -139,5 +165,8 @@ export const getExamSummaries = (): ExamSummary[] =>
     statusLabel: exam.statusLabel,
   }));
 
+/**
+ * Tìm exam theo id cho route detail và luồng chấm điểm khi submit.
+ */
 export const findExamById = (examId: string): Exam | undefined =>
   mockExams.find((exam) => exam.id === examId);

@@ -1,11 +1,9 @@
-import { ResultSummary } from './ResultSummary';
 import type { Answers, Question, SubmitResult } from './types';
 
 type ExamSidebarProps = {
   questions?: Question[];
   answers: Answers;
   isTimeUp: boolean;
-  submitResult: SubmitResult | null;
   onQuestionClick: (questionId: number) => void;
   currentQuestionId: number | null;
 };
@@ -14,7 +12,6 @@ export function ExamSidebar({
   questions,
   answers,
   isTimeUp,
-  submitResult,
   onQuestionClick,
   currentQuestionId,
 }: ExamSidebarProps) {
@@ -91,8 +88,6 @@ export function ExamSidebar({
             Đã hết giờ
           </p>
         )}
-
-        {submitResult && <ResultSummary result={submitResult} />}
       </div>
     </aside>
   );

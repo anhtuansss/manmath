@@ -1,58 +1,73 @@
 'use client';
 
+/**
+ * Mục đích:
+ * Component chạy phía trình duyệt chính của màn làm bài. Quản lý tải chi tiết đề,
+ * đồng hồ, đáp án người dùng, lưu nháp, điều hướng câu hỏi trong thanh bên và nộp bài.
+ *
+ * Luồng dữ liệu:
+ * GET /api/exams/:id -> hiển thị câu hỏi.
+ * localStorage -> khôi phục/lưu nháp đáp án theo từng đề.
+ * POST /api/exam/submit -> sessionStorage -> chuyển sang /exam/[id]/result.
+ *
+ * File liên quan:
+ * frontend/src/components/exam/ExamHeader.tsx
+ * frontend/src/components/exam/QuestionList.tsx
+ * frontend/src/components/exam/ExamSidebar.tsx
+ * frontend/src/lib/storage.ts
+ * backend/server.ts
+ */
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ExamHeader } from './ExamHeader';
 import { ExamSidebar } from './ExamSidebar';
 import { QuestionList } from './QuestionList';
 import { useRouter } from 'next/navigation';
+import { API_BASE_URL } from '../../config/api';
+import {
+  getExamAnswersKey,
+  getExamResultKey,
+  readAnswersStorage,
+  writeJsonStorage,
+} from '../../lib/storage';
 
 import type {
   Answers,
+  ExamDetailDto,
   ExamResultSession,
-  ExamResponse,
-  SubmitRequest,
-  SubmitResult,
+  SubmitExamRequestDto,
+  SubmitExamResultDto,
 } from './types';
 
 type ExamTakingClientProps = {
   examId: string;
 };
 
-const API_BASE_URL = 'http://localhost:5000';
-
 export function ExamTakingClient({ examId }: ExamTakingClientProps) {
   const [answers, setAnswers] = useState<Answers>({});
-  const [exam, setExam] = useState<ExamResponse | null>(null);
+  const [exam, setExam] = useState<ExamDetailDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [remainingSeconds, setRemainingSeconds] = useState<number>(0);
-  const [submitResult, setSubmitResult] = useState<SubmitResult | null>(null);
   const [currentQuestionId, setCurrentQuestionId] = useState<number | null>(null);
   const isTimeUp = remainingSeconds === 0;
-  const answerStorageKey = `exam-answers-${examId}`;
   const router = useRouter();
 
+  // Khôi phục đáp án đã lưu nháp để người dùng có thể làm tiếp sau khi reload.
   useEffect(() => {
-    const savedData = localStorage.getItem(answerStorageKey);
+    const savedAnswers = readAnswersStorage(localStorage, examId);
+    setAnswers(savedAnswers ?? {});
+  }, [examId]);
 
-    if (savedData) {
-      setAnswers(JSON.parse(savedData));
-      return;
-    }
-
-    setAnswers({});
-  }, [answerStorageKey]);
-
-  const resultStorageKey = `exam-result-${examId}`;
-
+  /**
+   * Tải chi tiết đề từ backend và reset state của màn làm bài theo examId hiện tại.
+   */
   useEffect(() => {
     const fetchExam = async () => {
       try {
         setLoading(true);
         setError(null);
         setExam(null);
-        setSubmitResult(null);
         setRemainingSeconds(0);
         setCurrentQuestionId(null);
 
@@ -66,7 +81,7 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
           throw new Error('Không tải được đề thi');
         }
 
-        const data: ExamResponse = await response.json();
+        const data: ExamDetailDto = await response.json();
         setExam(data);
       } catch (fetchError) {
         setError(
@@ -88,6 +103,7 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
     setRemainingSeconds(exam.durationMinutes * 60);
   }, [exam]);
 
+  // Đồng hồ chạy ở client; khi về 0, các nút đáp án sẽ bị khóa.
   useEffect(() => {
     if (!exam) return;
 
@@ -105,6 +121,10 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
     return () => window.clearInterval(timerId);
   }, [exam]);
 
+  /**
+ * Đồng bộ currentQuestionId với vị trí cuộn để thanh bên làm nổi bật
+ * câu hỏi đang nằm gần sticky header.
+   */
   useEffect(() => {
     if (!exam?.questions.length) return;
 
@@ -155,14 +175,19 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
     };
 
     setAnswers(newAnswers);
-    localStorage.setItem(answerStorageKey, JSON.stringify(newAnswers));
+    // Lưu ngay mỗi lần chọn đáp án để reload không làm mất tiến độ.
+    writeJsonStorage(localStorage, getExamAnswersKey(examId), newAnswers);
   };
 
+  /**
+   * Nộp đáp án lên backend, lưu kết quả tạm vào sessionStorage,
+   * rồi chuyển người dùng sang trang kết quả riêng.
+   */
   const handleSubmit = async () => {
     if (!exam) return;
 
     try {
-      const payload: SubmitRequest = { examId: exam.id, answers };
+      const payload: SubmitExamRequestDto = { examId: exam.id, answers };
       const response = await fetch(`${API_BASE_URL}/api/exam/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -173,8 +198,7 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
         throw new Error('Failed to submit exam');
       }
 
-      const result: SubmitResult = await response.json();
-      setSubmitResult(result);
+      const result: SubmitExamResultDto = await response.json();
 
       const resultSession: ExamResultSession = {
         examId: exam.id,
@@ -185,7 +209,7 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
         exam,
       };
 
-      sessionStorage.setItem(resultStorageKey, JSON.stringify(resultSession));
+      writeJsonStorage(sessionStorage, getExamResultKey(examId), resultSession);
       router.push(`/exam/${examId}/result`);
     } catch (submitError) {
       console.error('Submit error:', submitError);
@@ -249,7 +273,6 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
             questions={exam?.questions}
             answers={answers}
             isTimeUp={isTimeUp}
-            submitResult={submitResult}
             onQuestionClick={handleQuestionNavigate}
             currentQuestionId={currentQuestionId}
           />

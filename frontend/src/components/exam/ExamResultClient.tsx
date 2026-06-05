@@ -1,9 +1,31 @@
 'use client';
 
+/**
+ * Mục đích:
+ * Component chạy phía trình duyệt cho trang kết quả. Đọc kết quả tạm sau khi nộp bài,
+ * hiển thị tổng kết điểm và phần xem lại từng câu, đồng thời xử lý luồng làm lại đề.
+ *
+ * Luồng dữ liệu:
+ * sessionStorage -> ExamResultSession -> hiển thị điểm và phần xem lại đáp án.
+ * Nếu session không có bản chụp dữ liệu đề, gọi dự phòng GET /api/exams/:id
+ * để lấy câu hỏi.
+ *
+ * File liên quan:
+ * frontend/src/components/exam/ExamTakingClient.tsx
+ * frontend/src/lib/storage.ts
+ * backend/server.ts
+ */
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import type { ExamResponse, ExamResultSession, Question } from './types';
+import type { ExamDetailDto, ExamResultSession, QuestionDto } from './types';
+import { API_BASE_URL } from '../../config/api';
+import {
+  getExamAnswersKey,
+  getExamResultKey,
+  readResultStorage,
+  removeStorageItem,
+} from '../../lib/storage';
 
 type ExamResultClientProps = {
   examId: string;
@@ -11,45 +33,8 @@ type ExamResultClientProps = {
 
 type ReviewStatus = 'correct' | 'incorrect' | 'unanswered';
 
-const API_BASE_URL = 'http://localhost:5000';
-
-const parseResultSession = (
-  rawData: string | null,
-  examId: string,
-): ExamResultSession | null => {
-  if (!rawData) return null;
-
-  try {
-    const parsed = JSON.parse(rawData) as Partial<ExamResultSession>;
-
-    if (
-      parsed.examId !== examId ||
-      !parsed.examTitle ||
-      !parsed.submittedAt ||
-      !parsed.answers ||
-      !parsed.submitResult
-    ) {
-      return null;
-    }
-
-    return {
-      examId: parsed.examId,
-      examTitle: parsed.examTitle,
-      submittedAt: parsed.submittedAt,
-      answers: parsed.answers,
-      submitResult: parsed.submitResult,
-      exam: parsed.exam,
-    };
-  } catch {
-    return null;
-  }
-};
-
-const getResultStorageKey = (examId: string) => `exam-result-${examId}`;
-const getAnswerStorageKey = (examId: string) => `exam-answers-${examId}`;
-
 const getReviewStatus = (
-  question: Question,
+  question: QuestionDto,
   selectedOptionIndex: number | undefined,
 ): ReviewStatus => {
   if (selectedOptionIndex === undefined) return 'unanswered';
@@ -105,10 +90,14 @@ function ResultEmptyState({ examId }: ExamResultClientProps) {
 export function ExamResultClient({ examId }: ExamResultClientProps) {
   const router = useRouter();
   const [resultSession, setResultSession] = useState<ExamResultSession | null>(null);
-  const [exam, setExam] = useState<ExamResponse | null>(null);
+  const [exam, setExam] = useState<ExamDetailDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [reviewError, setReviewError] = useState<string | null>(null);
 
+  /**
+   * Tải kết quả nộp bài từ sessionStorage. Ở MVP, trang kết quả cố ý dựa vào
+   * storage tạm, nên nếu mở URL trực tiếp khi chưa nộp bài thì hiển thị trạng thái rỗng.
+   */
   useEffect(() => {
     let isActive = true;
 
@@ -116,10 +105,7 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
       setLoading(true);
       setReviewError(null);
 
-      const storedResult = parseResultSession(
-        sessionStorage.getItem(getResultStorageKey(examId)),
-        examId,
-      );
+      const storedResult = readResultStorage(sessionStorage, examId);
 
       if (!storedResult) {
         if (!isActive) return;
@@ -138,6 +124,7 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
         return;
       }
 
+      // Session cũ có thể chưa có bản chụp dữ liệu đề, nên tải chi tiết để vẫn xem lại được.
       try {
         const response = await fetch(`${API_BASE_URL}/api/exams/${examId}`);
 
@@ -145,7 +132,7 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
           throw new Error('Không tải được chi tiết đề để review đáp án');
         }
 
-        const examData: ExamResponse = await response.json();
+        const examData: ExamDetailDto = await response.json();
 
         if (!isActive) return;
         setExam(examData);
@@ -169,8 +156,9 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
   }, [examId]);
 
   const handleRetakeExam = () => {
-    sessionStorage.removeItem(getResultStorageKey(examId));
-    localStorage.removeItem(getAnswerStorageKey(examId));
+    // Làm lại đề cần bắt đầu sạch: xóa cả kết quả tạm và đáp án đã lưu nháp.
+    removeStorageItem(sessionStorage, getExamResultKey(examId));
+    removeStorageItem(localStorage, getExamAnswersKey(examId));
     router.push(`/exam/${examId}`);
   };
 

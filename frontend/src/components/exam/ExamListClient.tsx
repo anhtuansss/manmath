@@ -1,10 +1,22 @@
 'use client';
 
+/**
+ * Mục đích:
+ * Component chạy phía trình duyệt cho trang danh sách đề. Chịu trách nhiệm
+ * tải danh sách, xử lý trạng thái tải/lỗi/rỗng và đưa dữ liệu cho ExamList hiển thị.
+ *
+ * Luồng dữ liệu:
+ * GET /api/exams -> ExamSummaryDto[] -> thêm href cho UI -> ExamListItem[].
+ *
+ * File liên quan:
+ * frontend/src/components/exam/ExamList.tsx
+ * frontend/src/components/exam/types.ts
+ * backend/server.ts
+ */
 import { useEffect, useState } from 'react';
 import { ExamList } from './ExamList';
 import type { ExamListApiItem, ExamListItem } from './types';
-
-const API_BASE_URL = 'http://localhost:5000';
+import { API_BASE_URL } from '../../config/api';
 
 const toExamListItem = (exam: ExamListApiItem): ExamListItem => ({
   ...exam,
@@ -137,6 +149,10 @@ export function ExamListClient() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  /**
+ * Tải danh sách đề từ backend và chuyển sang dữ liệu UI có href.
+   * Hàm này được gọi khi component mount và khi người dùng bấm thử lại.
+   */
   const fetchExams = async () => {
     try {
       setLoading(true);

@@ -1,31 +1,66 @@
-export type Question = {
+/**
+ * Mục đích:
+ * Tập trung các type frontend dùng cho giao diện làm bài, API DTO
+ * và dữ liệu kết quả lưu tạm.
+ *
+ * Luồng dữ liệu:
+ * Backend trả DTO qua API. Frontend chuyển một số DTO thành dữ liệu cho UI,
+ * sau đó lưu nháp đáp án hoặc kết quả tạm vào localStorage/sessionStorage.
+ *
+ * File liên quan:
+ * backend/src/data/mockExams.ts
+ * frontend/src/components/exam/ExamListClient.tsx
+ * frontend/src/components/exam/ExamTakingClient.tsx
+ * frontend/src/components/exam/ExamResultClient.tsx
+ */
+export type QuestionDto = {
   id: number;
   question: string;
   options: string[];
   correctAnswer: string;
 };
 
-export type ExamResponse = {
+export type Question = QuestionDto;
+
+export type ExamDetailDto = {
   id: string;
   examTitle: string;
   durationMinutes: number;
-  questions: Question[];
+  questions: QuestionDto[];
 };
+
+export type ExamResponse = ExamDetailDto;
 
 export type Answers = Record<number, number>;
 
-export type SubmitRequest = {
-  examId: string;
+export type SubmitExamRequestDto = {
+  examId?: string;
   answers: Answers;
 };
 
-export type SubmitResult = {
+export type SubmitRequest = SubmitExamRequestDto;
+
+export type SubmitExamResultDto = {
   correctCount: number;
   totalQuestions: number;
   score: number;
 };
 
+export type SubmitResult = SubmitExamResultDto;
+
 export type ExamDifficulty = 'easy' | 'medium' | 'hard';
+
+export type ExamSummaryDto = {
+  id: string;
+  title: string;
+  description: string;
+  durationMinutes: number;
+  totalQuestions: number;
+  subject: string;
+  difficulty: ExamDifficulty;
+  year?: number;
+  statusLabel: string;
+};
 
 export type ExamListItem = {
   id: string;
@@ -40,13 +75,15 @@ export type ExamListItem = {
   href: string;
 };
 
-export type ExamListApiItem = Omit<ExamListItem, 'href'>;
+// Dữ liệu API của danh sách đề không có href; frontend tự gắn href để điều hướng.
+export type ExamListApiItem = ExamSummaryDto;
 
+// Model lưu tạm trong sessionStorage sau khi nộp bài, không phải API DTO.
 export type ExamResultSession = {
   examId: string;
   examTitle: string;
   submittedAt: string;
   answers: Answers;
-  submitResult: SubmitResult;
-  exam?: ExamResponse;
+  submitResult: SubmitExamResultDto;
+  exam?: ExamDetailDto;
 };
