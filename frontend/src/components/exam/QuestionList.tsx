@@ -21,15 +21,15 @@ export function QuestionList({
     totalQuestions > 0 ? (answeredCount / totalQuestions) * 100 : 0;
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <div className="flex items-center justify-between text-sm">
+    <div className="space-y-8">
+      <div className="rounded-lg border border-slate-200 bg-white px-4 py-3">
+        <div className="mb-2 flex items-center justify-between text-sm">
           <span className="text-slate-500">Tiến độ</span>
-          <span className="font-medium text-slate-900">
+          <span className="font-semibold text-slate-950">
             {answeredCount}/{totalQuestions} câu
           </span>
         </div>
-        <div className="h-2 overflow-hidden rounded-full bg-slate-200">
+        <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
           <div
             className="h-full rounded-full bg-blue-600 transition-all"
             style={{ width: `${progressPercentage}%` }}
@@ -40,14 +40,14 @@ export function QuestionList({
         <div
           id={`question-${question.id}`}
           key={question.id}
-          className="scroll-mt-24 rounded-2xl border border-slate-200 bg-white p-7"
+          className="scroll-mt-28 rounded-lg border border-slate-200 bg-white p-6 sm:p-8"
         >
-          <div className="mb-6">
-            <span className="inline-block rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
+          <div className="mb-6 flex items-center border-b border-slate-200 pb-4">
+            <span className="text-sm font-semibold text-blue-700">
               Câu {index + 1}/{totalQuestions}
             </span>
           </div>
-          <p className="mb-8 text-[17px] leading-8 text-slate-900">
+          <p className="mb-8 text-lg leading-8 text-slate-950">
             {question.question}
           </p>
           <AnswerOptions

@@ -3,6 +3,7 @@ import type { ExamListItem } from './types';
 
 type ExamCardProps = {
   exam: ExamListItem;
+  variant?: 'featured' | 'compact';
 };
 
 const difficultyStyles: Record<ExamListItem['difficulty'], string> = {
@@ -17,57 +18,79 @@ const difficultyLabels: Record<ExamListItem['difficulty'], string> = {
   hard: 'Khó',
 };
 
-export function ExamCard({ exam }: ExamCardProps) {
+export function ExamCard({ exam, variant = 'featured' }: ExamCardProps) {
+  if (variant === 'compact') {
+    return (
+      <article className="group rounded-lg border border-slate-200 bg-white p-4 transition-colors hover:border-blue-300">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="min-w-0 flex-1">
+            <h3 className="text-base font-semibold leading-6 text-slate-950 transition-colors group-hover:text-blue-700">
+              {exam.title}
+            </h3>
+            <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-sm text-slate-500">
+              <span>{exam.totalQuestions} câu</span>
+              <span aria-hidden="true">•</span>
+              <span>{exam.durationMinutes} phút</span>
+              <span aria-hidden="true">•</span>
+              <span>{difficultyLabels[exam.difficulty]}</span>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-600">
+              {exam.statusLabel}
+            </span>
+            <Link
+              href={exam.href}
+              className="inline-flex h-9 items-center justify-center rounded-lg border border-blue-200 bg-blue-50 px-3 text-sm font-semibold text-blue-700 transition-colors hover:border-blue-600 hover:bg-blue-100"
+            >
+              Vào đề
+            </Link>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
   return (
-    <article className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-5 transition-colors hover:border-slate-300">
-      <div className="mt-5 flex flex-wrap items-center gap-3">
+    <article className="group flex min-h-[230px] flex-col rounded-lg border border-slate-200 bg-white p-6 transition-colors hover:border-blue-300">
+      <div className="flex items-start justify-between gap-4">
+        <h3 className="text-xl font-semibold leading-7 text-slate-950 transition-colors group-hover:text-blue-700">
+          {exam.title}
+        </h3>
         <span
-          className={`rounded-full border px-3 py-1 text-xs font-semibold ${difficultyStyles[exam.difficulty]}`}
+          className={`shrink-0 rounded-md border px-2.5 py-1 text-xs font-semibold ${difficultyStyles[exam.difficulty]}`}
         >
           {difficultyLabels[exam.difficulty]}
         </span>
-        {exam.year && (
-          <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-500">
-            {exam.year}
-          </span>
-        )}
       </div>
 
-      <div className="flex-1">
-        <h2 className="text-lg font-semibold leading-snug text-slate-950 transition-colors group-hover:text-blue-700">
-          {exam.title}
-        </h2>
-        <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">
-          {exam.description}
-        </p>
+      <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-600">
+        {exam.description}
+      </p>
 
-        <div className="mt-4 space-y-2 text-sm">
-          <div className="flex items-center justify-between text-slate-600">
-            <span>Thời lượng</span>
-            <span className="font-medium text-slate-950">
-              {exam.durationMinutes} phút
-            </span>
-          </div>
-          <div className="flex items-center justify-between text-slate-600">
-            <span>Số câu</span>
-            <span className="font-semibold text-slate-950">
-              {exam.totalQuestions} câu
-            </span>
-          </div>
-          <div className="flex items-center justify-between text-slate-600">
-            <span>Môn</span>
-            <span className="font-semibold text-slate-950">{exam.subject}</span>
-          </div>
+      <div className="mt-5 grid grid-cols-2 gap-3 border-t border-slate-200 pt-4 text-sm">
+        <div>
+          <p className="text-slate-500">Số câu</p>
+          <p className="mt-1 font-semibold text-slate-950">
+            {exam.totalQuestions} câu
+          </p>
+        </div>
+        <div>
+          <p className="text-slate-500">Thời lượng</p>
+          <p className="mt-1 font-semibold text-slate-950">
+            {exam.durationMinutes} phút
+          </p>
         </div>
       </div>
 
-      <div className="mt-5 flex items-center gap-3">
-        <span className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700">
+      <div className="mt-auto flex items-center justify-between gap-3 pt-5">
+        <span className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-600">
           {exam.statusLabel}
         </span>
         <Link
           href={exam.href}
-          className="inline-flex rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+          className="inline-flex h-10 items-center justify-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
         >
           Bắt đầu làm bài
         </Link>

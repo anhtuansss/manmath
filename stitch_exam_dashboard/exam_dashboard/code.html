@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ManMath - Exam Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-tertiary-container": "#f5fff6",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "secondary-container": "#6063ee",
+                        "on-primary-container": "#fefcff",
+                        "secondary": "#4648d4",
+                        "tertiary-fixed": "#6ffbbe",
+                        "on-secondary-fixed": "#07006c",
+                        "inverse-surface": "#283044",
+                        "surface-dim": "#d2d9f4",
+                        "surface-container-low": "#f2f3ff",
+                        "on-tertiary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "tertiary": "#006947",
+                        "surface-tint": "#005ac2",
+                        "primary-container": "#2170e4",
+                        "on-secondary-container": "#fffbff",
+                        "surface-variant": "#dae2fd",
+                        "background": "#faf8ff",
+                        "on-surface": "#131b2e",
+                        "outline": "#727785",
+                        "inverse-on-surface": "#eef0ff",
+                        "on-primary-fixed": "#001a42",
+                        "on-error": "#ffffff",
+                        "outline-variant": "#c2c6d6",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "primary": "#0058be",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "surface": "#faf8ff",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-background": "#131b2e",
+                        "on-tertiary-fixed": "#002113",
+                        "surface-bright": "#faf8ff",
+                        "inverse-primary": "#adc6ff",
+                        "primary-fixed": "#d8e2ff",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#dae2fd",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#e1e0ff",
+                        "surface-container-high": "#e2e7ff",
+                        "tertiary-container": "#00855b",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "surface-container": "#eaedff",
+                        "on-surface-variant": "#424754"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    spacing: {
+                        "md": "16px",
+                        "margin-mobile": "16px",
+                        "lg": "24px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "gutter": "24px",
+                        "max-width-exam": "800px",
+                        "unit": "4px"
+                    },
+                    fontFamily: {
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    fontSize: {
+                        "label-sm": ["12px", { lineHeight: "16px", fontWeight: "600" }],
+                        "headline-md": ["20px", { lineHeight: "28px", fontWeight: "600" }],
+                        "display": ["36px", { lineHeight: "44px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "headline-lg-mobile": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+                        "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+                        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+                        "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+                        "headline-lg": ["28px", { lineHeight: "36px", letterSpacing: "-0.01em", fontWeight: "600" }],
+                        "label-md": ["14px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #F8FAFC;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-background min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-on-background docked full-width top-0 sticky z-50 border-b border-outline-variant dark:border-outline flat no shadows flex justify-between items-center w-full px-lg py-sm max-w-exam mx-auto max-w-[1200px]">
+<div class="flex items-center gap-xl">
+<div class="font-display text-display text-primary dark:text-primary-fixed-dim">ManMath</div>
+<nav class="hidden md:flex gap-lg">
+<a class="text-primary dark:text-primary-fixed-dim border-b-2 border-primary pb-1 font-label-md text-label-md hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Dashboard</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-label-md text-label-md hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Exams</a>
+<a class="text-on-surface-variant dark:text-surface-variant font-label-md text-label-md hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Profile</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="timer">timer</span>
+<span class="font-label-md text-label-md text-on-surface-variant">00:45:00</span>
+<button class="bg-primary text-on-primary px-lg py-sm rounded font-label-md text-label-md hover:opacity-90 transition-opacity">Submit</button>
+</div>
+</header>
+<!-- Main Content Grid -->
+<main class="flex-1 w-full max-w-[1200px] mx-auto px-lg py-xl grid grid-cols-1 lg:grid-cols-12 gap-xl">
+<!-- Left Column: Exams -->
+<div class="lg:col-span-8 flex flex-col gap-xl">
+<!-- Recommended Section -->
+<section>
+<h2 class="font-headline-md text-headline-md text-on-background mb-md">Recommended for Today</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<!-- Exam Card 1 -->
+<div class="bg-surface border border-outline-variant rounded p-lg hover:border-primary transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-sm">
+<h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors line-clamp-2">Đề thi thử THPT Quốc gia 2024 - Số 1</h3>
+<span class="bg-surface-container-high text-on-surface-variant px-sm py-xs rounded font-label-sm text-label-sm whitespace-nowrap">Medium</span>
+</div>
+<div class="flex gap-lg font-body-sm text-body-sm text-on-surface-variant mb-md">
+<div class="flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">list_alt</span> 50 questions</div>
+<div class="flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">schedule</span> 90 mins</div>
+</div>
+<div class="flex justify-between items-center mt-auto pt-md border-t border-outline-variant/50">
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-variant px-sm py-xs rounded">Not started</span>
+<button class="text-primary font-label-md text-label-md flex items-center gap-xs hover:underline">Start <span class="material-symbols-outlined text-[16px]">arrow_forward</span></button>
+</div>
+</div>
+<!-- Exam Card 2 -->
+<div class="bg-surface border border-outline-variant rounded p-lg hover:border-primary transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-sm">
+<h3 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors line-clamp-2">Chuyên đề Hàm số &amp; Đồ thị - Nâng cao</h3>
+<span class="bg-surface-container-high text-on-surface-variant px-sm py-xs rounded font-label-sm text-label-sm whitespace-nowrap">Hard</span>
+</div>
+<div class="flex gap-lg font-body-sm text-body-sm text-on-surface-variant mb-md">
+<div class="flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">list_alt</span> 40 questions</div>
+<div class="flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">schedule</span> 60 mins</div>
+</div>
+<div class="flex justify-between items-center mt-auto pt-md border-t border-outline-variant/50">
+<span class="font-label-sm text-label-sm text-primary bg-primary-container/20 px-sm py-xs rounded">In progress (45%)</span>
+<button class="text-primary font-label-md text-label-md flex items-center gap-xs hover:underline">Resume <span class="material-symbols-outlined text-[16px]">arrow_forward</span></button>
+</div>
+</div>
+</div>
+</section>
+<!-- Exam List Section -->
+<section>
+<div class="flex justify-between items-center mb-md">
+<h2 class="font-headline-md text-headline-md text-on-background">Exam Library</h2>
+<div class="flex gap-sm">
+<button class="p-sm border border-outline-variant rounded text-on-surface-variant hover:bg-surface-container-low"><span class="material-symbols-outlined">filter_list</span></button>
+</div>
+</div>
+<div class="flex flex-col gap-sm">
+<!-- List Item 1 -->
+<div class="bg-surface border border-outline-variant rounded p-md flex flex-col md:flex-row md:items-center justify-between gap-md hover:border-primary transition-colors">
+<div class="flex-1">
+<h3 class="font-label-md text-label-md text-on-surface mb-xs">Đề thi thử Sở GD&amp;ĐT Hà Nội 2023</h3>
+<div class="flex gap-md font-body-sm text-body-sm text-on-surface-variant">
+<span>50 questions</span> • <span>90 mins</span> • <span>Medium</span>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<span class="font-label-sm text-label-sm text-tertiary bg-tertiary-container/20 px-sm py-xs rounded whitespace-nowrap">Completed (8.5/10)</span>
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+</div>
+<!-- List Item 2 -->
+<div class="bg-surface border border-outline-variant rounded p-md flex flex-col md:flex-row md:items-center justify-between gap-md hover:border-primary transition-colors">
+<div class="flex-1">
+<h3 class="font-label-md text-label-md text-on-surface mb-xs">Đề thi thử Chuyên KHTN - Lần 2</h3>
+<div class="flex gap-md font-body-sm text-body-sm text-on-surface-variant">
+<span>50 questions</span> • <span>90 mins</span> • <span>Hard</span>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-variant px-sm py-xs rounded whitespace-nowrap">Not started</span>
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+</div>
+<!-- List Item 3 -->
+<div class="bg-surface border border-outline-variant rounded p-md flex flex-col md:flex-row md:items-center justify-between gap-md hover:border-primary transition-colors">
+<div class="flex-1">
+<h3 class="font-label-md text-label-md text-on-surface mb-xs">Ôn tập Hình học Không gian - Tọa độ Oxyz</h3>
+<div class="flex gap-md font-body-sm text-body-sm text-on-surface-variant">
+<span>30 questions</span> • <span>45 mins</span> • <span>Medium</span>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-variant px-sm py-xs rounded whitespace-nowrap">Not started</span>
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Sidebar -->
+<div class="lg:col-span-4 flex flex-col gap-xl">
+<!-- Recent Progress -->
+<div class="bg-surface border border-outline-variant rounded p-lg">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">trending_up</span> Recent Progress
+                </h3>
+<div class="flex flex-col gap-md">
+<div class="flex justify-between items-center pb-sm border-b border-outline-variant/50">
+<div>
+<div class="font-label-md text-label-md text-on-surface">Đề Sở Hà Nội</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">2 days ago</div>
+</div>
+<div class="font-headline-md text-headline-md text-tertiary">8.5</div>
+</div>
+<div class="flex justify-between items-center pb-sm border-b border-outline-variant/50">
+<div>
+<div class="font-label-md text-label-md text-on-surface">Chuyên KHTN L1</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">1 week ago</div>
+</div>
+<div class="font-headline-md text-headline-md text-primary">7.8</div>
+</div>
+<div class="flex justify-between items-center">
+<div>
+<div class="font-label-md text-label-md text-on-surface">Đề Tham khảo BGD</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">2 weeks ago</div>
+</div>
+<div class="font-headline-md text-headline-md text-tertiary">8.2</div>
+</div>
+</div>
+</div>
+<!-- Topic Weaknesses -->
+<div class="bg-surface border border-outline-variant rounded p-lg">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-error">target</span> Topic Weaknesses
+                </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-md">Based on your recent mistakes, focus on reviewing these topics:</p>
+<div class="flex flex-col gap-sm">
+<div class="bg-error-container/20 border border-error-container p-sm rounded flex items-start gap-sm">
+<span class="material-symbols-outlined text-error text-[20px] mt-xs">warning</span>
+<div>
+<div class="font-label-md text-label-md text-on-surface">Integrals &amp; Applications</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Accuracy: 45%</div>
+</div>
+</div>
+<div class="bg-surface-variant/50 border border-outline-variant p-sm rounded flex items-start gap-sm">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px] mt-xs">info</span>
+<div>
+<div class="font-label-md text-label-md text-on-surface">Complex Numbers - Locus</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Accuracy: 55%</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface dark:bg-on-background full-width py-xl mt-auto border-t border-outline-variant dark:border-outline flat no shadows flex flex-col items-center justify-center gap-sm px-lg max-w-exam mx-auto text-center w-full max-w-[1200px]">
+<div class="font-label-md text-label-md text-on-surface mb-sm">© 2024 ManMath Academic Publishing</div>
+<div class="flex gap-lg font-body-sm text-body-sm text-on-surface-variant">
+<a class="hover:text-primary underline transition-all opacity-70 hover:opacity-100" href="#">Terms of Service</a>
+<a class="hover:text-primary underline transition-all opacity-70 hover:opacity-100" href="#">Privacy Policy</a>
+<a class="hover:text-primary underline transition-all opacity-70 hover:opacity-100" href="#">Help Center</a>
+</div>
+</footer>
+</body></html>
