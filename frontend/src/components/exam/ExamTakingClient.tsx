@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 
 import type {
   Answers,
+  ExamResultSession,
   ExamResponse,
   SubmitRequest,
   SubmitResult,
@@ -175,12 +176,13 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
       const result: SubmitResult = await response.json();
       setSubmitResult(result);
 
-      const resultSession = {
+      const resultSession: ExamResultSession = {
         examId: exam.id,
         examTitle: exam.examTitle,
         submittedAt: new Date().toISOString(),
         answers,
         submitResult: result,
+        exam,
       };
 
       sessionStorage.setItem(resultStorageKey, JSON.stringify(resultSession));
