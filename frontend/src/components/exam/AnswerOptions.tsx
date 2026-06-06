@@ -27,39 +27,31 @@ export function AnswerOptions({
             disabled={isTimeUp}
             onClick={() => onSelectAnswer(question.id, choiceIndex)}
             className={`
-              group flex w-full items-start gap-4 rounded-lg border-2 p-4 text-left transition-colors
-              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-50
-              disabled:cursor-not-allowed disabled:opacity-80
-              ${isSelected
-                ? 'border-blue-600 bg-blue-50'
-                : 'border-slate-200 bg-white hover:border-blue-200 hover:bg-slate-50'
+              group flex w-full items-start gap-4 rounded-xl border p-4 text-left transition-colors
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3882F6] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F8FAFC]
+              disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-500
+              ${
+                isSelected
+                  ? 'border-[#3882F6] bg-blue-50 text-[#0F172A] shadow-[0_0_0_1px_rgba(56,130,246,0.28)]'
+                  : 'border-[#E2E8F0] bg-white text-[#0F172A] hover:border-blue-200 hover:bg-[#F8FAFC]'
               }
             `}
           >
             <span
               className={`
-                mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-colors
-                ${isSelected
-                  ? 'border-blue-600 bg-white'
-                  : 'border-slate-300 bg-white group-hover:border-blue-300'
+                flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-sm font-semibold transition-colors
+                ${
+                  isSelected
+                    ? 'border-[#3882F6] bg-[#3882F6] text-white'
+                    : 'border-[#E2E8F0] bg-[#F8FAFC] text-[#64748B] group-hover:border-blue-200 group-hover:text-[#3882F6]'
                 }
               `}
               aria-hidden="true"
             >
-              <span
-                className={`h-2.5 w-2.5 rounded-full transition-colors ${
-                  isSelected ? 'bg-blue-600' : 'bg-transparent'
-                }`}
-              />
-            </span>
-            <span
-              className={`w-6 shrink-0 text-base font-semibold leading-6 ${
-                isSelected ? 'text-blue-700' : 'text-slate-700'
-              }`}
-            >
               {optionLabel}
             </span>
-            <span className="min-w-0 flex-1 text-base leading-6 text-slate-900">
+
+            <span className="min-w-0 flex-1 pt-1 text-base leading-7">
               {choice}
             </span>
           </button>

@@ -25,61 +25,93 @@ const toExamListItem = (exam: ExamListApiItem): ExamListItem => ({
 
 function ExamListSkeleton() {
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-6 text-slate-950 sm:px-6 sm:py-8">
-      <div className="mb-8 border-b border-slate-200 pb-5">
-        <div className="h-4 w-20 rounded bg-blue-100" />
-        <div className="mt-3 h-8 w-64 rounded bg-slate-200" />
-        <div className="mt-3 h-4 w-full max-w-xl rounded bg-slate-100" />
-      </div>
-
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="space-y-8">
-          <section>
-            <div className="mb-4 h-6 w-40 rounded bg-slate-200" />
-            <div className="grid gap-4 md:grid-cols-2">
-              {[0, 1].map((item) => (
-                <div
-                  key={item}
-                  className="min-h-[230px] animate-pulse rounded-lg border border-slate-200 bg-white p-6"
-                >
-                  <div className="h-6 w-3/4 rounded bg-slate-200" />
-                  <div className="mt-4 h-4 w-full rounded bg-slate-100" />
-                  <div className="mt-2 h-4 w-2/3 rounded bg-slate-100" />
-                  <div className="mt-8 grid grid-cols-2 gap-3 border-t border-slate-200 pt-4">
-                    <div className="h-10 rounded bg-slate-100" />
-                    <div className="h-10 rounded bg-slate-100" />
-                  </div>
+    <main className="min-h-screen bg-[#F8FAFC] text-[#0F172A]">
+      <div className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
+        <header className="border-b border-[#E2E8F0] pb-6">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 animate-pulse rounded-xl bg-blue-100" />
+                <div>
+                  <div className="h-4 w-24 animate-pulse rounded bg-slate-200" />
+                  <div className="mt-2 h-3 w-32 animate-pulse rounded bg-slate-100" />
                 </div>
-              ))}
+              </div>
+              <div className="mt-7 h-4 w-36 animate-pulse rounded bg-blue-100" />
+              <div className="mt-3 h-9 w-72 max-w-full animate-pulse rounded bg-slate-200" />
+              <div className="mt-3 h-4 w-full max-w-xl animate-pulse rounded bg-slate-100" />
             </div>
-          </section>
 
-          <section>
-            <div className="mb-4 h-6 w-32 rounded bg-slate-200" />
-            <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:w-[360px]">
               {[0, 1, 2].map((item) => (
                 <div
                   key={item}
-                  className="animate-pulse rounded-lg border border-slate-200 bg-white p-4"
-                >
-                  <div className="h-5 w-2/3 rounded bg-slate-200" />
-                  <div className="mt-3 h-4 w-1/2 rounded bg-slate-100" />
-                </div>
+                  className="h-[74px] animate-pulse rounded-xl border border-[#E2E8F0] bg-white"
+                />
               ))}
             </div>
-          </section>
-        </div>
-
-        <aside className="space-y-4">
-          <div className="animate-pulse rounded-lg border border-slate-200 bg-white p-5">
-            <div className="h-6 w-40 rounded bg-slate-200" />
-            <div className="mt-5 space-y-4">
-              <div className="h-5 rounded bg-slate-100" />
-              <div className="h-5 rounded bg-slate-100" />
-              <div className="h-5 rounded bg-slate-100" />
-            </div>
           </div>
-        </aside>
+        </header>
+
+        <div className="grid gap-6 py-6 lg:grid-cols-[minmax(0,1fr)_300px]">
+          <div className="space-y-7">
+            <section>
+              <div className="mb-4">
+                <div className="h-6 w-48 animate-pulse rounded bg-slate-200" />
+                <div className="mt-2 h-4 w-80 max-w-full animate-pulse rounded bg-slate-100" />
+              </div>
+              <div className="grid gap-4 lg:grid-cols-3">
+                {[0, 1, 2].map((item) => (
+                  <div
+                    key={item}
+                    className="min-h-[220px] animate-pulse rounded-xl border border-[#E2E8F0] bg-white p-5"
+                  >
+                    <div className="h-4 w-24 rounded bg-slate-100" />
+                    <div className="mt-4 h-6 w-4/5 rounded bg-slate-200" />
+                    <div className="mt-3 h-4 w-full rounded bg-slate-100" />
+                    <div className="mt-2 h-4 w-2/3 rounded bg-slate-100" />
+                    <div className="mt-8 grid grid-cols-2 gap-3 border-t border-[#E2E8F0] pt-4">
+                      <div className="h-10 rounded bg-slate-100" />
+                      <div className="h-10 rounded bg-slate-100" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="rounded-xl border border-[#E2E8F0] bg-white">
+              <div className="border-b border-[#E2E8F0] px-4 py-4">
+                <div className="h-6 w-40 animate-pulse rounded bg-slate-200" />
+                <div className="mt-2 h-4 w-72 max-w-full animate-pulse rounded bg-slate-100" />
+              </div>
+              <div className="divide-y divide-[#E2E8F0]">
+                {[0, 1, 2, 3].map((item) => (
+                  <div key={item} className="animate-pulse px-4 py-4">
+                    <div className="h-4 w-24 rounded bg-slate-100" />
+                    <div className="mt-3 h-5 w-2/3 rounded bg-slate-200" />
+                    <div className="mt-3 h-4 w-48 rounded bg-slate-100" />
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+
+          <aside className="space-y-4">
+            {[0, 1].map((item) => (
+              <div
+                key={item}
+                className="h-48 animate-pulse rounded-xl border border-[#E2E8F0] bg-white p-5"
+              >
+                <div className="h-5 w-36 rounded bg-slate-200" />
+                <div className="mt-5 space-y-3">
+                  <div className="h-4 rounded bg-slate-100" />
+                  <div className="h-4 rounded bg-slate-100" />
+                  <div className="h-4 w-2/3 rounded bg-slate-100" />
+                </div>
+              </div>
+            ))}
+          </aside>
+        </div>
       </div>
     </main>
   );
@@ -92,22 +124,31 @@ type ExamListErrorProps = {
 
 function ExamListError({ message, onRetry }: ExamListErrorProps) {
   return (
-    <main className="mx-auto flex min-h-[70vh] w-full max-w-3xl items-center px-4 py-10">
-      <section className="w-full rounded-lg border border-red-200 bg-white p-6">
-        <p className="text-sm font-semibold text-red-700">
-          Không tải được danh sách đề
-        </p>
-        <h1 className="mt-2 text-2xl font-semibold text-slate-950">
+    <main className="flex min-h-screen items-center justify-center bg-[#F8FAFC] px-4 py-10 text-[#0F172A]">
+      <section className="w-full max-w-xl rounded-xl border border-red-200 bg-white p-6">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-sm font-bold text-red-700">
+            !
+          </div>
+          <div>
+            <p className="text-base font-semibold text-[#0F172A]">ManMath</p>
+            <p className="text-xs font-medium text-[#64748B]">
+              Không tải được danh sách đề
+            </p>
+          </div>
+        </div>
+
+        <h1 className="mt-6 text-2xl font-semibold tracking-tight text-[#0F172A]">
           Kiểm tra backend rồi thử lại
         </h1>
-        <p className="mt-3 text-sm leading-6 text-slate-600">
-          {message}. Backend cần chạy ở cổng 5000 để frontend đọc được API
-          danh sách đề.
+        <p className="mt-3 text-sm leading-6 text-[#64748B]">
+          {message}. Hãy đảm bảo backend đang chạy và cấu hình API base URL của
+          frontend đang trỏ đúng môi trường hiện tại.
         </p>
         <button
           type="button"
           onClick={onRetry}
-          className="mt-6 inline-flex h-10 items-center justify-center rounded-lg bg-blue-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+          className="mt-6 inline-flex h-10 items-center justify-center rounded-lg bg-[#3882F6] px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3882F6] focus-visible:ring-offset-2"
         >
           Thử lại
         </button>
@@ -122,20 +163,31 @@ type ExamListEmptyProps = {
 
 function ExamListEmpty({ onRetry }: ExamListEmptyProps) {
   return (
-    <main className="mx-auto flex min-h-[70vh] w-full max-w-3xl items-center px-4 py-10">
-      <section className="w-full rounded-lg border border-slate-200 bg-white p-6">
-        <p className="text-sm font-semibold text-blue-700">ManMath</p>
-        <h1 className="mt-2 text-2xl font-semibold text-slate-950">
+    <main className="flex min-h-screen items-center justify-center bg-[#F8FAFC] px-4 py-10 text-[#0F172A]">
+      <section className="w-full max-w-xl rounded-xl border border-[#E2E8F0] bg-white p-6">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#3882F6] text-lg font-bold text-white">
+            M
+          </div>
+          <div>
+            <p className="text-base font-semibold text-[#0F172A]">ManMath</p>
+            <p className="text-xs font-medium text-[#64748B]">
+              Kho đề đang trống
+            </p>
+          </div>
+        </div>
+
+        <h1 className="mt-6 text-2xl font-semibold tracking-tight text-[#0F172A]">
           Chưa có đề luyện nào
         </h1>
-        <p className="mt-3 text-sm leading-6 text-slate-600">
-          API đã trả về danh sách rỗng. Khi backend có mock exam, màn này sẽ
-          hiển thị đề nổi bật và thư viện đề như dashboard.
+        <p className="mt-3 text-sm leading-6 text-[#64748B]">
+          API đã trả về danh sách rỗng. Khi backend có dữ liệu đề, màn này sẽ
+          hiển thị khu đề đề xuất, danh sách đề và tổng quan kho đề.
         </p>
         <button
           type="button"
           onClick={onRetry}
-          className="mt-6 inline-flex h-10 items-center justify-center rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
+          className="mt-6 inline-flex h-10 items-center justify-center rounded-lg border border-[#E2E8F0] bg-white px-4 text-sm font-semibold text-[#0F172A] transition-colors hover:bg-[#F8FAFC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3882F6] focus-visible:ring-offset-2"
         >
           Tải lại danh sách
         </button>
@@ -150,7 +202,7 @@ export function ExamListClient() {
   const [error, setError] = useState<string | null>(null);
 
   /**
- * Tải danh sách đề từ backend và chuyển sang dữ liệu UI có href.
+   * Tải danh sách đề từ backend và chuyển sang dữ liệu UI có href.
    * Hàm này được gọi khi component mount và khi người dùng bấm thử lại.
    */
   const fetchExams = async () => {

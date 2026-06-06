@@ -6,10 +6,37 @@ datasource db {
   provider = "postgresql"
 }
 
-  model MathProblem {
-  id             Int      @id @default(autoincrement())
-  question       String
-  choice         String[]
-  answer         String
-  createdAt      DateTime @default(now())
+enum ExamDifficulty {
+  easy
+  medium
+  hard
+}
+
+model Exam {
+  id               String            @id
+  title            String
+  description      String
+  durationMinutes  Int
+  subject          String
+  difficulty       ExamDifficulty
+  year             Int?
+  statusLabel      String
+  questions        Question[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt 
+}
+
+model Question {
+  id            Int      @id 
+  examId        String
+  exam          Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  order         Int
+  question      String
+  options       String[]
+  correctAnswer String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([examId, order])
+  @@index([examId])
 }

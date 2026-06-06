@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { TimerDisplay } from './TimerDisplay';
 
 type ExamHeaderProps = {
@@ -16,22 +17,39 @@ export function ExamHeader({
   questionCount,
 }: ExamHeaderProps) {
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:py-0">
-        <div className="min-w-0">
-          <h1 className="truncate text-lg font-semibold text-slate-950 sm:text-xl">
-            {examTitle ?? 'ManMath'}
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            {questionCount} câu hỏi
-          </p>
+    <header className="sticky top-0 z-50 border-b border-[#E2E8F0] bg-white/95 backdrop-blur-sm">
+      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+        <div className="flex min-w-0 items-center gap-4">
+          <Link
+            href="/"
+            aria-label="Về trang chủ ManMath"
+            className="flex shrink-0 items-center gap-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3882F6] focus-visible:ring-offset-2"
+          >
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#3882F6] text-base font-bold text-white shadow-[0_1px_2px_rgba(15,23,42,0.08)]">
+              M
+            </span>
+            <span className="hidden text-sm font-semibold text-[#0F172A] sm:inline">
+              ManMath
+            </span>
+          </Link>
+
+          <div className="min-w-0 border-l border-[#E2E8F0] pl-4">
+            <p className="text-xs font-medium text-[#64748B]">
+              {questionCount} câu hỏi
+            </p>
+            <h1 className="mt-0.5 truncate text-sm font-semibold text-[#0F172A] sm:text-base">
+              {examTitle ?? 'Đề luyện thi'}
+            </h1>
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+
+        <div className="flex flex-wrap items-center gap-2 lg:justify-end">
           <TimerDisplay remainingSeconds={remainingSeconds} />
           <button
+            type="button"
             onClick={onSubmit}
             disabled={isTimeUp}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 active:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex h-10 items-center justify-center rounded-lg bg-[#3882F6] px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3882F6] focus-visible:ring-offset-2 active:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-600"
           >
             Nộp bài
           </button>

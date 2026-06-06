@@ -1,45 +1,24 @@
 /**
  * Mục đích:
- * Mock data đề thi cho backend MVP. File này đóng vai trò nguồn dữ liệu tạm thời
- * trước khi thay bằng PostgreSQL/Prisma.
+ * Dữ liệu đề giả lập dùng cho seed local và kiểm tra cấu trúc đề trước khi hoàn toàn
+ * chuyển sang PostgreSQL ở runtime.
  *
  * Luồng dữ liệu:
- * server.ts đọc mockExams, trả ExamSummaryDto cho màn danh sách và ExamDetailDto
- * cho màn làm bài. Submit endpoint dùng cùng dữ liệu này để chấm điểm.
+ * File seed đọc mockExams để tạo Exam và Question trong database local. Runtime backend
+ * không còn đọc file này nữa; server.ts đi qua Prisma helper.
  *
  * File liên quan:
- * backend/server.ts
- * frontend/src/components/exam/types.ts
+ * backend/src/data/seed.ts
+ * backend/src/types/exam.ts
  */
-export type ExamDifficulty = 'easy' | 'medium' | 'hard';
-
-export type QuestionDto = {
-  id: number;
-  question: string;
-  options: string[];
-  correctAnswer: string;
-};
+import type {
+  ExamDetailDto,
+  ExamDifficulty,
+  ExamSummaryDto,
+  QuestionDto,
+} from '../types/exam';
 
 export type Question = QuestionDto;
-
-export type ExamSummaryDto = {
-  id: string;
-  title: string;
-  description: string;
-  durationMinutes: number;
-  totalQuestions: number;
-  subject: string;
-  difficulty: ExamDifficulty;
-  year?: number;
-  statusLabel: string;
-};
-
-export type ExamDetailDto = {
-  id: string;
-  examTitle: string;
-  durationMinutes: number;
-  questions: QuestionDto[];
-};
 
 export type ExamMock = ExamDetailDto & {
   description: string;
@@ -49,7 +28,7 @@ export type ExamMock = ExamDetailDto & {
   statusLabel: string;
 };
 
-// Dữ liệu đề giả lập có thêm metadata cho list UI; DTO detail chỉ gửi phần cần cho làm bài.
+// Dữ liệu đề giả lập có thêm metadata cho list UI và seed local.
 export type Exam = ExamMock;
 
 export type ExamSummary = ExamSummaryDto;
@@ -148,25 +127,3 @@ export const mockExams: ExamMock[] = [
     ],
   },
 ];
-
-/**
- * Chuyển đề giả lập đầy đủ sang ExamSummaryDto cho trang danh sách đề.
- */
-export const getExamSummaries = (): ExamSummaryDto[] =>
-  mockExams.map((exam) => ({
-    id: exam.id,
-    title: exam.examTitle,
-    description: exam.description,
-    durationMinutes: exam.durationMinutes,
-    totalQuestions: exam.questions.length,
-    subject: exam.subject,
-    difficulty: exam.difficulty,
-    year: exam.year,
-    statusLabel: exam.statusLabel,
-  }));
-
-/**
- * Tìm exam theo id cho route detail và luồng chấm điểm khi submit.
- */
-export const findExamById = (examId: string): Exam | undefined =>
-  mockExams.find((exam) => exam.id === examId);

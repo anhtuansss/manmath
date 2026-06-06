@@ -1,28 +1,28 @@
 /**
  * Mục đích:
- * Express API cho MVP ManMath. Backend hiện dùng mock data để kiểm tra trọn luồng
- * trước khi thay nguồn dữ liệu bằng PostgreSQL.
+ * Express API cho MVP ManMath. Backend đọc dữ liệu đề qua Prisma helper để giữ
+ * runtime gọn, còn mock data chỉ còn phục vụ seed local.
  *
  * Luồng dữ liệu:
  * Frontend gọi GET /api/exams để lấy danh sách, GET /api/exams/:id để lấy chi tiết,
- * và POST /api/exam/submit để backend chấm điểm.
+ * và POST /api/exam/submit để backend chấm điểm từ dữ liệu PostgreSQL.
  *
  * File liên quan:
- * backend/src/data/mockExams.ts
+ * backend/src/lib/prisma.ts
+ * backend/src/lib/examMapper.ts
+ * backend/src/types/exam.ts
  * frontend/src/components/exam/ExamListClient.tsx
  * frontend/src/components/exam/ExamTakingClient.tsx
  * frontend/src/components/exam/ExamResultClient.tsx
  */
 import express, { Request, Response } from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
+import { prisma } from './src/lib/prisma';
 import {
-  findExamById,
-  getExamSummaries,
-  type ExamDetailDto,
-} from './src/data/mockExams';
-
-dotenv.config();
+  mapExamRecordToDetailDto,
+  mapExamRecordToSummaryDto,
+} from './src/lib/examMapper';
+import type { ExamDetailDto } from './src/types/exam';
 
 const app = express();
 
@@ -33,34 +33,67 @@ app.get('/api/health', (req: Request, res: Response) => {
   res.json({ status: 'ok', message: 'ManMath API is running' });
 });
 
-/**
- * Trả danh sách đề rút gọn cho trang danh sách hoặc bảng tổng quan.
- * Phản hồi cố ý nhỏ hơn chi tiết đề để màn danh sách không nhận dữ liệu câu hỏi dư thừa.
- */
-app.get('/api/exams', (req: Request, res: Response) => {
-  res.json(getExamSummaries());
+// Lấy danh sách đề thi với thông tin tóm tắt để hiển thị ở trang danh sách.
+app.get('/api/exams', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const exams = await prisma.exam.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        durationMinutes: true,
+        subject: true,
+        difficulty: true,
+        year: true,
+        statusLabel: true,
+        _count: {
+          select: {
+            questions: true,
+          },
+        },
+      },
+    });
+
+    const examSummaries = exams.map((exam) => mapExamRecordToSummaryDto(exam));
+
+    res.json(examSummaries);
+  } catch (error) {
+    console.error('Failed to load exam summaries:', error);
+    res.status(500).json({ message: 'Khong the lay danh sach de thi' });
+  }
 });
 
-/**
- * Trả chi tiết một đề theo id cho màn làm bài.
- * Chi tiết đề có cả questions và correctAnswer vì MVP cần xem lại đáp án sau khi nộp.
- */
-app.get('/api/exams/:id', (req: Request, res: Response): void => {
-  const exam = findExamById(req.params.id);
+// Lấy chi tiết đề thi, bao gồm danh sách câu hỏi và đáp án đúng để màn làm bài sử dụng.
+app.get('/api/exams/:id', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const examRecord = await prisma.exam.findUnique({
+      where: {
+        id: req.params.id,
+      },
+      include: {
+        questions: {
+          orderBy: {
+            order: 'asc',
+          },
+        },
+      },
+    });
 
-  if (!exam) {
-    res.status(404).json({ message: 'Khong tim thay de thi' });
-    return;
+    if (!examRecord) {
+      res.status(404).json({ message: 'Khong tim thay de thi' });
+      return;
+    }
+
+    const examDetail: ExamDetailDto = mapExamRecordToDetailDto(examRecord);
+
+    res.json(examDetail);
+  } catch (error) {
+    console.error('Failed to load exam detail:', error);
+    res.status(500).json({ message: 'Khong the lay chi tiet de thi' });
   }
-
-  const examDetail: ExamDetailDto = {
-    id: exam.id,
-    examTitle: exam.examTitle,
-    durationMinutes: exam.durationMinutes,
-    questions: exam.questions,
-  };
-
-  res.json(examDetail);
 });
 
 type SubmitExamRequestDto = {
@@ -145,7 +178,7 @@ const normalizeSubmitAnswers = (
   };
 };
 
-app.post('/api/exam/submit', (req: Request, res: Response): void => {
+app.post('/api/exam/submit', async (req: Request, res: Response): Promise<void> => {
   if (!isPlainObject(req.body)) {
     res.status(400).json({ message: 'Du lieu nop bai khong hop le' });
     return;
@@ -158,12 +191,25 @@ app.post('/api/exam/submit', (req: Request, res: Response): void => {
     return;
   }
 
-  const exam = findExamById(examId.trim());
+  const examRecord = await prisma.exam.findUnique({
+    where: {
+      id: examId.trim(),
+    },
+    include: {
+      questions: {
+        orderBy: {
+          order: 'asc',
+        },
+      },
+    },
+  });
 
-  if (!exam) {
+  if (!examRecord) {
     res.status(404).json({ message: 'Khong tim thay de thi de cham diem' });
     return;
   }
+
+  const exam: ExamDetailDto = mapExamRecordToDetailDto(examRecord);
 
   const validatedAnswers = normalizeSubmitAnswers(exam, answers);
 

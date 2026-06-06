@@ -10,20 +10,22 @@ const formatTime = (totalSeconds: number) => {
 };
 
 export function TimerDisplay({ remainingSeconds }: TimerDisplayProps) {
-  const isTimeDanger = remainingSeconds > 0 && remainingSeconds < 60;
-  const isTimeWarning = remainingSeconds >= 60 && remainingSeconds < 300;
-  
+  const isTimeDanger = remainingSeconds <= 60;
+  const isTimeWarning = remainingSeconds > 60 && remainingSeconds < 300;
+
   return (
     <div
-      className={`rounded-lg px-3 py-1.5 ${
+      aria-live="polite"
+      className={`inline-flex h-10 items-center gap-2 rounded-lg border px-3 ${
         isTimeDanger
-          ? 'bg-red-50 text-red-700'
+          ? 'border-red-200 bg-red-50 text-red-700'
           : isTimeWarning
-            ? 'bg-amber-50 text-amber-700'
-            : 'bg-slate-100 text-slate-950'
+            ? 'border-amber-200 bg-amber-50 text-amber-700'
+            : 'border-[#E2E8F0] bg-[#F8FAFC] text-[#0F172A]'
       }`}
     >
-      <span className="font-mono text-lg font-semibold">
+      <span className="hidden text-xs font-semibold sm:inline">Thời gian</span>
+      <span className="font-mono text-base font-semibold tabular-nums">
         {formatTime(remainingSeconds)}
       </span>
     </div>

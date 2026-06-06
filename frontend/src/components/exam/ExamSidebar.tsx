@@ -1,4 +1,4 @@
-import type { Answers, Question, SubmitResult } from './types';
+import type { Answers, Question } from './types';
 
 type ExamSidebarProps = {
   questions?: Question[];
@@ -15,30 +15,39 @@ export function ExamSidebar({
   onQuestionClick,
   currentQuestionId,
 }: ExamSidebarProps) {
+  const totalQuestions = questions?.length ?? 0;
   const answeredCount =
     questions?.filter((question) => answers[question.id] !== undefined).length ?? 0;
+  const progressPercentage =
+    totalQuestions > 0 ? (answeredCount / totalQuestions) * 100 : 0;
 
   return (
     <aside className="lg:sticky lg:top-24 lg:self-start">
-      <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-        <div className="mb-4">
-          <h3 className="text-base font-semibold text-slate-950">
-            Danh sách câu hỏi
-          </h3>
-          <p className="mt-1 text-xs font-medium text-slate-500">
-            {questions?.length ?? 0} câu trong đề
+      <div className="rounded-xl border border-[#E2E8F0] bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+        <div>
+          <h3 className="text-sm font-semibold text-[#0F172A]">Câu hỏi</h3>
+          <p className="mt-1 text-xs font-medium text-[#64748B]">
+            Điều hướng nhanh trong đề
           </p>
         </div>
 
-        <div className="mb-4 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-600">
-          Đã làm:{' '}
-          <span className="font-semibold text-slate-950">
-            {answeredCount} / {questions?.length ?? 0}
-          </span>
+        <div className="mt-4 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-3">
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-medium text-[#64748B]">Đã làm</span>
+            <span className="font-semibold text-[#0F172A]">
+              {answeredCount}/{totalQuestions}
+            </span>
+          </div>
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200">
+            <div
+              className="h-full rounded-full bg-[#3882F6] transition-all"
+              style={{ width: `${progressPercentage}%` }}
+            />
+          </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <div className="grid w-max grid-cols-[repeat(5,2.25rem)] gap-2">
+        <div className="mt-4 overflow-x-auto pb-1">
+          <div className="grid w-max grid-cols-[repeat(5,2rem)] gap-1.5">
             {questions?.map((question, index) => {
               const isAnswered = answers[question.id] !== undefined;
               const isCurrent = question.id === currentQuestionId;
@@ -50,14 +59,14 @@ export function ExamSidebar({
                   type="button"
                   onClick={() => onQuestionClick(question.id)}
                   className={`
-                    flex h-9 w-9 shrink-0 items-center justify-center rounded-md border text-sm font-semibold transition-colors
-                    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-50
+                    flex h-8 w-8 shrink-0 items-center justify-center rounded-md border text-xs font-semibold transition-colors
+                    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3882F6] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F8FAFC]
                     ${
                       isCurrent
-                        ? 'border-blue-600 bg-blue-600 text-white ring-2 ring-blue-100'
+                        ? 'border-[#3882F6] bg-[#3882F6] text-white shadow-[0_0_0_2px_rgba(56,130,246,0.18)]'
                         : isAnswered
                           ? 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:border-emerald-300'
-                          : 'border-slate-300 bg-white text-slate-600 hover:border-blue-200'
+                          : 'border-[#E2E8F0] bg-white text-[#64748B] hover:border-blue-200 hover:text-[#3882F6]'
                     }
                   `}
                 >
@@ -68,23 +77,23 @@ export function ExamSidebar({
           </div>
         </div>
 
-        <div className="mt-4 grid gap-2 border-t border-slate-200 pt-4 text-xs">
+        <div className="mt-4 grid gap-2 border-t border-[#E2E8F0] pt-4 text-xs">
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-sm border border-blue-600 bg-blue-600 ring-2 ring-blue-100" />
-            <span className="font-medium text-slate-600">Câu hiện tại</span>
+            <div className="h-3 w-3 rounded-sm border border-[#3882F6] bg-[#3882F6]" />
+            <span className="font-medium text-[#64748B]">Câu hiện tại</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="h-3 w-3 rounded-sm border border-emerald-200 bg-emerald-50" />
-            <span className="font-medium text-slate-600">Đã trả lời</span>
+            <span className="font-medium text-[#64748B]">Đã trả lời</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-sm border border-slate-300 bg-white" />
-            <span className="font-medium text-slate-600">Chưa trả lời</span>
+            <div className="h-3 w-3 rounded-sm border border-[#E2E8F0] bg-white" />
+            <span className="font-medium text-[#64748B]">Chưa trả lời</span>
           </div>
         </div>
 
         {isTimeUp && (
-          <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-center text-sm font-semibold text-red-700">
+          <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-center text-sm font-semibold text-red-700">
             Đã hết giờ
           </p>
         )}
