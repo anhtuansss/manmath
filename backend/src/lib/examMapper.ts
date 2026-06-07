@@ -2,10 +2,9 @@ import type {
   ExamDetailDto,
   ExamDifficulty,
   ExamSummaryDto,
-  QuestionDto,
 } from '../types/exam';
 
-type ExamSummaryRecord = {
+type ExamSummaryDbRecord = {
   id: string;
   title: string;
   description: string;
@@ -19,15 +18,22 @@ type ExamSummaryRecord = {
   };
 };
 
-type ExamDetailRecord = {
+type QuestionDbRecord = {
+  id: number;
+  question: string;
+  options: string[];
+  correctAnswer: string;
+};
+
+type ExamDetailDbRecord = {
   id: string;
   title: string;
   durationMinutes: number;
-  questions: QuestionDto[];
+  questions: QuestionDbRecord[];
 };
 
 export const mapExamRecordToSummaryDto = (
-  examRecord: ExamSummaryRecord,
+  examRecord: ExamSummaryDbRecord,
 ): ExamSummaryDto => {
   return {
     id: examRecord.id,
@@ -43,7 +49,7 @@ export const mapExamRecordToSummaryDto = (
 };
 
 export const mapExamRecordToDetailDto = (
-  examRecord: ExamDetailRecord,
+  examRecord: ExamDetailDbRecord,
 ): ExamDetailDto => {
   return {
     id: examRecord.id,

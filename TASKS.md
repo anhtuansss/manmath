@@ -1,52 +1,214 @@
 ﻿# TASKS
 
-## Current MVP Status
+## Phase 1 - MVP Foundation
 
-- [x] Backend serves multiple mock exams.
-- [x] Frontend fetches exam list from backend.
-- [x] Frontend fetches exam detail by exam id.
-- [x] Routes exist for `/`, `/exams`, `/exam/[id]`, and `/exam/[id]/result`.
-- [x] Exam taking page renders questions and A/B/C/D options.
-- [x] Timer works and stops at zero.
-- [x] Answers are autosaved in `localStorage` and restored on reload.
-- [x] Submit request works and backend returns score data.
-- [x] Result page reads temporary submit result from `sessionStorage`.
-- [x] Result page shows score, accuracy, and answer review.
-- [x] Backend serves exam list, exam detail, and submit data from PostgreSQL-backed seed data.
+### Frontend MVP
 
-## Next Technical Cleanup
+* [x] Trang danh sách đề `/`
+* [x] Alias danh sách đề `/exams`
+* [x] Trang làm bài `/exam/[id]`
+* [x] Trang kết quả `/exam/[id]/result`
+* [x] Hiển thị câu hỏi và đáp án A/B/C/D
+* [x] Đồng hồ đếm ngược
+* [x] Autosave bằng `localStorage`
+* [x] Khôi phục bài làm sau khi reload
+* [x] Submit bài thi
+* [x] Chuyển sang trang kết quả
+* [x] Review đáp án
+* [x] Loading / Error / Empty states
+* [x] UI polish theo Concept 2
 
-- [x] Move frontend API base URL into a small env/config helper.
-- [x] Create a small storage helper for answer autosave and result persistence.
-- [x] Standardize DTO naming between backend mock data and frontend types.
-- [x] Add lightweight backend validation for submit payloads.
-- [x] Legacy Prisma seed file is renamed and seed script is disabled.
-- [x] Update smoke test notes after each MVP flow change.
+### Backend MVP
 
-## PostgreSQL Preparation
+* [x] API health check
+* [x] API lấy danh sách đề
+* [x] API lấy chi tiết đề
+* [x] API submit bài thi
+* [x] Validation cơ bản cho submit
+* [x] Error handling cơ bản
 
-- [x] Design the initial PostgreSQL/Prisma schema for exams, questions, options, and answers.
-- [x] Decide how mock exam data maps to database seed data.
-- [x] Create a Prisma client helper and env guard for the backend.
-- [x] Replace backend mock data gradually after schema approval.
-- [x] Switch `GET /api/exams` and `GET /api/exams/:id` to PostgreSQL reads.
-- [x] Keep API response shapes stable while moving data source to PostgreSQL.
+### Technical Cleanup
 
-## Next Backend Cleanup
+* [x] API config helper
+* [x] Storage helper
+* [x] DTO naming cleanup
+* [x] Legacy seed cleanup
+* [x] Route - Controller - Service architecture
+* [x] Backend smoke test checklist
+* [x] Documentation update
 
-- [x] Remove stale mock-data imports from runtime code and extract a small exam mapper from `server.ts`.
-- [ ] Extract submit grading and validation helpers from `server.ts` into a dedicated backend helper.
+---
 
-## Out of Scope For Now
+## Phase 2 - Database Foundation
 
-- [ ] Do not add authentication.
-- [ ] Do not add OCR.
-- [ ] Do not add AI explanation.
-- [ ] Do not add admin dashboard.
-- [ ] Do not add ranking, leaderboard, payment, or subscription.
+### Prisma & Environment
 
-## Smoke Test Notes
+* [x] Prisma client helper
+* [x] Env guard (`DATABASE_URL`, `PORT`, ...)
+* [x] Centralized config
 
-- `/` và `/exams`: mở danh sách đề, bấm vào một đề để đi tới `/exam/[id]`.
-- `/exam/[id]`: tải đề, chọn đáp án, đồng hồ chạy, autosave giữ lại sau khi reload, submit chuyển sang trang kết quả.
-- `/exam/[id]/result`: hiển thị điểm và phần xem lại đáp án; mở trực tiếp khi chưa submit thì thấy trạng thái rỗng.
+### PostgreSQL Integration
+
+* [x] Hoàn thiện schema Prisma
+* [x] Tạo migrations
+* [x] Seed dữ liệu đề thi
+* [x] Chuyển `GET /api/exams` sang DB
+* [x] Chuyển `GET /api/exams/:id` sang DB
+* [x] Chuyển `POST /api/exam/submit` sang DB
+* [x] Xóa dependency runtime vào mock data
+* [x] Tách rõ DB record type khỏi API DTO trong mapper
+
+### Database Testing
+
+* [x] Smoke test toàn bộ API với PostgreSQL
+* [ ] Verify response shape không đổi
+* [ ] Verify frontend hoạt động không cần sửa
+
+---
+
+## Phase 3 - User System
+
+### Authentication
+
+* [ ] Đăng ký
+* [ ] Đăng nhập
+* [ ] JWT Access Token
+* [ ] Refresh Token
+* [ ] Logout
+
+### User Profile
+
+* [ ] Hồ sơ người dùng
+* [ ] Thay đổi mật khẩu
+* [ ] Cập nhật thông tin cá nhân
+
+---
+
+## Phase 4 - Exam History
+
+### Attempts
+
+* [ ] Lưu lịch sử làm bài
+* [ ] Lưu từng đáp án đã chọn
+* [ ] Lưu thời gian làm bài
+* [ ] Lưu điểm số
+
+### Result Tracking
+
+* [ ] Xem lịch sử làm bài
+* [ ] Xem lần làm gần nhất
+* [ ] Xem điểm cao nhất
+* [ ] Thống kê số lần làm
+
+---
+
+## Phase 5 - Math Rendering
+
+### KaTeX
+
+* [ ] Render công thức toán học
+* [ ] Render phân số
+* [ ] Render căn thức
+* [ ] Render tích phân
+* [ ] Render giới hạn
+* [ ] Render ma trận
+* [ ] Render hình học cơ bản
+
+### Question Format
+
+* [ ] Hỗ trợ nội dung LaTeX trong đề
+* [ ] Hỗ trợ hình ảnh trong câu hỏi
+* [ ] Hỗ trợ hình ảnh trong đáp án
+
+---
+
+## Phase 6 - Exam Content Pipeline
+
+### Import Questions
+
+* [ ] Import đề từ JSON
+* [ ] Import đề từ Excel
+* [ ] Import đề từ Word
+
+### Admin Exam Management
+
+* [ ] Tạo đề
+* [ ] Sửa đề
+* [ ] Xóa đề
+* [ ] Quản lý ngân hàng câu hỏi
+
+---
+
+## Phase 7 - Analytics
+
+### Topic System
+
+* [ ] Bảng Topics
+* [ ] Mapping Question -> Topic
+* [ ] Mapping Question -> Subtopic
+
+### User Analytics
+
+* [ ] Tính độ chính xác theo chuyên đề
+* [ ] Tính độ chính xác theo thời gian
+* [ ] Theo dõi tiến bộ
+* [ ] Dashboard học tập
+
+### Recommendation Engine (Không AI)
+
+* [ ] Xác định chuyên đề yếu
+* [ ] Gợi ý chuyên đề cần luyện
+* [ ] Gợi ý đề thi phù hợp
+
+---
+
+## Phase 8 - AI Features
+
+### AI Feedback
+
+* [ ] Sinh nhận xét sau bài thi
+* [ ] Giải thích điểm mạnh
+* [ ] Giải thích điểm yếu
+* [ ] Đề xuất kế hoạch học tập
+
+### AI Explanation
+
+* [ ] Giải thích đáp án
+* [ ] Giải thích từng bước giải
+
+### AI Tutor
+
+* [ ] Hỏi đáp theo từng câu hỏi
+* [ ] Ôn tập cá nhân hóa
+
+---
+
+## Future Ideas
+
+* [ ] OCR đề thi PDF
+* [ ] Leaderboard
+* [ ] Hệ thống thành tích
+* [ ] Subscription
+* [ ] Mobile app
+* [ ] Thi thử nhiều người
+
+---
+
+## Current Focus
+
+### Sprint hiện tại
+
+* [x] Prisma client helper
+* [x] Env guard
+* [x] PostgreSQL integration
+* [x] API đọc dữ liệu từ DB
+* [x] Submit sử dụng DB
+* [ ] Verify response shape không đổi sau mapper cleanup
+
+### Không làm lúc này
+
+* [ ] AI
+* [ ] OCR
+* [ ] Payment
+* [ ] Leaderboard
+* [ ] Mobile app
