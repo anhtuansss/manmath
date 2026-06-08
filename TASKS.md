@@ -61,8 +61,8 @@
 ### Database Testing
 
 * [x] Smoke test toàn bộ API với PostgreSQL
-* [ ] Verify response shape không đổi
-* [ ] Verify frontend hoạt động không cần sửa
+* [x] Verify response shape không đổi
+* [x] Verify frontend hoạt động không cần sửa
 
 ---
 
@@ -88,13 +88,14 @@
 
 ### Attempts
 
-* [ ] Lưu lịch sử làm bài
-* [ ] Lưu từng đáp án đã chọn
+* [x] Lưu lịch sử làm bài
+* [x] Lưu từng đáp án đã chọn
 * [ ] Lưu thời gian làm bài
-* [ ] Lưu điểm số
+* [x] Lưu điểm số
 
 ### Result Tracking
 
+* [x] API summary lịch sử làm bài theo đề
 * [ ] Xem lịch sử làm bài
 * [ ] Xem lần làm gần nhất
 * [ ] Xem điểm cao nhất
@@ -198,12 +199,11 @@
 
 ### Sprint hiện tại
 
-* [x] Prisma client helper
-* [x] Env guard
-* [x] PostgreSQL integration
-* [x] API đọc dữ liệu từ DB
-* [x] Submit sử dụng DB
-* [ ] Verify response shape không đổi sau mapper cleanup
+* [x] Tạo schema Attempt / AttemptAnswer
+* [x] Lưu attempt khi submit bài
+* [x] Giữ response submit không đổi
+* [ ] Lưu thời gian làm bài
+* [x] Tạo API đọc lịch sử làm bài
 
 ### Không làm lúc này
 

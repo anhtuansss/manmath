@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  getExamAttempts,
   getExamDetail,
   getExamList,
   getHealth,
@@ -15,6 +16,8 @@ examRouter.get('/health', getHealth);
 examRouter.get('/exams', getExamList);
 
 // Lấy chi tiết đề thi theo ID, bao gồm cả câu hỏi và đáp án
+examRouter.get('/exams/:id/attempts', getExamAttempts);
+
 examRouter.get('/exams/:id', getExamDetail);
 
 // Xử lý nộp bài thi, tính điểm và trả về kết quả

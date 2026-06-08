@@ -25,3 +25,14 @@ export type ExamDetailDto = {
   durationMinutes: number;
   questions: QuestionDto[];
 };
+
+export type ExamAttemptSummaryDto = {
+  id: string;
+  examId: string;
+  score: number;
+  correctCount: number;
+  totalQuestions: number;
+  unansweredCount: number;
+  durationSeconds: number | null;
+  submittedAt: string;
+};

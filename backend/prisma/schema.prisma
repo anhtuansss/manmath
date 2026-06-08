@@ -22,6 +22,7 @@ model Exam {
   year             Int?
   statusLabel      String
   questions        Question[]
+  attempts         Attempt[]
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt 
 }
@@ -39,4 +40,37 @@ model Question {
 
   @@unique([examId, order])
   @@index([examId])
+}
+
+model Attempt {
+  id              String          @id @default(cuid())
+  examId          String
+  exam            Exam            @relation(fields: [examId], references: [id], onDelete: Cascade)
+  userId          String?
+  score           Float
+  correctCount    Int
+  totalQuestions  Int
+  unansweredCount Int
+  startedAt       DateTime?
+  submittedAt     DateTime        @default(now())
+  durationSeconds Int?
+  answers         AttemptAnswer[]
+
+  @@index([examId])
+  @@index([userId])
+  @@index([submittedAt])
+}
+
+model AttemptAnswer {
+  id                  String   @id @default(cuid())
+  attemptId           String
+  attempt             Attempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  questionId          Int
+  selectedOptionIndex Int?
+  correctOptionIndex  Int
+  isCorrect           Boolean
+
+  @@index([attemptId])
+  @@index([questionId])
+  @@unique([attemptId, questionId])
 }

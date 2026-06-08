@@ -3,7 +3,11 @@ import {
   mapExamRecordToDetailDto,
   mapExamRecordToSummaryDto,
 } from '../lib/examMapper';
-import type { ExamDetailDto, ExamSummaryDto } from '../types/exam';
+import type {
+  ExamAttemptSummaryDto,
+  ExamDetailDto,
+  ExamSummaryDto,
+} from '../types/exam';
 
 export type SubmitExamRequestDto = {
   examId?: string;
@@ -121,10 +125,19 @@ export const getExamDetailById = async (
     where: {
       id: examId,
     },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      durationMinutes: true,
       questions: {
         orderBy: {
           order: 'asc',
+        },
+        select: {
+          id: true,
+          question: true,
+          options: true,
+          correctAnswer: true,
         },
       },
     },
@@ -135,6 +148,49 @@ export const getExamDetailById = async (
   }
 
   return mapExamRecordToDetailDto(examRecord);
+};
+
+// Lấy danh sách các lần thi đã nộp cho một đề thi cụ thể
+export const getExamAttemptsByExamId = async (
+  examId: string,
+): Promise<ExamAttemptSummaryDto[] | null> => {
+  const examRecord = await prisma.exam.findUnique({
+    where: {
+      id: examId,
+    },
+    select: {
+      attempts: {
+        orderBy: {
+          submittedAt: 'desc',
+        },
+        select: {
+          id: true,
+          examId: true,
+          score: true,
+          correctCount: true,
+          totalQuestions: true,
+          unansweredCount: true,
+          durationSeconds: true,
+          submittedAt: true,
+        },
+      },
+    },
+  });
+
+  if (!examRecord) {
+    return null;
+  }
+
+  return examRecord.attempts.map((attempt) => ({
+    id: attempt.id,
+    examId: attempt.examId,
+    score: attempt.score,
+    correctCount: attempt.correctCount,
+    totalQuestions: attempt.totalQuestions,
+    unansweredCount: attempt.unansweredCount,
+    durationSeconds: attempt.durationSeconds,
+    submittedAt: attempt.submittedAt.toISOString(),
+  }));
 };
 
 // Xử lý nộp bài thi, tính điểm và trả về kết quả
@@ -191,7 +247,34 @@ export const submitExam = async (
   }
 
   const totalQuestions = exam.questions.length;
+  const unansweredCount = exam.questions.filter((question) => {
+    return validatedAnswers.answers[question.id] === undefined;
+  }).length;
   const score = Math.round((correctCount / totalQuestions) * 10);
+
+  await prisma.attempt.create({
+    data: {
+      examId: exam.id,
+      score,
+      correctCount,
+      totalQuestions,
+      unansweredCount,
+      answers: {
+        create: exam.questions.map((question) => {
+          const selectedOptionIndex = validatedAnswers.answers[question.id];
+          const correctOptionIndex = question.options.indexOf(question.correctAnswer);
+          const isAnswered = selectedOptionIndex !== undefined;
+
+          return {
+            questionId: question.id,
+            selectedOptionIndex: isAnswered ? selectedOptionIndex : null,
+            correctOptionIndex,
+            isCorrect: isAnswered && selectedOptionIndex === correctOptionIndex,
+          };
+        }),
+      },
+    },
+  });
 
   return {
     ok: true,

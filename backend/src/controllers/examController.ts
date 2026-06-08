@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
 import {
+  getExamAttemptsByExamId,
   getExamDetailById,
   getExamSummaries,
   submitExam,
@@ -46,6 +47,25 @@ export const getExamDetail = async (
 };
 
 // Xử lý nộp bài thi, tính điểm và trả về kết quả
+export const getExamAttempts = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const attempts = await getExamAttemptsByExamId(req.params.id);
+
+    if (!attempts) {
+      res.status(404).json({ message: 'Khong tim thay de thi' });
+      return;
+    }
+
+    res.json(attempts);
+  } catch (error) {
+    console.error('Failed to load exam attempts:', error);
+    res.status(500).json({ message: 'Khong the lay lich su lam bai' });
+  }
+};
+
 export const submitExamController = async (
   req: Request,
   res: Response,
