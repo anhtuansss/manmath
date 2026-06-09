@@ -99,48 +99,48 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
       : 0;
 
   return (
-    <main className="min-h-[100dvh] bg-[#F8FAFC] px-4 py-6 text-[#0F172A] sm:px-6 lg:px-8">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-        <header className="flex flex-col gap-4 border-b border-[#E2E8F0] pb-5 sm:flex-row sm:items-end sm:justify-between">
+    <main className="min-h-[100dvh] bg-slate-50 px-4 py-8 text-slate-900 sm:px-6 lg:px-8">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
+        <header className="flex flex-col gap-5 border-b border-slate-200 pb-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <Link href="/" className="inline-flex items-center gap-3 text-sm font-semibold">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#3882F6] text-base font-bold text-white">
+            <Link href="/" className="inline-flex items-center gap-3 text-sm font-bold">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-lg font-bold text-white shadow-sm ring-1 ring-primary/20">
                 M
               </span>
               ManMath
             </Link>
 
-            <p className="mt-6 text-sm font-semibold text-[#3882F6]">
+            <p className="mt-8 text-sm font-bold text-primary">
               Lịch sử làm bài
             </p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+            <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
               Các lần làm đề
             </h1>
-            <p className="mt-2 text-sm text-[#64748B]">Mã đề: {examId}</p>
+            <p className="mt-2 text-base text-slate-600">Mã đề: {examId}</p>
           </div>
 
           <Link
             href={`/exam/${examId}`}
-            className="inline-flex h-10 items-center justify-center rounded-lg border border-[#E2E8F0] bg-white px-4 text-sm font-semibold hover:bg-[#F8FAFC]"
+            className="inline-flex h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-6 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
             Quay lại đề
           </Link>
         </header>
 
         {loading && (
-          <section className="rounded-xl border border-[#E2E8F0] bg-white p-6">
-            <p className="text-sm text-[#64748B]">Đang tải lịch sử làm bài...</p>
+          <section className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+            <p className="text-sm font-medium text-slate-500">Đang tải lịch sử làm bài...</p>
           </section>
         )}
 
         {error && (
-          <section className="rounded-xl border border-red-200 bg-white p-6">
-            <h2 className="text-lg font-semibold text-red-700">Không tải được dữ liệu</h2>
-            <p className="mt-2 text-sm text-[#64748B]">{error}</p>
+          <section className="rounded-2xl border border-red-200 bg-white p-8 shadow-sm">
+            <h2 className="text-lg font-bold text-red-700">Không tải được dữ liệu</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">{error}</p>
             <button
               type="button"
               onClick={fetchAttempts}
-              className="mt-4 rounded-lg bg-[#3882F6] px-4 py-2 text-sm font-semibold text-white"
+              className="mt-5 inline-flex h-10 items-center justify-center rounded-xl bg-primary px-5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
               Thử lại
             </button>
@@ -148,9 +148,9 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
         )}
 
         {!loading && !error && attempts.length === 0 && (
-          <section className="rounded-xl border border-[#E2E8F0] bg-white p-6">
-            <h2 className="text-lg font-semibold">Chưa có lần làm bài nào</h2>
-            <p className="mt-2 text-sm text-[#64748B]">
+          <section className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+            <h2 className="text-lg font-bold text-slate-900">Chưa có lần làm bài nào</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
               Sau khi bạn nộp bài, lịch sử làm bài của đề này sẽ xuất hiện ở đây.
             </p>
           </section>
@@ -160,35 +160,35 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
 
         {!loading && !error && attempts.length > 0 && (
           <>
-              <section className="grid gap-4 md:grid-cols-3">
-              <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
-                <p className="text-xs font-semibold text-[#64748B]">
+              <section className="grid gap-6 md:grid-cols-3">
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
                   Lần làm gần nhất
                 </p>
-                <p className="mt-2 text-2xl font-semibold text-[#0F172A]">
+                <p className="mt-3 text-3xl font-bold text-slate-900">
                   {latestAttempt?.score}/10
                 </p>
-                <p className="mt-1 text-sm text-[#64748B]">
+                <p className="mt-1.5 text-sm font-medium text-slate-500">
                   {latestAttempt ? formatSubmittedAt(latestAttempt.submittedAt) : 'Chưa có dữ liệu'}
                 </p>
                 {latestAttempt && (
                   <Link
                     href={`/attempts/${latestAttempt.id}`}
-                    className="mt-4 inline-flex text-sm font-semibold text-[#3882F6] hover:text-blue-700"
+                    className="mt-5 inline-flex text-sm font-bold text-primary transition-colors hover:text-primary-hover"
                   >
-                    Xem chi tiết
+                    Xem chi tiết →
                   </Link>
                 )}
               </div>
 
-              <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
-                <p className="text-xs font-semibold text-[#64748B]">
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
                   Điểm cao nhất
                 </p>
-                <p className="mt-2 text-2xl font-semibold text-emerald-600">
+                <p className="mt-3 text-3xl font-bold text-emerald-600">
                   {bestAttempt?.score}/10
                 </p>
-                <p className="mt-1 text-sm text-[#64748B]">
+                <p className="mt-1.5 text-sm font-medium text-slate-500">
                   {bestAttempt
                     ? `${bestAttempt.correctCount}/${bestAttempt.totalQuestions} câu đúng`
                     : 'Chưa có dữ liệu'}
@@ -196,32 +196,32 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
                 {bestAttempt && (
                   <Link
                     href={`/attempts/${bestAttempt.id}`}
-                    className="mt-4 inline-flex text-sm font-semibold text-[#3882F6] hover:text-blue-700"
+                    className="mt-5 inline-flex text-sm font-bold text-primary transition-colors hover:text-primary-hover"
                   >
-                    Xem bài tốt nhất
+                    Xem bài tốt nhất →
                   </Link>
                 )}
               </div>
 
-              <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
-                <p className="text-xs font-semibold text-[#64748B]">
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
                   Số lần làm
                 </p>
-                <p className="mt-2 text-2xl font-semibold text-[#0F172A]">
+                <p className="mt-3 text-3xl font-bold text-slate-900">
                   {attempts.length}
                 </p>
-                <p className="mt-1 text-sm text-[#64748B]">
+                <p className="mt-1.5 text-sm font-medium text-slate-500">
                   Điểm trung bình {averageScore.toFixed(1)}/10
                 </p>
               </div>
             </section>
 
-            <section className="overflow-hidden rounded-xl border border-[#E2E8F0] bg-white">
-              <div className="border-b border-[#E2E8F0] px-4 py-4">
-                <h2 className="text-lg font-semibold">Danh sách lần làm</h2>
+            <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+              <div className="border-b border-slate-100 px-6 py-5">
+                <h2 className="text-lg font-bold text-slate-900">Danh sách lần làm</h2>
               </div>
 
-              <div className="divide-y divide-[#E2E8F0]">
+              <div className="divide-y divide-slate-100">
                 {attempts.map((attempt, index) => {
                   const accuracy = Math.round(
                     (attempt.correctCount / attempt.totalQuestions) * 100,
@@ -230,27 +230,27 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
                   return (
                     <article
                       key={attempt.id}
-                      className="grid gap-4 px-4 py-4 md:grid-cols-[1fr_auto] md:items-center"
+                      className="grid gap-6 px-6 py-6 md:grid-cols-[1fr_auto] md:items-center"
                     >
                       <div>
-                        <p className="text-sm font-semibold">
+                        <p className="text-base font-bold text-slate-900">
                           Lần làm #{attempts.length - index}
                         </p>
-                        <p className="mt-1 text-sm text-[#64748B]">
+                        <p className="mt-1.5 text-sm font-medium text-slate-500">
                           {formatSubmittedAt(attempt.submittedAt)}
                         </p>
 
-                        <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold">
-                          <span className="rounded-md border border-[#E2E8F0] bg-white px-2.5 py-1 text-[#64748B]">
+                        <div className="mt-4 flex flex-wrap gap-2 text-xs font-bold tracking-wider">
+                          <span className="inline-flex rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 uppercase text-slate-600">
                             Thời gian: {formatDurationSeconds(attempt.durationSeconds)}
                           </span>
-                          <span className="rounded-md border border-blue-200 bg-blue-50 px-2.5 py-1 text-blue-700">
+                          <span className="inline-flex rounded-md border border-blue-200 bg-blue-50 px-3 py-1.5 uppercase text-blue-700">
                             {attempt.score}/10 điểm
                           </span>
-                          <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-emerald-700">
+                          <span className="inline-flex rounded-md border border-emerald-200 bg-emerald-50 px-3 py-1.5 uppercase text-emerald-700">
                             {attempt.correctCount}/{attempt.totalQuestions} câu đúng
                           </span>
-                          <span className="rounded-md border border-[#E2E8F0] bg-[#F8FAFC] px-2.5 py-1 text-[#64748B]">
+                          <span className="inline-flex rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 uppercase text-slate-600">
                             {accuracy}% chính xác
                           </span>
                         </div>
@@ -258,7 +258,7 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
 
                       <Link
                         href={`/attempts/${attempt.id}`}
-                        className="inline-flex h-10 items-center justify-center rounded-lg bg-[#3882F6] px-4 text-sm font-semibold text-white hover:bg-blue-600"
+                        className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                       >
                         Xem chi tiết
                       </Link>

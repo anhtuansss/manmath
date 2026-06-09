@@ -232,27 +232,28 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
 
   if (loading) {
     return (
-      <div className="min-h-[100dvh] bg-[#F8FAFC] text-[#0F172A]">
-        <div className="border-b border-[#E2E8F0] bg-white">
+      <div className="min-h-[100dvh] bg-slate-50 text-slate-900">
+        <div className="border-b border-slate-200 bg-white shadow-sm">
           <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-3">
-              <div className="h-9 w-9 animate-pulse rounded-xl bg-blue-100" />
+            <div className="flex items-center gap-4">
+              <div className="h-10 w-10 animate-pulse rounded-xl bg-slate-200" />
               <div>
                 <div className="h-4 w-24 animate-pulse rounded bg-slate-200" />
                 <div className="mt-2 h-3 w-40 animate-pulse rounded bg-slate-100" />
               </div>
             </div>
-            <div className="h-10 w-28 animate-pulse rounded-lg bg-slate-100" />
+            <div className="h-10 w-32 animate-pulse rounded-lg bg-slate-200" />
           </div>
         </div>
 
-        <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
-            <div className="space-y-6">
-              <div className="h-16 animate-pulse rounded-xl border border-[#E2E8F0] bg-white" />
-              <div className="h-96 animate-pulse rounded-xl border border-[#E2E8F0] bg-white" />
+        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+            <div className="space-y-8">
+              <div className="h-20 animate-pulse rounded-2xl border border-slate-200 bg-white shadow-sm lg:hidden" />
+              <div className="h-96 animate-pulse rounded-2xl border border-slate-200 bg-white shadow-sm" />
+              <div className="h-96 animate-pulse rounded-2xl border border-slate-200 bg-white shadow-sm" />
             </div>
-            <div className="h-80 animate-pulse rounded-xl border border-[#E2E8F0] bg-white" />
+            <div className="hidden h-[500px] animate-pulse rounded-2xl border border-slate-200 bg-white shadow-sm lg:block" />
           </div>
         </main>
       </div>
@@ -261,18 +262,18 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
 
   if (error) {
     return (
-      <div className="flex min-h-[100dvh] items-center justify-center bg-[#F8FAFC] px-4 text-[#0F172A]">
-        <div className="w-full max-w-md rounded-xl border border-red-200 bg-white p-6 text-center shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
-          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-sm font-bold text-red-700">
+      <div className="flex min-h-[100dvh] items-center justify-center bg-slate-50 px-4 text-slate-900">
+        <div className="w-full max-w-md rounded-2xl border border-red-200 bg-white p-8 text-center shadow-sm">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 text-xl font-bold text-red-600">
             !
           </div>
-          <h1 className="mt-4 text-lg font-semibold text-[#0F172A]">
+          <h1 className="mt-6 text-xl font-bold text-slate-900">
             Không thể mở đề thi
           </h1>
-          <p className="mt-2 text-sm leading-6 text-red-600">{error}</p>
+          <p className="mt-3 text-base leading-7 text-slate-600">{error}</p>
           <Link
             href="/"
-            className="mt-5 inline-flex h-10 items-center justify-center rounded-lg bg-[#3882F6] px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3882F6] focus-visible:ring-offset-2"
+            className="mt-8 inline-flex h-11 items-center justify-center rounded-xl bg-primary px-6 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
             Quay về danh sách đề
           </Link>
@@ -282,7 +283,7 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-[#F8FAFC] text-[#0F172A]">
+    <div className="min-h-[100dvh] bg-slate-50 text-slate-900">
       <ExamHeader
         examTitle={exam?.examTitle}
         questionCount={exam?.questions.length ?? 0}
@@ -290,8 +291,8 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
         isTimeUp={isTimeUp}
         onSubmit={handleSubmit}
       />
-      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <div className="flex flex-col-reverse gap-6 lg:grid lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start">
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="flex flex-col-reverse gap-8 lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
           <QuestionList
             questions={exam?.questions}
             answers={answers}

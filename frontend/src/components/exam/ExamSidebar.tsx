@@ -23,31 +23,31 @@ export function ExamSidebar({
 
   return (
     <aside className="lg:sticky lg:top-24 lg:self-start">
-      <div className="rounded-xl border border-[#E2E8F0] bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div>
-          <h3 className="text-sm font-semibold text-[#0F172A]">Câu hỏi</h3>
-          <p className="mt-1 text-xs font-medium text-[#64748B]">
+          <h3 className="text-sm font-bold text-slate-900">Câu hỏi</h3>
+          <p className="mt-1 text-xs font-medium text-slate-500">
             Điều hướng nhanh trong đề
           </p>
         </div>
 
-        <div className="mt-4 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-3">
+        <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
           <div className="flex items-center justify-between text-xs">
-            <span className="font-medium text-[#64748B]">Đã làm</span>
-            <span className="font-semibold text-[#0F172A]">
+            <span className="font-medium text-slate-500">Đã làm</span>
+            <span className="font-bold text-slate-900">
               {answeredCount}/{totalQuestions}
             </span>
           </div>
           <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200">
             <div
-              className="h-full rounded-full bg-[#3882F6] transition-all"
+              className="h-full rounded-full bg-primary transition-all duration-300"
               style={{ width: `${progressPercentage}%` }}
             />
           </div>
         </div>
 
-        <div className="mt-4 overflow-x-auto pb-1">
-          <div className="grid w-max grid-cols-[repeat(5,2rem)] gap-1.5">
+        <div className="mt-5 overflow-x-auto pb-2">
+          <div className="grid w-max grid-cols-[repeat(5,2.25rem)] gap-2 lg:grid-cols-[repeat(6,2.25rem)] xl:grid-cols-[repeat(5,2.25rem)]">
             {questions?.map((question, index) => {
               const isAnswered = answers[question.id] !== undefined;
               const isCurrent = question.id === currentQuestionId;
@@ -59,14 +59,14 @@ export function ExamSidebar({
                   type="button"
                   onClick={() => onQuestionClick(question.id)}
                   className={`
-                    flex h-8 w-8 shrink-0 items-center justify-center rounded-md border text-xs font-semibold transition-colors
-                    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3882F6] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F8FAFC]
+                    flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border text-xs font-bold transition-colors
+                    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2
                     ${
                       isCurrent
-                        ? 'border-[#3882F6] bg-[#3882F6] text-white shadow-[0_0_0_2px_rgba(56,130,246,0.18)]'
+                        ? 'border-primary bg-primary text-white shadow-sm ring-1 ring-primary/30'
                         : isAnswered
-                          ? 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:border-emerald-300'
-                          : 'border-[#E2E8F0] bg-white text-[#64748B] hover:border-blue-200 hover:text-[#3882F6]'
+                          ? 'border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                          : 'border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:text-primary'
                     }
                   `}
                 >
@@ -77,23 +77,23 @@ export function ExamSidebar({
           </div>
         </div>
 
-        <div className="mt-4 grid gap-2 border-t border-[#E2E8F0] pt-4 text-xs">
+        <div className="mt-5 grid gap-2.5 border-t border-slate-100 pt-5 text-xs">
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-sm border border-[#3882F6] bg-[#3882F6]" />
-            <span className="font-medium text-[#64748B]">Câu hiện tại</span>
+            <div className="h-3.5 w-3.5 rounded-[4px] border border-primary bg-primary" />
+            <span className="font-medium text-slate-600">Câu hiện tại</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-sm border border-emerald-200 bg-emerald-50" />
-            <span className="font-medium text-[#64748B]">Đã trả lời</span>
+            <div className="h-3.5 w-3.5 rounded-[4px] border border-emerald-300 bg-emerald-50" />
+            <span className="font-medium text-slate-600">Đã trả lời</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-3 w-3 rounded-sm border border-[#E2E8F0] bg-white" />
-            <span className="font-medium text-[#64748B]">Chưa trả lời</span>
+            <div className="h-3.5 w-3.5 rounded-[4px] border border-slate-200 bg-white" />
+            <span className="font-medium text-slate-600">Chưa trả lời</span>
           </div>
         </div>
 
         {isTimeUp && (
-          <p className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-center text-sm font-semibold text-red-700">
+          <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-center text-sm font-bold text-red-700 shadow-sm">
             Đã hết giờ
           </p>
         )}

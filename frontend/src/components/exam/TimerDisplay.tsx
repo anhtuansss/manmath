@@ -16,12 +16,12 @@ export function TimerDisplay({ remainingSeconds }: TimerDisplayProps) {
   return (
     <div
       aria-live="polite"
-      className={`inline-flex h-10 items-center gap-2 rounded-lg border px-3 ${
+      className={`inline-flex h-10 items-center gap-2 rounded-lg border px-3 transition-colors ${
         isTimeDanger
           ? 'border-red-200 bg-red-50 text-red-700'
           : isTimeWarning
             ? 'border-amber-200 bg-amber-50 text-amber-700'
-            : 'border-[#E2E8F0] bg-[#F8FAFC] text-[#0F172A]'
+            : 'border-slate-200 bg-slate-50 text-slate-900'
       }`}
     >
       <span className="hidden text-xs font-semibold sm:inline">Thời gian</span>

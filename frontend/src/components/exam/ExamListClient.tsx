@@ -25,88 +25,88 @@ const toExamListItem = (exam: ExamListApiItem): ExamListItem => ({
 
 function ExamListSkeleton() {
   return (
-    <main className="min-h-screen bg-[#F8FAFC] text-[#0F172A]">
-      <div className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
-        <header className="border-b border-[#E2E8F0] pb-6">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-            <div>
+    <main className="min-h-screen bg-slate-50 text-slate-900">
+      <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <header className="mb-10 pb-8">
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 animate-pulse rounded-xl bg-blue-100" />
+                <div className="h-10 w-10 animate-pulse rounded-xl bg-slate-200" />
                 <div>
                   <div className="h-4 w-24 animate-pulse rounded bg-slate-200" />
-                  <div className="mt-2 h-3 w-32 animate-pulse rounded bg-slate-100" />
+                  <div className="mt-2 h-3 w-32 animate-pulse rounded bg-slate-200" />
                 </div>
               </div>
-              <div className="mt-7 h-4 w-36 animate-pulse rounded bg-blue-100" />
-              <div className="mt-3 h-9 w-72 max-w-full animate-pulse rounded bg-slate-200" />
-              <div className="mt-3 h-4 w-full max-w-xl animate-pulse rounded bg-slate-100" />
+              <div className="mt-10 h-6 w-36 animate-pulse rounded-full bg-slate-200" />
+              <div className="mt-5 h-12 w-3/4 max-w-3xl animate-pulse rounded bg-slate-200" />
+              <div className="mt-4 h-6 w-full max-w-2xl animate-pulse rounded bg-slate-200" />
             </div>
 
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:w-[360px]">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:w-[400px]">
               {[0, 1, 2].map((item) => (
                 <div
                   key={item}
-                  className="h-[74px] animate-pulse rounded-xl border border-[#E2E8F0] bg-white"
+                  className="h-[88px] animate-pulse rounded-2xl border border-slate-200 bg-white"
                 />
               ))}
             </div>
           </div>
         </header>
 
-        <div className="grid gap-6 py-6 lg:grid-cols-[minmax(0,1fr)_300px]">
-          <div className="space-y-7">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="space-y-10">
             <section>
-              <div className="mb-4">
-                <div className="h-6 w-48 animate-pulse rounded bg-slate-200" />
-                <div className="mt-2 h-4 w-80 max-w-full animate-pulse rounded bg-slate-100" />
+              <div className="mb-6">
+                <div className="h-7 w-48 animate-pulse rounded bg-slate-200" />
+                <div className="mt-2 h-4 w-80 max-w-full animate-pulse rounded bg-slate-200" />
               </div>
-              <div className="grid gap-4 lg:grid-cols-3">
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {[0, 1, 2].map((item) => (
                   <div
                     key={item}
-                    className="min-h-[220px] animate-pulse rounded-xl border border-[#E2E8F0] bg-white p-5"
+                    className="min-h-[240px] animate-pulse rounded-2xl border border-slate-200 bg-white p-6"
                   >
-                    <div className="h-4 w-24 rounded bg-slate-100" />
+                    <div className="h-4 w-24 rounded bg-slate-200" />
                     <div className="mt-4 h-6 w-4/5 rounded bg-slate-200" />
-                    <div className="mt-3 h-4 w-full rounded bg-slate-100" />
-                    <div className="mt-2 h-4 w-2/3 rounded bg-slate-100" />
-                    <div className="mt-8 grid grid-cols-2 gap-3 border-t border-[#E2E8F0] pt-4">
-                      <div className="h-10 rounded bg-slate-100" />
-                      <div className="h-10 rounded bg-slate-100" />
+                    <div className="mt-3 h-4 w-full rounded bg-slate-200" />
+                    <div className="mt-2 h-4 w-2/3 rounded bg-slate-200" />
+                    <div className="mt-8 grid grid-cols-2 gap-4 border-t border-slate-100 pt-5">
+                      <div className="h-10 rounded bg-slate-200" />
+                      <div className="h-10 rounded bg-slate-200" />
                     </div>
                   </div>
                 ))}
               </div>
             </section>
 
-            <section className="rounded-xl border border-[#E2E8F0] bg-white">
-              <div className="border-b border-[#E2E8F0] px-4 py-4">
+            <section className="rounded-2xl border border-slate-200 bg-white">
+              <div className="border-b border-slate-100 px-6 py-5">
                 <div className="h-6 w-40 animate-pulse rounded bg-slate-200" />
-                <div className="mt-2 h-4 w-72 max-w-full animate-pulse rounded bg-slate-100" />
+                <div className="mt-2 h-4 w-72 max-w-full animate-pulse rounded bg-slate-200" />
               </div>
-              <div className="divide-y divide-[#E2E8F0]">
+              <div className="divide-y divide-slate-100">
                 {[0, 1, 2, 3].map((item) => (
-                  <div key={item} className="animate-pulse px-4 py-4">
-                    <div className="h-4 w-24 rounded bg-slate-100" />
+                  <div key={item} className="animate-pulse px-6 py-5">
+                    <div className="h-4 w-24 rounded bg-slate-200" />
                     <div className="mt-3 h-5 w-2/3 rounded bg-slate-200" />
-                    <div className="mt-3 h-4 w-48 rounded bg-slate-100" />
+                    <div className="mt-3 h-4 w-48 rounded bg-slate-200" />
                   </div>
                 ))}
               </div>
             </section>
           </div>
 
-          <aside className="space-y-4">
+          <aside className="space-y-6">
             {[0, 1].map((item) => (
               <div
                 key={item}
-                className="h-48 animate-pulse rounded-xl border border-[#E2E8F0] bg-white p-5"
+                className="h-48 animate-pulse rounded-2xl border border-slate-200 bg-white p-6"
               >
                 <div className="h-5 w-36 rounded bg-slate-200" />
-                <div className="mt-5 space-y-3">
-                  <div className="h-4 rounded bg-slate-100" />
-                  <div className="h-4 rounded bg-slate-100" />
-                  <div className="h-4 w-2/3 rounded bg-slate-100" />
+                <div className="mt-6 space-y-4">
+                  <div className="h-4 rounded bg-slate-200" />
+                  <div className="h-4 rounded bg-slate-200" />
+                  <div className="h-4 w-2/3 rounded bg-slate-200" />
                 </div>
               </div>
             ))}
@@ -124,33 +124,32 @@ type ExamListErrorProps = {
 
 function ExamListError({ message, onRetry }: ExamListErrorProps) {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#F8FAFC] px-4 py-10 text-[#0F172A]">
-      <section className="w-full max-w-xl rounded-xl border border-red-200 bg-white p-6">
+    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10 text-slate-900">
+      <section className="w-full max-w-xl rounded-2xl border border-red-200 bg-white p-8 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-sm font-bold text-red-700">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 text-xl font-bold text-red-600">
             !
           </div>
           <div>
-            <p className="text-base font-semibold text-[#0F172A]">ManMath</p>
-            <p className="text-xs font-medium text-[#64748B]">
+            <p className="text-base font-bold text-slate-900">ManMath</p>
+            <p className="text-xs font-medium text-slate-500">
               Không tải được danh sách đề
             </p>
           </div>
         </div>
 
-        <h1 className="mt-6 text-2xl font-semibold tracking-tight text-[#0F172A]">
-          Kiểm tra backend rồi thử lại
+        <h1 className="mt-8 text-2xl font-bold tracking-tight text-slate-900">
+          Kiểm tra kết nối và thử lại
         </h1>
-        <p className="mt-3 text-sm leading-6 text-[#64748B]">
-          {message}. Hãy đảm bảo backend đang chạy và cấu hình API base URL của
-          frontend đang trỏ đúng môi trường hiện tại.
+        <p className="mt-3 text-base leading-7 text-slate-600">
+          {message}. Hãy đảm bảo hệ thống backend đang chạy và API hoạt động bình thường.
         </p>
         <button
           type="button"
           onClick={onRetry}
-          className="mt-6 inline-flex h-10 items-center justify-center rounded-lg bg-[#3882F6] px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3882F6] focus-visible:ring-offset-2"
+          className="mt-8 inline-flex h-11 items-center justify-center rounded-xl bg-primary px-6 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         >
-          Thử lại
+          Tải lại trang
         </button>
       </section>
     </main>
@@ -163,31 +162,30 @@ type ExamListEmptyProps = {
 
 function ExamListEmpty({ onRetry }: ExamListEmptyProps) {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#F8FAFC] px-4 py-10 text-[#0F172A]">
-      <section className="w-full max-w-xl rounded-xl border border-[#E2E8F0] bg-white p-6">
+    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10 text-slate-900">
+      <section className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#3882F6] text-lg font-bold text-white">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-xl font-bold text-white shadow-sm ring-1 ring-primary/20">
             M
           </div>
           <div>
-            <p className="text-base font-semibold text-[#0F172A]">ManMath</p>
-            <p className="text-xs font-medium text-[#64748B]">
+            <p className="text-base font-bold text-slate-900">ManMath</p>
+            <p className="text-xs font-medium text-slate-500">
               Kho đề đang trống
             </p>
           </div>
         </div>
 
-        <h1 className="mt-6 text-2xl font-semibold tracking-tight text-[#0F172A]">
+        <h1 className="mt-8 text-2xl font-bold tracking-tight text-slate-900">
           Chưa có đề luyện nào
         </h1>
-        <p className="mt-3 text-sm leading-6 text-[#64748B]">
-          API đã trả về danh sách rỗng. Khi backend có dữ liệu đề, màn này sẽ
-          hiển thị khu đề đề xuất, danh sách đề và tổng quan kho đề.
+        <p className="mt-3 text-base leading-7 text-slate-600">
+          Hệ thống hiện tại chưa có đề thi nào khả dụng. Xin vui lòng quay lại sau.
         </p>
         <button
           type="button"
           onClick={onRetry}
-          className="mt-6 inline-flex h-10 items-center justify-center rounded-lg border border-[#E2E8F0] bg-white px-4 text-sm font-semibold text-[#0F172A] transition-colors hover:bg-[#F8FAFC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3882F6] focus-visible:ring-offset-2"
+          className="mt-8 inline-flex h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-6 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         >
           Tải lại danh sách
         </button>
