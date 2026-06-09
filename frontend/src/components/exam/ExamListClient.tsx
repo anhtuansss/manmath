@@ -25,88 +25,114 @@ const toExamListItem = (exam: ExamListApiItem): ExamListItem => ({
 
 function ExamListSkeleton() {
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900">
-      <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <header className="mb-10 pb-8">
-          <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-            <div className="min-w-0 flex-1">
+    <main className="min-h-screen bg-background text-text-primary">
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        {/* ── Hero Skeleton ── */}
+        <header className="pb-8">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              {/* Logo */}
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 animate-pulse rounded-xl bg-slate-200" />
+                <div className="h-10 w-10 animate-pulse rounded-xl bg-primary-light" />
                 <div>
-                  <div className="h-4 w-24 animate-pulse rounded bg-slate-200" />
-                  <div className="mt-2 h-3 w-32 animate-pulse rounded bg-slate-200" />
+                  <div className="h-4 w-24 animate-pulse rounded-md bg-slate-200" />
+                  <div className="mt-2 h-3 w-32 animate-pulse rounded-md bg-slate-100" />
                 </div>
               </div>
-              <div className="mt-10 h-6 w-36 animate-pulse rounded-full bg-slate-200" />
-              <div className="mt-5 h-12 w-3/4 max-w-3xl animate-pulse rounded bg-slate-200" />
-              <div className="mt-4 h-6 w-full max-w-2xl animate-pulse rounded bg-slate-200" />
+              {/* Breadcrumb + Heading */}
+              <div className="mt-7 h-4 w-36 animate-pulse rounded-md bg-primary-light" />
+              <div className="mt-3 h-10 w-80 max-w-full animate-pulse rounded-md bg-slate-200" />
+              <div className="mt-3 h-4 w-full max-w-xl animate-pulse rounded-md bg-slate-100" />
             </div>
 
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:w-[400px]">
+            {/* Stat Cards Skeleton */}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:w-[380px]">
               {[0, 1, 2].map((item) => (
                 <div
                   key={item}
-                  className="h-[88px] animate-pulse rounded-2xl border border-slate-200 bg-white"
-                />
+                  className="animate-pulse rounded-lg border border-border bg-surface px-4 py-3 shadow-card"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="h-4 w-4 rounded bg-slate-200" />
+                    <div className="h-3 w-12 rounded bg-slate-100" />
+                  </div>
+                  <div className="mt-3 h-6 w-12 rounded bg-slate-200" />
+                </div>
               ))}
             </div>
           </div>
         </header>
 
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
-          <div className="space-y-10">
+        {/* ── Main Content Skeleton ── */}
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
+          <div className="space-y-8">
+            {/* Featured Section Skeleton */}
             <section>
-              <div className="mb-6">
-                <div className="h-7 w-48 animate-pulse rounded bg-slate-200" />
-                <div className="mt-2 h-4 w-80 max-w-full animate-pulse rounded bg-slate-200" />
+              <div className="mb-5">
+                <div className="h-6 w-48 animate-pulse rounded-md bg-slate-200" />
+                <div className="mt-2 h-4 w-80 max-w-full animate-pulse rounded-md bg-slate-100" />
               </div>
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-5 lg:grid-cols-3">
                 {[0, 1, 2].map((item) => (
                   <div
                     key={item}
-                    className="min-h-[240px] animate-pulse rounded-2xl border border-slate-200 bg-white p-6"
+                    className="min-h-[240px] animate-pulse rounded-xl border border-border border-t-[3px] border-t-slate-200 bg-surface p-5 shadow-card"
                   >
-                    <div className="h-4 w-24 rounded bg-slate-200" />
-                    <div className="mt-4 h-6 w-4/5 rounded bg-slate-200" />
-                    <div className="mt-3 h-4 w-full rounded bg-slate-200" />
-                    <div className="mt-2 h-4 w-2/3 rounded bg-slate-200" />
-                    <div className="mt-8 grid grid-cols-2 gap-4 border-t border-slate-100 pt-5">
-                      <div className="h-10 rounded bg-slate-200" />
-                      <div className="h-10 rounded bg-slate-200" />
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="h-3 w-20 rounded bg-slate-100" />
+                        <div className="mt-3 h-5 w-4/5 rounded bg-slate-200" />
+                      </div>
+                      <div className="h-5 w-14 rounded-full bg-slate-100" />
+                    </div>
+                    <div className="mt-4 h-4 w-full rounded bg-slate-100" />
+                    <div className="mt-2 h-4 w-2/3 rounded bg-slate-100" />
+                    <div className="mt-6 grid grid-cols-2 gap-3 border-t border-border pt-4">
+                      <div className="h-10 rounded bg-slate-100" />
+                      <div className="h-10 rounded bg-slate-100" />
                     </div>
                   </div>
                 ))}
               </div>
             </section>
 
-            <section className="rounded-2xl border border-slate-200 bg-white">
-              <div className="border-b border-slate-100 px-6 py-5">
-                <div className="h-6 w-40 animate-pulse rounded bg-slate-200" />
-                <div className="mt-2 h-4 w-72 max-w-full animate-pulse rounded bg-slate-200" />
+            {/* List Section Skeleton */}
+            <section className="overflow-hidden rounded-xl border border-border bg-surface shadow-card">
+              <div className="border-b border-border px-5 py-4">
+                <div className="h-6 w-40 animate-pulse rounded-md bg-slate-200" />
+                <div className="mt-2 h-4 w-72 max-w-full animate-pulse rounded-md bg-slate-100" />
               </div>
-              <div className="divide-y divide-slate-100">
+              <div className="divide-y divide-border">
                 {[0, 1, 2, 3].map((item) => (
-                  <div key={item} className="animate-pulse px-6 py-5">
-                    <div className="h-4 w-24 rounded bg-slate-200" />
-                    <div className="mt-3 h-5 w-2/3 rounded bg-slate-200" />
-                    <div className="mt-3 h-4 w-48 rounded bg-slate-200" />
+                  <div key={item} className="animate-pulse px-5 py-4">
+                    <div className="h-3 w-20 rounded bg-slate-100" />
+                    <div className="mt-2 h-5 w-2/3 rounded bg-slate-200" />
+                    <div className="mt-3 flex gap-4">
+                      <div className="h-3 w-16 rounded bg-slate-100" />
+                      <div className="h-3 w-16 rounded bg-slate-100" />
+                      <div className="h-3 w-16 rounded bg-slate-100" />
+                    </div>
                   </div>
                 ))}
               </div>
             </section>
           </div>
 
-          <aside className="space-y-6">
+          {/* Sidebar Skeleton */}
+          <aside className="space-y-4">
             {[0, 1].map((item) => (
               <div
                 key={item}
-                className="h-48 animate-pulse rounded-2xl border border-slate-200 bg-white p-6"
+                className="animate-pulse rounded-xl border border-border bg-surface p-5 shadow-card"
               >
-                <div className="h-5 w-36 rounded bg-slate-200" />
-                <div className="mt-6 space-y-4">
-                  <div className="h-4 rounded bg-slate-200" />
-                  <div className="h-4 rounded bg-slate-200" />
-                  <div className="h-4 w-2/3 rounded bg-slate-200" />
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 rounded bg-slate-200" />
+                  <div className="h-5 w-36 rounded bg-slate-200" />
+                </div>
+                <div className="mt-5 space-y-3">
+                  <div className="h-4 rounded bg-slate-100" />
+                  <div className="h-4 rounded bg-slate-100" />
+                  <div className="h-4 w-2/3 rounded bg-slate-100" />
                 </div>
               </div>
             ))}
@@ -124,33 +150,38 @@ type ExamListErrorProps = {
 
 function ExamListError({ message, onRetry }: ExamListErrorProps) {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10 text-slate-900">
-      <section className="w-full max-w-xl rounded-2xl border border-red-200 bg-white p-8 shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 text-xl font-bold text-red-600">
-            !
-          </div>
-          <div>
-            <p className="text-base font-bold text-slate-900">ManMath</p>
-            <p className="text-xs font-medium text-slate-500">
-              Không tải được danh sách đề
-            </p>
-          </div>
+    <main className="flex min-h-screen items-center justify-center bg-background px-4 py-10 text-text-primary">
+      <section className="w-full max-w-xl animate-fade-in rounded-xl border border-error-border bg-surface p-8 shadow-card">
+        {/* Error Icon */}
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-error-light">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="text-error">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/>
+            <path d="M12 8v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            <circle cx="12" cy="16" r="0.75" fill="currentColor"/>
+          </svg>
         </div>
 
-        <h1 className="mt-8 text-2xl font-bold tracking-tight text-slate-900">
-          Kiểm tra kết nối và thử lại
+        <h1 className="mt-5 text-center font-[family-name:var(--font-outfit)] text-2xl font-bold tracking-tight text-text-primary">
+          Kiểm tra backend rồi thử lại
         </h1>
-        <p className="mt-3 text-base leading-7 text-slate-600">
-          {message}. Hãy đảm bảo hệ thống backend đang chạy và API hoạt động bình thường.
+        <p className="mt-3 text-center text-sm leading-6 text-text-secondary">
+          {message}. Hãy đảm bảo backend đang chạy và cấu hình API base URL của
+          frontend đang trỏ đúng môi trường hiện tại.
         </p>
-        <button
-          type="button"
-          onClick={onRetry}
-          className="mt-8 inline-flex h-11 items-center justify-center rounded-xl bg-primary px-6 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-        >
-          Tải lại trang
-        </button>
+
+        <div className="mt-6 flex justify-center">
+          <button
+            type="button"
+            onClick={onRetry}
+            className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          >
+            {/* Retry icon */}
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-white">
+              <path d="M2.5 8a5.5 5.5 0 0 1 9.37-3.9L13.5 2.5v4h-4l1.6-1.6A3.5 3.5 0 1 0 11.5 8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Thử lại
+          </button>
+        </div>
       </section>
     </main>
   );
@@ -162,33 +193,42 @@ type ExamListEmptyProps = {
 
 function ExamListEmpty({ onRetry }: ExamListEmptyProps) {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-10 text-slate-900">
-      <section className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-xl font-bold text-white shadow-sm ring-1 ring-primary/20">
-            M
-          </div>
-          <div>
-            <p className="text-base font-bold text-slate-900">ManMath</p>
-            <p className="text-xs font-medium text-slate-500">
-              Kho đề đang trống
-            </p>
-          </div>
+    <main className="flex min-h-screen items-center justify-center bg-background px-4 py-10 text-text-primary">
+      <section className="w-full max-w-xl animate-fade-in rounded-xl border border-border bg-surface p-8 shadow-card">
+        {/* Logo Icon */}
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-primary shadow-card">
+          <span className="text-2xl font-bold text-white">M</span>
         </div>
 
-        <h1 className="mt-8 text-2xl font-bold tracking-tight text-slate-900">
+        <h1 className="mt-5 text-center font-[family-name:var(--font-outfit)] text-2xl font-bold tracking-tight text-text-primary">
           Chưa có đề luyện nào
         </h1>
-        <p className="mt-3 text-base leading-7 text-slate-600">
-          Hệ thống hiện tại chưa có đề thi nào khả dụng. Xin vui lòng quay lại sau.
+        <p className="mt-3 text-center text-sm leading-6 text-text-secondary">
+          API đã trả về danh sách rỗng. Khi backend có dữ liệu đề, màn này sẽ
+          hiển thị khu đề đề xuất, danh sách đề và tổng quan kho đề.
         </p>
-        <button
-          type="button"
-          onClick={onRetry}
-          className="mt-8 inline-flex h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-6 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-        >
-          Tải lại danh sách
-        </button>
+
+        {/* Illustration area */}
+        <div className="mx-auto mt-6 flex h-20 w-20 items-center justify-center rounded-full bg-background-alt">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" className="text-text-muted">
+            <path d="M9 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" stroke="currentColor" strokeWidth="1.5"/>
+            <path d="M9 7h6M9 11h6M9 15h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          </svg>
+        </div>
+
+        <div className="mt-6 flex justify-center">
+          <button
+            type="button"
+            onClick={onRetry}
+            className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          >
+            {/* Refresh icon */}
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-white">
+              <path d="M2.5 8a5.5 5.5 0 0 1 9.37-3.9L13.5 2.5v4h-4l1.6-1.6A3.5 3.5 0 1 0 11.5 8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Tải lại danh sách
+          </button>
+        </div>
       </section>
     </main>
   );

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { Logo } from './Logo';
 import { API_BASE_URL } from '../../config/api';
 import type { ExamAttemptSummaryDto } from './types';
 
@@ -99,96 +100,169 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
       : 0;
 
   return (
-    <main className="min-h-[100dvh] bg-slate-50 px-4 py-8 text-slate-900 sm:px-6 lg:px-8">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
-        <header className="flex flex-col gap-5 border-b border-slate-200 pb-6 sm:flex-row sm:items-end sm:justify-between">
+    <main className="min-h-[100dvh] bg-background px-4 py-6 text-text-primary sm:px-6 lg:px-8">
+      <div className="mx-auto flex w-full max-w-5xl animate-fade-in flex-col gap-6">
+        {/* ── Header ── */}
+        <header className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <Link href="/" className="inline-flex items-center gap-3 text-sm font-bold">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-lg font-bold text-white shadow-sm ring-1 ring-primary/20">
-                M
-              </span>
+            <Link href="/" className="inline-flex cursor-pointer items-center gap-3 text-sm font-semibold transition-colors duration-200">
+              <Logo className="h-9 w-9" />
               ManMath
             </Link>
 
-            <p className="mt-8 text-sm font-bold text-primary">
+            <p className="mt-6 text-sm font-semibold text-primary">
               Lịch sử làm bài
             </p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
+            <h1 className="mt-2 font-[family-name:var(--font-outfit)] text-3xl font-bold tracking-tight text-text-primary">
               Các lần làm đề
             </h1>
-            <p className="mt-2 text-base text-slate-600">Mã đề: {examId}</p>
+            <p className="mt-2 text-sm text-text-secondary">Mã đề: {examId}</p>
           </div>
 
           <Link
             href={`/exam/${examId}`}
-            className="inline-flex h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-6 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            className="inline-flex h-10 cursor-pointer items-center gap-2 justify-center rounded-lg border border-border bg-surface px-4 text-sm font-semibold text-text-primary transition-colors duration-200 hover:bg-background-alt focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M6 12L2 8l4-4M2 8h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
             Quay lại đề
           </Link>
         </header>
 
+        {/* ── Loading State ── */}
         {loading && (
-          <section className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-            <p className="text-sm font-medium text-slate-500">Đang tải lịch sử làm bài...</p>
+          <section className="space-y-6">
+            {/* Stats skeleton */}
+            <div className="grid gap-4 md:grid-cols-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="rounded-xl border border-border bg-surface p-5 shadow-card">
+                  <div className="h-3 w-28 animate-pulse rounded bg-background-alt" />
+                  <div className="mt-3 h-7 w-20 animate-pulse rounded bg-background-alt" />
+                  <div className="mt-2 h-4 w-36 animate-pulse rounded bg-background-alt" />
+                  <div className="mt-4 h-4 w-24 animate-pulse rounded bg-primary-light" />
+                </div>
+              ))}
+            </div>
+            {/* List skeleton */}
+            <div className="overflow-hidden rounded-xl border border-border bg-surface shadow-card">
+              <div className="border-b border-border px-5 py-4">
+                <div className="h-5 w-40 animate-pulse rounded bg-background-alt" />
+              </div>
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="border-b border-border px-5 py-4 last:border-b-0">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-2">
+                      <div className="h-4 w-28 animate-pulse rounded bg-background-alt" />
+                      <div className="h-3 w-36 animate-pulse rounded bg-background-alt" />
+                      <div className="flex gap-2">
+                        <div className="h-6 w-20 animate-pulse rounded-md bg-background-alt" />
+                        <div className="h-6 w-20 animate-pulse rounded-md bg-primary-light" />
+                        <div className="h-6 w-24 animate-pulse rounded-md bg-success-light" />
+                      </div>
+                    </div>
+                    <div className="h-10 w-24 animate-pulse rounded-lg bg-primary-light" />
+                  </div>
+                </div>
+              ))}
+            </div>
           </section>
         )}
 
+        {/* ── Error State ── */}
         {error && (
-          <section className="rounded-2xl border border-red-200 bg-white p-8 shadow-sm">
-            <h2 className="text-lg font-bold text-red-700">Không tải được dữ liệu</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600">{error}</p>
-            <button
-              type="button"
-              onClick={fetchAttempts}
-              className="mt-5 inline-flex h-10 items-center justify-center rounded-xl bg-primary px-5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            >
-              Thử lại
-            </button>
+          <section className="rounded-xl border border-error-border bg-surface p-6 shadow-card">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-error-light">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-error" aria-hidden="true">
+                  <path d="M10 7v4m0 2h.01M17 10a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <div>
+                <h2 className="font-[family-name:var(--font-outfit)] text-lg font-bold text-error">
+                  Không tải được dữ liệu
+                </h2>
+                <p className="mt-1 text-sm text-text-secondary">{error}</p>
+                <button
+                  type="button"
+                  onClick={fetchAttempts}
+                  className="mt-4 inline-flex h-10 cursor-pointer items-center justify-center rounded-lg bg-primary px-4 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                >
+                  Thử lại
+                </button>
+              </div>
+            </div>
           </section>
         )}
 
+        {/* ── Empty State ── */}
         {!loading && !error && attempts.length === 0 && (
-          <section className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-            <h2 className="text-lg font-bold text-slate-900">Chưa có lần làm bài nào</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600">
-              Sau khi bạn nộp bài, lịch sử làm bài của đề này sẽ xuất hiện ở đây.
-            </p>
+          <section className="rounded-xl border border-border bg-surface p-8 shadow-card">
+            <div className="flex flex-col items-center text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-background-alt">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-text-muted" aria-hidden="true">
+                  <path d="M9 5h6M9 9h6M9 13h4M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <h2 className="mt-4 font-[family-name:var(--font-outfit)] text-lg font-bold text-text-primary">
+                Chưa có lần làm bài nào
+              </h2>
+              <p className="mt-2 max-w-sm text-sm text-text-secondary">
+                Sau khi bạn nộp bài, lịch sử làm bài của đề này sẽ xuất hiện ở đây.
+              </p>
+            </div>
           </section>
         )}
-        
 
-
+        {/* ── Data Loaded ── */}
         {!loading && !error && attempts.length > 0 && (
           <>
-              <section className="grid gap-6 md:grid-cols-3">
-              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                  Lần làm gần nhất
-                </p>
-                <p className="mt-3 text-3xl font-bold text-slate-900">
+            {/* Stats Cards */}
+            <section className="grid gap-4 md:grid-cols-3">
+              {/* Latest attempt */}
+              <div className="rounded-xl border border-border border-t-[3px] border-t-primary bg-surface p-5 shadow-card">
+                <div className="flex items-center gap-2">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-text-muted" aria-hidden="true">
+                    <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" />
+                    <path d="M8 5v3l2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <p className="text-xs font-semibold text-text-secondary">
+                    Lần làm gần nhất
+                  </p>
+                </div>
+                <p className="mt-2 text-2xl font-bold text-text-primary">
                   {latestAttempt?.score}/10
                 </p>
-                <p className="mt-1.5 text-sm font-medium text-slate-500">
+                <p className="mt-1 text-sm text-text-secondary">
                   {latestAttempt ? formatSubmittedAt(latestAttempt.submittedAt) : 'Chưa có dữ liệu'}
                 </p>
                 {latestAttempt && (
                   <Link
                     href={`/attempts/${latestAttempt.id}`}
-                    className="mt-5 inline-flex text-sm font-bold text-primary transition-colors hover:text-primary-hover"
+                    className="mt-4 inline-flex cursor-pointer items-center gap-1 text-sm font-semibold text-primary transition-colors duration-200 hover:text-primary-hover"
                   >
-                    Xem chi tiết →
+                    Xem chi tiết
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
                   </Link>
                 )}
               </div>
 
-              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                  Điểm cao nhất
-                </p>
-                <p className="mt-3 text-3xl font-bold text-emerald-600">
+              {/* Best attempt */}
+              <div className="rounded-xl border border-border border-t-[3px] border-t-success bg-surface p-5 shadow-card">
+                <div className="flex items-center gap-2">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-text-muted" aria-hidden="true">
+                    <path d="M8 2l2 4 4 .5-3 3 .5 4L8 12l-3.5 1.5.5-4-3-3L6 6l2-4z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <p className="text-xs font-semibold text-text-secondary">
+                    Điểm cao nhất
+                  </p>
+                </div>
+                <p className="mt-2 text-2xl font-bold text-success">
                   {bestAttempt?.score}/10
                 </p>
-                <p className="mt-1.5 text-sm font-medium text-slate-500">
+                <p className="mt-1 text-sm text-text-secondary">
                   {bestAttempt
                     ? `${bestAttempt.correctCount}/${bestAttempt.totalQuestions} câu đúng`
                     : 'Chưa có dữ liệu'}
@@ -196,32 +270,44 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
                 {bestAttempt && (
                   <Link
                     href={`/attempts/${bestAttempt.id}`}
-                    className="mt-5 inline-flex text-sm font-bold text-primary transition-colors hover:text-primary-hover"
+                    className="mt-4 inline-flex cursor-pointer items-center gap-1 text-sm font-semibold text-primary transition-colors duration-200 hover:text-primary-hover"
                   >
-                    Xem bài tốt nhất →
+                    Xem bài tốt nhất
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
                   </Link>
                 )}
               </div>
 
-              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                  Số lần làm
-                </p>
-                <p className="mt-3 text-3xl font-bold text-slate-900">
+              {/* Total attempts */}
+              <div className="rounded-xl border border-border border-t-[3px] border-t-text-secondary bg-surface p-5 shadow-card">
+                <div className="flex items-center gap-2">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-text-muted" aria-hidden="true">
+                    <path d="M3 4h10M3 8h10M3 12h6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                  <p className="text-xs font-semibold text-text-secondary">
+                    Số lần làm
+                  </p>
+                </div>
+                <p className="mt-2 text-2xl font-bold text-text-primary">
                   {attempts.length}
                 </p>
-                <p className="mt-1.5 text-sm font-medium text-slate-500">
+                <p className="mt-1 text-sm text-text-secondary">
                   Điểm trung bình {averageScore.toFixed(1)}/10
                 </p>
               </div>
             </section>
 
-            <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-              <div className="border-b border-slate-100 px-6 py-5">
-                <h2 className="text-lg font-bold text-slate-900">Danh sách lần làm</h2>
+            {/* Attempt List */}
+            <section className="overflow-hidden rounded-xl border border-border bg-surface shadow-card">
+              <div className="border-b border-border px-5 py-4">
+                <h2 className="font-[family-name:var(--font-outfit)] text-lg font-bold text-text-primary">
+                  Danh sách lần làm
+                </h2>
               </div>
 
-              <div className="divide-y divide-slate-100">
+              <div className="divide-y divide-border">
                 {attempts.map((attempt, index) => {
                   const accuracy = Math.round(
                     (attempt.correctCount / attempt.totalQuestions) * 100,
@@ -230,27 +316,27 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
                   return (
                     <article
                       key={attempt.id}
-                      className="grid gap-6 px-6 py-6 md:grid-cols-[1fr_auto] md:items-center"
+                      className="grid gap-4 px-5 py-4 transition-colors duration-200 hover:bg-background-alt md:grid-cols-[1fr_auto] md:items-center"
                     >
                       <div>
-                        <p className="text-base font-bold text-slate-900">
+                        <p className="text-sm font-semibold text-text-primary">
                           Lần làm #{attempts.length - index}
                         </p>
-                        <p className="mt-1.5 text-sm font-medium text-slate-500">
+                        <p className="mt-1 text-sm text-text-secondary">
                           {formatSubmittedAt(attempt.submittedAt)}
                         </p>
 
-                        <div className="mt-4 flex flex-wrap gap-2 text-xs font-bold tracking-wider">
-                          <span className="inline-flex rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 uppercase text-slate-600">
+                        <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold">
+                          <span className="rounded-md border border-border bg-background px-2.5 py-1 text-text-secondary">
                             Thời gian: {formatDurationSeconds(attempt.durationSeconds)}
                           </span>
-                          <span className="inline-flex rounded-md border border-blue-200 bg-blue-50 px-3 py-1.5 uppercase text-blue-700">
+                          <span className="rounded-md border border-primary-light bg-primary-50 px-2.5 py-1 text-primary">
                             {attempt.score}/10 điểm
                           </span>
-                          <span className="inline-flex rounded-md border border-emerald-200 bg-emerald-50 px-3 py-1.5 uppercase text-emerald-700">
+                          <span className="rounded-md border border-success-border bg-success-light px-2.5 py-1 text-success">
                             {attempt.correctCount}/{attempt.totalQuestions} câu đúng
                           </span>
-                          <span className="inline-flex rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 uppercase text-slate-600">
+                          <span className="rounded-md border border-border bg-background px-2.5 py-1 text-text-secondary">
                             {accuracy}% chính xác
                           </span>
                         </div>
@@ -258,7 +344,7 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
 
                       <Link
                         href={`/attempts/${attempt.id}`}
-                        className="inline-flex h-10 items-center justify-center rounded-xl bg-primary px-5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                        className="inline-flex h-10 cursor-pointer items-center justify-center rounded-lg bg-primary px-4 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                       >
                         Xem chi tiết
                       </Link>

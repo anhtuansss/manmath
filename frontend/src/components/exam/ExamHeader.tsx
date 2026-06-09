@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Logo } from './Logo';
 import { TimerDisplay } from './TimerDisplay';
 
 type ExamHeaderProps = {
@@ -17,40 +18,56 @@ export function ExamHeader({
   questionCount,
 }: ExamHeaderProps) {
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur-sm">
+    <header className="sticky top-0 z-50 border-b border-border bg-surface/95 backdrop-blur-sm shadow-header">
       <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <div className="flex min-w-0 items-center gap-4">
           <Link
             href="/"
             aria-label="Về trang chủ ManMath"
-            className="flex shrink-0 items-center gap-2 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            className="flex shrink-0 items-center gap-2 rounded-lg transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-base font-bold text-white shadow-sm ring-1 ring-primary/20">
-              M
-            </span>
-            <span className="hidden text-sm font-bold text-slate-900 sm:inline">
+            <Logo className="h-9 w-9" />
+            <span className="hidden text-sm font-semibold text-text-primary sm:inline">
               ManMath
             </span>
           </Link>
 
-          <div className="min-w-0 border-l border-slate-200 pl-4">
-            <p className="text-xs font-medium text-slate-500">
+          <div className="min-w-0 border-l border-border pl-4">
+            <p className="text-xs font-medium text-text-secondary">
               {questionCount} câu hỏi
             </p>
-            <h1 className="mt-0.5 truncate text-sm font-bold text-slate-900 sm:text-base">
+            <h1 className="mt-0.5 truncate font-[family-name:var(--font-outfit)] text-sm font-semibold text-text-primary sm:text-base">
               {examTitle ?? 'Đề luyện thi'}
             </h1>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 lg:justify-end">
+        <div className="flex flex-wrap items-center gap-2 lg:justify-end">
           <TimerDisplay remainingSeconds={remainingSeconds} />
           <button
             type="button"
             onClick={onSubmit}
             disabled={isTimeUp}
-            className="inline-flex h-10 items-center justify-center rounded-lg bg-primary px-5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-600 disabled:shadow-none"
+            className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:bg-primary-hover disabled:cursor-not-allowed disabled:bg-background-alt disabled:text-text-muted"
           >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+              className="shrink-0"
+            >
+              <path
+                d="M13.354 2.646a.5.5 0 0 1 .058.638l-.058.07L6.707 10l-3-3a.5.5 0 0 1 .638-.765l.07.058L7 8.586l6.293-6.293a.5.5 0 0 1 .708 0l-.647.353Z"
+                fill="currentColor"
+              />
+              <path
+                d="M14.5 8a.5.5 0 0 1 .492.41L15 8.5V12a3 3 0 0 1-2.824 2.995L12 15H4a3 3 0 0 1-2.995-2.824L1 12V4a3 3 0 0 1 2.824-2.995L4 1h5.5a.5.5 0 0 1 .09.992L9.5 2H4a2 2 0 0 0-1.995 1.85L2 4v8a2 2 0 0 0 1.85 1.995L4 14h8a2 2 0 0 0 1.995-1.85L14 12V8.5a.5.5 0 0 1 .5-.5Z"
+                fill="currentColor"
+              />
+            </svg>
             Nộp bài
           </button>
         </div>

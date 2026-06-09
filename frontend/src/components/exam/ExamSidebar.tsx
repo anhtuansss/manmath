@@ -23,31 +23,33 @@ export function ExamSidebar({
 
   return (
     <aside className="lg:sticky lg:top-24 lg:self-start">
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="rounded-xl border border-border bg-surface p-5 shadow-card">
         <div>
-          <h3 className="text-sm font-bold text-slate-900">Câu hỏi</h3>
-          <p className="mt-1 text-xs font-medium text-slate-500">
+          <h3 className="font-[family-name:var(--font-outfit)] text-sm font-semibold text-text-primary">
+            Câu hỏi
+          </h3>
+          <p className="mt-1 text-xs font-medium text-text-secondary">
             Điều hướng nhanh trong đề
           </p>
         </div>
 
-        <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+        <div className="mt-4 rounded-lg border border-border bg-background p-3">
           <div className="flex items-center justify-between text-xs">
-            <span className="font-medium text-slate-500">Đã làm</span>
-            <span className="font-bold text-slate-900">
+            <span className="font-medium text-text-secondary">Đã làm</span>
+            <span className="font-semibold text-text-primary">
               {answeredCount}/{totalQuestions}
             </span>
           </div>
-          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200">
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-background-alt">
             <div
-              className="h-full rounded-full bg-primary transition-all duration-300"
+              className="h-full rounded-full bg-primary transition-all duration-200"
               style={{ width: `${progressPercentage}%` }}
             />
           </div>
         </div>
 
-        <div className="mt-5 overflow-x-auto pb-2">
-          <div className="grid w-max grid-cols-[repeat(5,2.25rem)] gap-2 lg:grid-cols-[repeat(6,2.25rem)] xl:grid-cols-[repeat(5,2.25rem)]">
+        <div className="mt-4">
+          <div className="grid grid-cols-5 gap-2">
             {questions?.map((question, index) => {
               const isAnswered = answers[question.id] !== undefined;
               const isCurrent = question.id === currentQuestionId;
@@ -59,14 +61,14 @@ export function ExamSidebar({
                   type="button"
                   onClick={() => onQuestionClick(question.id)}
                   className={`
-                    flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border text-xs font-bold transition-colors
+                    flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border text-xs font-semibold transition-all duration-200
                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2
                     ${
                       isCurrent
-                        ? 'border-primary bg-primary text-white shadow-sm ring-1 ring-primary/30'
+                        ? 'border-primary bg-primary text-white shadow-ring-primary'
                         : isAnswered
-                          ? 'border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                          : 'border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:text-primary'
+                          ? 'border-success-border bg-success-light text-success hover:border-success'
+                          : 'border-border bg-surface text-text-secondary hover:border-primary/40 hover:bg-primary/5 hover:text-primary'
                     }
                   `}
                 >
@@ -77,25 +79,39 @@ export function ExamSidebar({
           </div>
         </div>
 
-        <div className="mt-5 grid gap-2.5 border-t border-slate-100 pt-5 text-xs">
+        <div className="mt-4 grid gap-2 border-t border-border pt-4 text-xs">
           <div className="flex items-center gap-2">
-            <div className="h-3.5 w-3.5 rounded-[4px] border border-primary bg-primary" />
-            <span className="font-medium text-slate-600">Câu hiện tại</span>
+            <div className="h-3 w-3 rounded-full bg-primary" />
+            <span className="font-medium text-text-secondary">Câu hiện tại</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-3.5 w-3.5 rounded-[4px] border border-emerald-300 bg-emerald-50" />
-            <span className="font-medium text-slate-600">Đã trả lời</span>
+            <div className="h-3 w-3 rounded-full border border-success-border bg-success-light" />
+            <span className="font-medium text-text-secondary">Đã trả lời</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="h-3.5 w-3.5 rounded-[4px] border border-slate-200 bg-white" />
-            <span className="font-medium text-slate-600">Chưa trả lời</span>
+            <div className="h-3 w-3 rounded-full border border-border bg-surface" />
+            <span className="font-medium text-text-secondary">Chưa trả lời</span>
           </div>
         </div>
 
         {isTimeUp && (
-          <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-center text-sm font-bold text-red-700 shadow-sm">
+          <div className="mt-3 flex items-center justify-center gap-2 rounded-lg border border-error-border bg-error-light px-3 py-2 text-sm font-semibold text-error">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+              className="shrink-0"
+            >
+              <path
+                d="M8 1.5a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13ZM8 3a5 5 0 1 0 0 10A5 5 0 0 0 8 3Zm0 7a.75.75 0 1 1 0 1.5.75.75 0 0 1 0-1.5ZM8 4.5a.75.75 0 0 1 .743.648L8.75 5.25v3.5a.75.75 0 0 1-1.493.102L7.25 8.75v-3.5A.75.75 0 0 1 8 4.5Z"
+                fill="currentColor"
+              />
+            </svg>
             Đã hết giờ
-          </p>
+          </div>
         )}
       </div>
     </aside>

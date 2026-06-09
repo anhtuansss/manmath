@@ -28,23 +28,23 @@ export function AnswerOptions({
             disabled={isTimeUp}
             onClick={() => onSelectAnswer(question.id, choiceIndex)}
             className={`
-              group flex w-full items-start gap-4 rounded-xl border p-4 text-left transition-all
+              group flex w-full cursor-pointer items-start gap-4 rounded-xl border p-4 text-left transition-all duration-200
               focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2
-              disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-500
+              disabled:cursor-not-allowed disabled:border-border disabled:bg-background-alt disabled:text-text-muted
               ${
                 isSelected
-                  ? 'border-primary bg-blue-50/50 text-slate-900 ring-1 ring-primary'
-                  : 'border-slate-200 bg-white text-slate-900 hover:border-blue-300 hover:bg-slate-50/50'
+                  ? 'border-primary bg-primary-50 text-text-primary shadow-ring-primary'
+                  : 'border-border bg-surface text-text-primary hover:border-border-hover hover:bg-background-alt'
               }
             `}
           >
             <span
               className={`
-                flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-sm font-bold transition-colors
+                flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-sm font-semibold transition-all duration-200
                 ${
                   isSelected
-                    ? 'border-primary bg-primary text-white shadow-sm'
-                    : 'border-slate-200 bg-slate-50 text-slate-500 group-hover:border-blue-300 group-hover:bg-white group-hover:text-primary'
+                    ? 'border-primary bg-primary text-white'
+                    : 'border-border bg-background text-text-secondary group-hover:border-primary/40 group-hover:text-primary'
                 }
               `}
               aria-hidden="true"
@@ -54,7 +54,7 @@ export function AnswerOptions({
 
             <MathText
               text={choice}
-              className="min-w-0 flex-1 pt-0.5 text-base leading-7"
+              className="min-w-0 flex-1 pt-1 text-base leading-7"
             />
           </button>
         );

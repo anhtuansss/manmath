@@ -1,20 +1,20 @@
+import React from 'react';
+
 type LogoProps = {
   className?: string;
 };
 
-export function Logo({ className = 'h-10 w-10' }: LogoProps) {
+export function Logo({ className = "h-10 w-10" }: LogoProps) {
   return (
-    <div
-      className={`flex shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-sm ring-1 ring-primary/20 ${className}`}
-    >
-      <svg
-        width="56%"
-        height="56%"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
+    <div className={`flex shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-card ${className}`}>
+      <svg 
+        width="56%" 
+        height="56%" 
+        viewBox="0 0 24 24" 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="2.5" 
+        strokeLinecap="round" 
         strokeLinejoin="round"
         aria-hidden="true"
       >
