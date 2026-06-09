@@ -36,6 +36,7 @@ export type Answers = Record<number, number>;
 export type SubmitExamRequestDto = {
   examId?: string;
   answers: Answers;
+  durationSeconds?: number;
 };
 
 export type SubmitRequest = SubmitExamRequestDto;
@@ -77,6 +78,38 @@ export type ExamListItem = {
 
 // Dữ liệu API của danh sách đề không có href; frontend tự gắn href để điều hướng.
 export type ExamListApiItem = ExamSummaryDto;
+
+// Dữ liệu API của danh sách số lần làm
+export type ExamAttemptSummaryDto = {
+  id: string;
+  examId: string;
+  score: number;
+  correctCount: number;
+  totalQuestions: number;
+  unansweredCount: number;
+  durationSeconds: number | null;
+  submittedAt: string;
+};
+
+// Dữ liệu API của từng câu trả lời
+export type AttemptAnswerDetailDto = {
+  questionId: number;
+  question: string;
+  options: string[];
+  selectedOptionIndex: number | null;
+  correctOptionIndex: number;
+  isCorrect: boolean;
+};
+
+export type ExamAttemptDetailDto = {
+  attempt: ExamAttemptSummaryDto;
+  exam: {
+    id: string;
+    title: string;
+    durationMinutes: number;
+  };
+  answers: AttemptAnswerDetailDto[];
+};
 
 // Model lưu tạm trong sessionStorage sau khi nộp bài, không phải API DTO.
 export type ExamResultSession = {

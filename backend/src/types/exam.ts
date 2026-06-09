@@ -36,3 +36,22 @@ export type ExamAttemptSummaryDto = {
   durationSeconds: number | null;
   submittedAt: string;
 };
+
+export type AttemptAnswerDetailDto = {
+  questionId: number;
+  question: string;
+  options: string[];
+  selectedOptionIndex: number | null;
+  correctOptionIndex: number;
+  isCorrect: boolean;
+};
+
+export type ExamAttemptDetailDto = {
+  attempt: ExamAttemptSummaryDto;
+  exam: {
+    id: string;
+    title: string;
+    durationMinutes: number;
+  };
+  answers: AttemptAnswerDetailDto[];
+};

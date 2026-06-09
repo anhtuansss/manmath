@@ -187,7 +187,14 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
     if (!exam) return;
 
     try {
-      const payload: SubmitExamRequestDto = { examId: exam.id, answers };
+      const totalDurationSeconds = exam.durationMinutes * 60;
+      const durationSeconds = Math.max(totalDurationSeconds - remainingSeconds, 0);
+
+      const payload: SubmitExamRequestDto = {
+        examId: exam.id,
+        answers,
+        durationSeconds,
+      };
       const response = await fetch(`${API_BASE_URL}/api/exam/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

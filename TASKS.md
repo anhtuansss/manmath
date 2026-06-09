@@ -90,13 +90,15 @@
 
 * [x] Lưu lịch sử làm bài
 * [x] Lưu từng đáp án đã chọn
-* [ ] Lưu thời gian làm bài
+* [x] Lưu thời gian làm bài
 * [x] Lưu điểm số
 
 ### Result Tracking
 
 * [x] API summary lịch sử làm bài theo đề
-* [ ] Xem lịch sử làm bài
+* [x] API chi tiết một lần làm bài
+* [x] Xem lịch sử làm bài
+* [x] Xem chi tiết một lần làm bài
 * [ ] Xem lần làm gần nhất
 * [ ] Xem điểm cao nhất
 * [ ] Thống kê số lần làm
@@ -202,8 +204,11 @@
 * [x] Tạo schema Attempt / AttemptAnswer
 * [x] Lưu attempt khi submit bài
 * [x] Giữ response submit không đổi
-* [ ] Lưu thời gian làm bài
+* [x] Lưu thời gian làm bài
 * [x] Tạo API đọc lịch sử làm bài
+* [x] Tạo API chi tiết một lần làm bài
+* [x] Tạo giao diện xem lịch sử làm bài
+* [x] Tạo giao diện xem chi tiết một lần làm bài
 
 ### Không làm lúc này
 

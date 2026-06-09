@@ -58,6 +58,13 @@ export function ExamCard({ exam, variant = 'featured' }: ExamCardProps) {
             >
               Vào đề
             </Link>
+            <Link
+              href={`/exam/${exam.id}/attempts`}
+              aria-label={`Xem lịch sử làm bài ${exam.title}`}
+              className="inline-flex h-9 items-center justify-center rounded-lg border border-[#E2E8F0] bg-white px-3 text-sm font-semibold text-[#64748B] transition-colors hover:bg-[#F8FAFC] hover:text-[#0F172A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3882F6] focus-visible:ring-offset-2"
+            >
+              Lịch sử
+            </Link>
           </div>
         </div>
       </article>

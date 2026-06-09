@@ -4,6 +4,7 @@ import {
   mapExamRecordToSummaryDto,
 } from '../lib/examMapper';
 import type {
+  ExamAttemptDetailDto,
   ExamAttemptSummaryDto,
   ExamDetailDto,
   ExamSummaryDto,
@@ -12,6 +13,7 @@ import type {
 export type SubmitExamRequestDto = {
   examId?: string;
   answers?: Record<number, number>;
+  durationSeconds?: number;
 };
 
 export type SubmitExamResultDto = {
@@ -193,6 +195,94 @@ export const getExamAttemptsByExamId = async (
   }));
 };
 
+// Lấy chi tiết một lần thi theo ID, bao gồm cả thông tin đề thi và câu trả lời đã chọn
+export const getAttemptDetailById = async (
+  attemptId: string,
+): Promise<ExamAttemptDetailDto | null> => {
+  const attemptRecord = await prisma.attempt.findUnique({
+    where: {
+      id: attemptId,
+    },
+    select: {
+      id: true,
+      examId: true,
+      score: true,
+      correctCount: true,
+      totalQuestions: true,
+      unansweredCount: true,
+      durationSeconds: true,
+      submittedAt: true,
+      exam: {
+        select: {
+          id: true,
+          title: true,
+          durationMinutes: true,
+          questions: {
+            orderBy: {
+              order: 'asc',
+            },
+            select: {
+              id: true,
+              question: true,
+              options: true,
+            },
+          },
+        },
+      },
+      answers: {
+        select: {
+          questionId: true,
+          selectedOptionIndex: true,
+          correctOptionIndex: true,
+          isCorrect: true,
+        },
+      },
+    },
+  });
+
+  if (!attemptRecord) {
+    return null;
+  }
+
+  const answerMap = new Map(
+    attemptRecord.answers.map((answer) => [answer.questionId, answer]),
+  );
+
+  return {
+    attempt: {
+      id: attemptRecord.id,
+      examId: attemptRecord.examId,
+      score: attemptRecord.score,
+      correctCount: attemptRecord.correctCount,
+      totalQuestions: attemptRecord.totalQuestions,
+      unansweredCount: attemptRecord.unansweredCount,
+      durationSeconds: attemptRecord.durationSeconds,
+      submittedAt: attemptRecord.submittedAt.toISOString(),
+    },
+    exam: {
+      id: attemptRecord.exam.id,
+      title: attemptRecord.exam.title,
+      durationMinutes: attemptRecord.exam.durationMinutes,
+    },
+    answers: attemptRecord.exam.questions.flatMap((question) => {
+      const answer = answerMap.get(question.id);
+
+      if (!answer) {
+        return [];
+      }
+
+      return {
+        questionId: question.id,
+        question: question.question,
+        options: question.options,
+        selectedOptionIndex: answer.selectedOptionIndex,
+        correctOptionIndex: answer.correctOptionIndex,
+        isCorrect: answer.isCorrect,
+      };
+    }),
+  };
+};
+
 // Xử lý nộp bài thi, tính điểm và trả về kết quả
 export const submitExam = async (
   payload: unknown,
@@ -205,13 +295,27 @@ export const submitExam = async (
     };
   }
 
-  const { examId, answers } = payload as Partial<SubmitExamRequestDto>;
+  const { examId, answers, durationSeconds } =
+  payload as Partial<SubmitExamRequestDto>;
 
   if (typeof examId !== 'string' || examId.trim().length === 0) {
     return {
       ok: false,
       statusCode: 400,
       message: 'Thieu examId hop le',
+    };
+  }
+
+  if (
+    durationSeconds !== undefined &&
+    (typeof durationSeconds !== 'number' ||
+      !Number.isInteger(durationSeconds) ||
+      durationSeconds < 0)
+  ) {
+    return {
+      ok: false,
+      statusCode: 400,
+      message: 'Thoi gian lam bai khong hop le',
     };
   }
 
@@ -259,6 +363,7 @@ export const submitExam = async (
       correctCount,
       totalQuestions,
       unansweredCount,
+      durationSeconds: durationSeconds ?? null,
       answers: {
         create: exam.questions.map((question) => {
           const selectedOptionIndex = validatedAnswers.answers[question.id];

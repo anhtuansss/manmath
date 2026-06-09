@@ -276,6 +276,12 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
               Làm lại đề
             </button>
             <Link
+              href={`/exam/${examId}/attempts`}
+              className="inline-flex h-10 items-center justify-center rounded-lg border border-[#E2E8F0] bg-white px-4 text-sm font-semibold text-[#0F172A] transition-colors hover:bg-[#F8FAFC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3882F6] focus-visible:ring-offset-2"
+            >
+              Xem lịch sử
+            </Link>
+            <Link
               href="/"
               className="inline-flex h-10 items-center justify-center rounded-lg bg-[#3882F6] px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3882F6] focus-visible:ring-offset-2"
             >

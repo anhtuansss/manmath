@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
 import {
+  getAttemptDetailById,
   getExamAttemptsByExamId,
   getExamDetailById,
   getExamSummaries,
@@ -66,6 +67,27 @@ export const getExamAttempts = async (
   }
 };
 
+// Lấy chi tiết một lần thi theo ID, bao gồm cả thông tin đề thi và câu trả lời đã chọn
+export const getAttemptDetail = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const attemptDetail = await getAttemptDetailById(req.params.attemptId);
+
+    if (!attemptDetail) {
+      res.status(404).json({ message: 'Khong tim thay lan lam bai' });
+      return;
+    }
+
+    res.json(attemptDetail);
+  } catch (error) {
+    console.error('Failed to load attempt detail:', error);
+    res.status(500).json({ message: 'Khong the lay chi tiet lan lam bai' });
+  }
+};
+
+// Xử lý nộp bài thi, tính điểm và trả về kết quả
 export const submitExamController = async (
   req: Request,
   res: Response,
