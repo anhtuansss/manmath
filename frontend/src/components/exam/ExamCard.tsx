@@ -31,37 +31,51 @@ const getExamMeta = (exam: ExamListItem) => {
 export function ExamCard({ exam, variant = 'featured' }: ExamCardProps) {
   if (variant === 'compact') {
     return (
-      <article className="group bg-white px-4 py-3 transition-colors hover:bg-[#F8FAFC]">
+      <article className="group cursor-pointer bg-surface px-5 py-4 transition-colors duration-200 hover:bg-background-alt">
         <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
           <div className="min-w-0">
-            <p className="text-xs font-medium text-[#64748B]">{getExamMeta(exam)}</p>
-            <h3 className="mt-1 text-sm font-semibold leading-5 text-[#0F172A] transition-colors group-hover:text-[#3882F6]">
+            <p className="text-xs font-medium text-accent">{getExamMeta(exam)}</p>
+            <h3 className="mt-1 text-sm font-semibold leading-5 text-text-primary transition-colors duration-200 group-hover:text-primary">
               {exam.title}
             </h3>
-            <div className="mt-2 flex flex-wrap gap-x-2 gap-y-1 text-xs font-medium text-[#64748B]">
-              <span>{exam.totalQuestions} câu</span>
-              <span aria-hidden="true">·</span>
-              <span>{exam.durationMinutes} phút</span>
-              <span aria-hidden="true">·</span>
-              <span>{difficultyLabels[exam.difficulty]}</span>
+            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-secondary">
+              <span className="inline-flex items-center gap-1">
+                {/* Questions icon */}
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-text-muted">
+                  <path d="M4.5 2h7a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 3 12.5v-9A1.5 1.5 0 0 1 4.5 2Z" stroke="currentColor" strokeWidth="1.2"/>
+                  <path d="M5.5 5.5h5M5.5 8h5M5.5 10.5h3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                </svg>
+                {exam.totalQuestions} câu
+              </span>
+              <span className="inline-flex items-center gap-1">
+                {/* Clock icon */}
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="text-text-muted">
+                  <circle cx="8" cy="8" r="5.5" stroke="currentColor" strokeWidth="1.2"/>
+                  <path d="M8 5v3l2 1.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                {exam.durationMinutes} phút
+              </span>
+              <span className="inline-flex items-center gap-1">
+                {difficultyLabels[exam.difficulty]}
+              </span>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2 md:justify-end">
-            <span className="rounded-md border border-[#E2E8F0] bg-[#F8FAFC] px-2.5 py-1 text-xs font-semibold text-[#64748B]">
+            <span className="rounded-full border border-border bg-background px-2.5 py-1 text-xs font-semibold text-text-secondary">
               {exam.statusLabel}
             </span>
             <Link
               href={exam.href}
               aria-label={`Vào đề ${exam.title}`}
-              className="inline-flex h-9 items-center justify-center rounded-lg border border-[#3882F6] bg-white px-3 text-sm font-semibold text-[#3882F6] transition-colors hover:bg-blue-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3882F6] focus-visible:ring-offset-2"
+              className="inline-flex h-9 cursor-pointer items-center justify-center rounded-lg bg-primary px-4 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
               Vào đề
             </Link>
             <Link
               href={`/exam/${exam.id}/attempts`}
               aria-label={`Xem lịch sử làm bài ${exam.title}`}
-              className="inline-flex h-9 items-center justify-center rounded-lg border border-[#E2E8F0] bg-white px-3 text-sm font-semibold text-[#64748B] transition-colors hover:bg-[#F8FAFC] hover:text-[#0F172A] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3882F6] focus-visible:ring-offset-2"
+              className="inline-flex h-9 cursor-pointer items-center justify-center rounded-lg border border-border bg-surface px-3 text-sm font-semibold text-text-secondary transition-colors duration-200 hover:bg-background-alt hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
               Lịch sử
             </Link>
@@ -72,48 +86,62 @@ export function ExamCard({ exam, variant = 'featured' }: ExamCardProps) {
   }
 
   return (
-    <article className="group flex min-h-[220px] flex-col rounded-xl border border-[#E2E8F0] bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-colors hover:border-[#3882F6]/70">
+    <article className="group flex min-h-[240px] cursor-pointer flex-col rounded-xl border border-border border-t-[3px] border-t-primary bg-surface p-5 shadow-card transition-all duration-200 hover:border-primary/30 hover:shadow-card-hover">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-xs font-medium text-[#64748B]">{getExamMeta(exam)}</p>
-          <h3 className="mt-2 line-clamp-2 text-lg font-semibold leading-6 text-[#0F172A] transition-colors group-hover:text-[#3882F6]">
+          <p className="text-xs font-medium text-accent">{getExamMeta(exam)}</p>
+          <h3 className="mt-2 line-clamp-2 font-[family-name:var(--font-outfit)] text-lg font-semibold leading-6 text-text-primary transition-colors duration-200 group-hover:text-primary">
             {exam.title}
           </h3>
         </div>
         <span
-          className={`shrink-0 rounded-md border px-2.5 py-1 text-xs font-semibold ${difficultyStyles[exam.difficulty]}`}
+          className={`shrink-0 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${difficultyStyles[exam.difficulty]}`}
         >
           {difficultyLabels[exam.difficulty]}
         </span>
       </div>
 
-      <p className="mt-3 line-clamp-2 text-sm leading-6 text-[#64748B]">
+      <p className="mt-3 line-clamp-2 text-sm leading-6 text-text-secondary">
         {exam.description}
       </p>
 
-      <div className="mt-5 grid grid-cols-2 gap-3 border-t border-[#E2E8F0] pt-4 text-sm">
-        <div>
-          <p className="text-xs font-medium text-[#64748B]">Số câu</p>
-          <p className="mt-1 font-semibold text-[#0F172A]">
-            {exam.totalQuestions} câu
-          </p>
+      <div className="mt-5 grid grid-cols-2 gap-3 border-t border-border pt-4 text-sm">
+        <div className="flex items-center gap-2">
+          {/* Questions icon */}
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="shrink-0 text-text-muted">
+            <path d="M4.5 2h7a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 3 12.5v-9A1.5 1.5 0 0 1 4.5 2Z" stroke="currentColor" strokeWidth="1.2"/>
+            <path d="M5.5 5.5h5M5.5 8h5M5.5 10.5h3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+          </svg>
+          <div>
+            <p className="text-xs font-medium text-text-secondary">Số câu</p>
+            <p className="mt-0.5 font-semibold text-text-primary">
+              {exam.totalQuestions} câu
+            </p>
+          </div>
         </div>
-        <div>
-          <p className="text-xs font-medium text-[#64748B]">Thời lượng</p>
-          <p className="mt-1 font-semibold text-[#0F172A]">
-            {exam.durationMinutes} phút
-          </p>
+        <div className="flex items-center gap-2">
+          {/* Clock icon */}
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="shrink-0 text-text-muted">
+            <circle cx="8" cy="8" r="5.5" stroke="currentColor" strokeWidth="1.2"/>
+            <path d="M8 5v3l2 1.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          <div>
+            <p className="text-xs font-medium text-text-secondary">Thời lượng</p>
+            <p className="mt-0.5 font-semibold text-text-primary">
+              {exam.durationMinutes} phút
+            </p>
+          </div>
         </div>
       </div>
 
       <div className="mt-auto flex items-center justify-between gap-3 pt-5">
-        <span className="rounded-md border border-[#E2E8F0] bg-[#F8FAFC] px-2.5 py-1 text-xs font-semibold text-[#64748B]">
+        <span className="rounded-full border border-border bg-background px-2.5 py-1 text-xs font-semibold text-text-secondary">
           {exam.statusLabel}
         </span>
         <Link
           href={exam.href}
           aria-label={`Bắt đầu làm bài ${exam.title}`}
-          className="inline-flex h-10 items-center justify-center rounded-lg bg-[#3882F6] px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3882F6] focus-visible:ring-offset-2"
+          className="inline-flex h-10 cursor-pointer items-center justify-center rounded-lg bg-primary px-4 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         >
           Bắt đầu
         </Link>

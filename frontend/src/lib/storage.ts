@@ -11,10 +11,14 @@
  * frontend/src/components/exam/ExamResultClient.tsx
  * frontend/src/components/exam/types.ts
  */
-import type { Answers, ExamResultSession } from '../components/exam/types';
+import type { Answers, ExamResultSession, ExamDraftSession } from '../components/exam/types';
 
 export const getExamAnswersKey = (examId: string): string => {
-  return `exam-answers-${examId}`;
+  return `exam-answers-${examId}`; // Old key
+};
+
+export const getExamDraftKey = (examId: string): string => {
+  return `manmath:exam-draft:${examId}`; // New key
 };
 
 export const getExamResultKey = (examId: string): string => {
@@ -42,6 +46,35 @@ export const writeJsonStorage = (storage: Storage, key: string, value: unknown):
 
 export const removeStorageItem = (storage: Storage, key: string): void => {
   storage.removeItem(key);
+};
+
+export const readDraftStorage = (storage: Storage, examId: string): ExamDraftSession | null => {
+  // First try the new key
+  const draft = readJsonStorage<ExamDraftSession>(storage, getExamDraftKey(examId));
+  if (draft && draft.answers && typeof draft.remainingSeconds === 'number') {
+    return draft;
+  }
+  
+  // Fallback to old key for backward compatibility
+  const oldAnswers = readJsonStorage<Answers>(storage, getExamAnswersKey(examId));
+  if (oldAnswers && Object.keys(oldAnswers).length > 0) {
+    return {
+      answers: oldAnswers,
+      remainingSeconds: -1, // -1 signals that we need to fallback to full duration in the component
+      updatedAt: Date.now(),
+    };
+  }
+  
+  return null;
+};
+
+export const writeDraftStorage = (storage: Storage, examId: string, draft: ExamDraftSession): void => {
+  writeJsonStorage(storage, getExamDraftKey(examId), draft);
+};
+
+export const clearDraftStorage = (storage: Storage, examId: string): void => {
+  removeStorageItem(storage, getExamDraftKey(examId));
+  removeStorageItem(storage, getExamAnswersKey(examId)); // Clean up old key too
 };
 
 export const readAnswersStorage = (storage: Storage, examId: string): Answers | null => {

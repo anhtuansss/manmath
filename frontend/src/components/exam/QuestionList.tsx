@@ -22,17 +22,17 @@ export function QuestionList({
     totalQuestions > 0 ? (answeredCount / totalQuestions) * 100 : 0;
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+    <div className="space-y-8">
+      <div className="rounded-xl border border-border bg-surface px-4 py-3 shadow-card">
         <div className="mb-2 flex items-center justify-between gap-3 text-sm">
-          <span className="font-medium text-[#64748B]">Tiến độ làm bài</span>
-          <span className="font-semibold text-[#0F172A]">
+          <span className="font-medium text-text-secondary">Tiến độ làm bài</span>
+          <span className="font-semibold text-text-primary">
             {answeredCount}/{totalQuestions} câu
           </span>
         </div>
-        <div className="h-1.5 overflow-hidden rounded-full bg-slate-100">
+        <div className="h-2.5 overflow-hidden rounded-full bg-background-alt">
           <div
-            className="h-full rounded-full bg-[#3882F6] transition-all"
+            className="h-full rounded-full bg-primary transition-all duration-200"
             style={{ width: `${progressPercentage}%` }}
           />
         </div>
@@ -42,20 +42,38 @@ export function QuestionList({
         <article
           id={`question-${question.id}`}
           key={question.id}
-          className="scroll-mt-28 rounded-xl border border-[#E2E8F0] bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
+          className="scroll-mt-28 rounded-xl border border-border bg-surface shadow-card animate-fade-in"
         >
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E2E8F0] px-5 py-4 sm:px-7">
-            <div>
-              <p className="text-sm font-semibold text-[#0F172A]">
-                Câu {index + 1}
-              </p>
-              <p className="mt-0.5 text-xs font-medium text-[#64748B]">
-                {index + 1}/{totalQuestions}
-              </p>
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-4 sm:px-7">
+            <div className="flex items-center gap-3">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-50 text-sm font-semibold text-primary">
+                {index + 1}
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-text-primary">
+                  Câu {index + 1}
+                </p>
+                <p className="mt-0.5 text-xs font-medium text-text-secondary">
+                  {index + 1}/{totalQuestions}
+                </p>
+              </div>
             </div>
 
             {answers[question.id] !== undefined && (
-              <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-success-border bg-success-light px-2.5 py-1 text-xs font-semibold text-success">
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M13.354 4.646a.5.5 0 0 1 0 .708l-6.5 6.5a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L6.5 10.793l6.146-6.147a.5.5 0 0 1 .708 0Z"
+                    fill="currentColor"
+                  />
+                </svg>
                 Đã chọn đáp án
               </span>
             )}
@@ -65,7 +83,7 @@ export function QuestionList({
             <MathText
               as="p"
               text={question.question}
-              className="max-w-3xl text-base leading-8 text-[#0F172A] sm:text-lg"
+              className="max-w-3xl text-base leading-8 text-text-primary sm:text-lg sm:leading-9"
             />
 
             <div className="mt-7">

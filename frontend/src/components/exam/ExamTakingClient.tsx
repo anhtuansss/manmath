@@ -7,7 +7,7 @@
  *
  * Luồng dữ liệu:
  * GET /api/exams/:id -> hiển thị câu hỏi.
- * localStorage -> khôi phục/lưu nháp đáp án theo từng đề.
+ * localStorage -> khôi phục/lưu nháp đáp án và thời gian theo từng đề.
  * POST /api/exam/submit -> sessionStorage -> chuyển sang /exam/[id]/result.
  *
  * File liên quan:
@@ -17,7 +17,7 @@
  * frontend/src/lib/storage.ts
  * backend/server.ts
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ExamHeader } from './ExamHeader';
@@ -25,15 +25,17 @@ import { ExamSidebar } from './ExamSidebar';
 import { QuestionList } from './QuestionList';
 import { API_BASE_URL } from '../../config/api';
 import {
-  getExamAnswersKey,
+  clearDraftStorage,
   getExamResultKey,
-  readAnswersStorage,
+  readDraftStorage,
+  writeDraftStorage,
   writeJsonStorage,
 } from '../../lib/storage';
 
 import type {
   Answers,
   ExamDetailDto,
+  ExamDraftSession,
   ExamResultSession,
   SubmitExamRequestDto,
   SubmitExamResultDto,
@@ -50,14 +52,20 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
   const [error, setError] = useState<string | null>(null);
   const [remainingSeconds, setRemainingSeconds] = useState<number>(0);
   const [currentQuestionId, setCurrentQuestionId] = useState<number | null>(null);
+  
+  // Autosave UX states
+  const [draftSession, setDraftSession] = useState<ExamDraftSession | null>(null);
+  const [showDraftPrompt, setShowDraftPrompt] = useState(false);
+  const [isDraftResolved, setIsDraftResolved] = useState(false);
+
   const isTimeUp = remainingSeconds === 0;
   const router = useRouter();
 
-  // Khôi phục đáp án đã lưu nháp để người dùng có thể làm tiếp sau khi reload.
+  // Use a ref to access the latest answers inside the setInterval without triggering re-renders
+  const answersRef = useRef(answers);
   useEffect(() => {
-    const savedAnswers = readAnswersStorage(localStorage, examId);
-    setAnswers(savedAnswers ?? {});
-  }, [examId]);
+    answersRef.current = answers;
+  }, [answers]);
 
   /**
    * Tải chi tiết đề từ backend và reset state của màn làm bài theo examId hiện tại.
@@ -70,6 +78,7 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
         setExam(null);
         setRemainingSeconds(0);
         setCurrentQuestionId(null);
+        setIsDraftResolved(false);
 
         const response = await fetch(`${API_BASE_URL}/api/exams/${examId}`);
 
@@ -83,6 +92,16 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
 
         const data: ExamDetailDto = await response.json();
         setExam(data);
+
+        // Check for existing draft
+        const draft = readDraftStorage(localStorage, examId);
+        if (draft) {
+          setDraftSession(draft);
+          setShowDraftPrompt(true);
+        } else {
+          setRemainingSeconds(data.durationMinutes * 60);
+          setIsDraftResolved(true);
+        }
       } catch (fetchError) {
         setError(
           fetchError instanceof Error
@@ -97,15 +116,28 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
     fetchExam();
   }, [examId]);
 
-  useEffect(() => {
-    if (!exam) return;
+  const handleContinueDraft = () => {
+    if (!draftSession || !exam) return;
+    setAnswers(draftSession.answers);
+    const secs = draftSession.remainingSeconds;
+    // Handle old format where remainingSeconds was -1, or if timer ran out
+    setRemainingSeconds(secs > 0 ? secs : exam.durationMinutes * 60);
+    setShowDraftPrompt(false);
+    setIsDraftResolved(true);
+  };
 
+  const handleStartFresh = () => {
+    if (!exam) return;
+    clearDraftStorage(localStorage, examId);
+    setAnswers({});
     setRemainingSeconds(exam.durationMinutes * 60);
-  }, [exam]);
+    setShowDraftPrompt(false);
+    setIsDraftResolved(true);
+  };
 
   // Đồng hồ chạy ở client; khi về 0, các nút đáp án sẽ bị khóa.
   useEffect(() => {
-    if (!exam) return;
+    if (!exam || !isDraftResolved) return;
 
     const timerId = window.setInterval(() => {
       setRemainingSeconds((previousSeconds) => {
@@ -114,12 +146,21 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
           return 0;
         }
 
-        return previousSeconds - 1;
+        const nextSeconds = previousSeconds - 1;
+        
+        // Autosave timer and current answers
+        writeDraftStorage(localStorage, examId, {
+          answers: answersRef.current,
+          remainingSeconds: nextSeconds,
+          updatedAt: Date.now()
+        });
+
+        return nextSeconds;
       });
     }, 1000);
 
     return () => window.clearInterval(timerId);
-  }, [exam]);
+  }, [exam, isDraftResolved, examId]);
 
   /**
    * Đồng bộ currentQuestionId với vị trí cuộn để thanh bên làm nổi bật
@@ -176,12 +217,16 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
 
     setAnswers(newAnswers);
     // Lưu ngay mỗi lần chọn đáp án để reload không làm mất tiến độ.
-    writeJsonStorage(localStorage, getExamAnswersKey(examId), newAnswers);
+    writeDraftStorage(localStorage, examId, {
+      answers: newAnswers,
+      remainingSeconds,
+      updatedAt: Date.now()
+    });
   };
 
   /**
    * Nộp đáp án lên backend, lưu kết quả tạm vào sessionStorage,
-   * rồi chuyển người dùng sang trang kết quả riêng.
+   * xóa lưu nháp localStorage, rồi chuyển người dùng sang trang kết quả.
    */
   const handleSubmit = async () => {
     if (!exam) return;
@@ -216,6 +261,9 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
         exam,
       };
 
+      // Xóa nháp khi nộp bài thành công
+      clearDraftStorage(localStorage, examId);
+
       writeJsonStorage(sessionStorage, getExamResultKey(examId), resultSession);
       router.push(`/exam/${examId}/result`);
     } catch (submitError) {
@@ -232,27 +280,65 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
 
   if (loading) {
     return (
-      <div className="min-h-[100dvh] bg-[#F8FAFC] text-[#0F172A]">
-        <div className="border-b border-[#E2E8F0] bg-white">
+      <div className="min-h-[100dvh] bg-background text-text-primary">
+        <div className="border-b border-border bg-surface shadow-header">
           <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-3">
-              <div className="h-9 w-9 animate-pulse rounded-xl bg-blue-100" />
-              <div>
-                <div className="h-4 w-24 animate-pulse rounded bg-slate-200" />
-                <div className="mt-2 h-3 w-40 animate-pulse rounded bg-slate-100" />
+            <div className="flex items-center gap-4">
+              <div className="h-9 w-9 animate-pulse rounded-xl bg-primary-light" />
+              <div className="border-l border-border pl-4">
+                <div className="h-3 w-20 animate-pulse rounded bg-background-alt" />
+                <div className="mt-2 h-4 w-40 animate-pulse rounded bg-background-alt" />
               </div>
             </div>
-            <div className="h-10 w-28 animate-pulse rounded-lg bg-slate-100" />
+            <div className="flex items-center gap-2">
+              <div className="h-10 w-24 animate-pulse rounded-lg bg-background-alt" />
+              <div className="h-10 w-24 animate-pulse rounded-lg bg-primary-light" />
+            </div>
           </div>
         </div>
 
         <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
             <div className="space-y-6">
-              <div className="h-16 animate-pulse rounded-xl border border-[#E2E8F0] bg-white" />
-              <div className="h-96 animate-pulse rounded-xl border border-[#E2E8F0] bg-white" />
+              <div className="h-16 animate-pulse rounded-xl border border-border bg-surface shadow-card" />
+              <div className="animate-pulse rounded-xl border border-border bg-surface shadow-card">
+                <div className="border-b border-border px-5 py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-primary-light" />
+                    <div className="h-4 w-24 rounded bg-background-alt" />
+                  </div>
+                </div>
+                <div className="px-5 py-6">
+                  <div className="h-4 w-full rounded bg-background-alt" />
+                  <div className="mt-3 h-4 w-3/4 rounded bg-background-alt" />
+                  <div className="mt-6 space-y-3">
+                    <div className="h-14 rounded-xl border border-border bg-background" />
+                    <div className="h-14 rounded-xl border border-border bg-background" />
+                    <div className="h-14 rounded-xl border border-border bg-background" />
+                    <div className="h-14 rounded-xl border border-border bg-background" />
+                  </div>
+                </div>
+              </div>
+              <div className="h-72 animate-pulse rounded-xl border border-border bg-surface shadow-card" />
             </div>
-            <div className="h-80 animate-pulse rounded-xl border border-[#E2E8F0] bg-white" />
+            <div className="animate-pulse rounded-xl border border-border bg-surface shadow-card">
+              <div className="p-5">
+                <div className="h-4 w-16 rounded bg-background-alt" />
+                <div className="mt-1 h-3 w-32 rounded bg-background-alt" />
+                <div className="mt-4 rounded-lg border border-border bg-background p-3">
+                  <div className="h-3 w-full rounded bg-background-alt" />
+                  <div className="mt-2 h-1.5 rounded-full bg-background-alt" />
+                </div>
+                <div className="mt-4 grid grid-cols-5 gap-2">
+                  {Array.from({ length: 15 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-9 w-9 rounded-lg border border-border bg-background"
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </main>
       </div>
@@ -261,18 +347,31 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
 
   if (error) {
     return (
-      <div className="flex min-h-[100dvh] items-center justify-center bg-[#F8FAFC] px-4 text-[#0F172A]">
-        <div className="w-full max-w-md rounded-xl border border-red-200 bg-white p-6 text-center shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
-          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-sm font-bold text-red-700">
-            !
+      <div className="flex min-h-[100dvh] items-center justify-center bg-background px-4 text-text-primary">
+        <div className="w-full max-w-md rounded-xl border border-border bg-surface p-8 text-center shadow-card animate-fade-in">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-error-light">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+              className="text-error"
+            >
+              <path
+                d="M8 1.5a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13ZM8 3a5 5 0 1 0 0 10A5 5 0 0 0 8 3Zm0 7a.75.75 0 1 1 0 1.5.75.75 0 0 1 0-1.5ZM8 4.5a.75.75 0 0 1 .743.648L8.75 5.25v3.5a.75.75 0 0 1-1.493.102L7.25 8.75v-3.5A.75.75 0 0 1 8 4.5Z"
+                fill="currentColor"
+              />
+            </svg>
           </div>
-          <h1 className="mt-4 text-lg font-semibold text-[#0F172A]">
+          <h1 className="mt-4 font-[family-name:var(--font-outfit)] text-lg font-semibold text-text-primary">
             Không thể mở đề thi
           </h1>
-          <p className="mt-2 text-sm leading-6 text-red-600">{error}</p>
+          <p className="mt-2 text-sm leading-6 text-error">{error}</p>
           <Link
             href="/"
-            className="mt-5 inline-flex h-10 items-center justify-center rounded-lg bg-[#3882F6] px-4 text-sm font-semibold text-white transition-colors hover:bg-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3882F6] focus-visible:ring-offset-2"
+            className="mt-6 inline-flex h-10 cursor-pointer items-center justify-center rounded-lg bg-primary px-5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
             Quay về danh sách đề
           </Link>
@@ -282,7 +381,44 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-[#F8FAFC] text-[#0F172A]">
+    <div className="min-h-[100dvh] bg-background text-text-primary">
+      {showDraftPrompt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4 animate-fade-in">
+          <div className="w-full max-w-md rounded-xl border border-border bg-surface p-6 shadow-card">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 2.5v5l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.5"/>
+                </svg>
+              </div>
+              <h2 className="font-[family-name:var(--font-outfit)] text-lg font-bold text-text-primary">
+                Bạn có bài làm chưa hoàn thành
+              </h2>
+            </div>
+            <p className="mt-4 text-sm leading-6 text-text-secondary">
+              ManMath đã lưu tạm đáp án và thời gian còn lại của lần làm trước.
+            </p>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row-reverse sm:justify-start">
+              <button
+                type="button"
+                onClick={handleContinueDraft}
+                className="inline-flex h-10 cursor-pointer items-center justify-center rounded-lg bg-primary px-5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              >
+                Tiếp tục làm bài
+              </button>
+              <button
+                type="button"
+                onClick={handleStartFresh}
+                className="inline-flex h-10 cursor-pointer items-center justify-center rounded-lg border border-border bg-surface px-5 text-sm font-semibold text-text-secondary transition-colors duration-200 hover:bg-background-alt hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              >
+                Làm lại từ đầu
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <ExamHeader
         examTitle={exam?.examTitle}
         questionCount={exam?.questions.length ?? 0}

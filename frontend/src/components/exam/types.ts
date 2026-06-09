@@ -120,3 +120,10 @@ export type ExamResultSession = {
   submitResult: SubmitExamResultDto;
   exam?: ExamDetailDto;
 };
+
+// Model lưu nháp tiến độ làm bài trong localStorage
+export type ExamDraftSession = {
+  answers: Answers;
+  remainingSeconds: number;
+  updatedAt: number;
+};

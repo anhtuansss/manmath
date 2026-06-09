@@ -28,23 +28,23 @@ export function AnswerOptions({
             disabled={isTimeUp}
             onClick={() => onSelectAnswer(question.id, choiceIndex)}
             className={`
-              group flex w-full items-start gap-4 rounded-xl border p-4 text-left transition-colors
-              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3882F6] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F8FAFC]
-              disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-50 disabled:text-slate-500
+              group flex w-full cursor-pointer items-start gap-4 rounded-xl border p-4 text-left transition-all duration-200
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2
+              disabled:cursor-not-allowed disabled:border-border disabled:bg-background-alt disabled:text-text-muted
               ${
                 isSelected
-                  ? 'border-[#3882F6] bg-blue-50 text-[#0F172A] shadow-[0_0_0_1px_rgba(56,130,246,0.28)]'
-                  : 'border-[#E2E8F0] bg-white text-[#0F172A] hover:border-blue-200 hover:bg-[#F8FAFC]'
+                  ? 'border-primary bg-primary-50 text-text-primary shadow-ring-primary'
+                  : 'border-border bg-surface text-text-primary hover:border-border-hover hover:bg-background-alt'
               }
             `}
           >
             <span
               className={`
-                flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-sm font-semibold transition-colors
+                flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-sm font-semibold transition-all duration-200
                 ${
                   isSelected
-                    ? 'border-[#3882F6] bg-[#3882F6] text-white'
-                    : 'border-[#E2E8F0] bg-[#F8FAFC] text-[#64748B] group-hover:border-blue-200 group-hover:text-[#3882F6]'
+                    ? 'border-primary bg-primary text-white'
+                    : 'border-border bg-background text-text-secondary group-hover:border-primary/40 group-hover:text-primary'
                 }
               `}
               aria-hidden="true"
