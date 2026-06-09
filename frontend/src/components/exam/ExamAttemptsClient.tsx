@@ -69,6 +69,35 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
     void fetchAttempts();
   }, [examId]);
 
+  const latestAttempt = attempts[0] ?? null;
+
+  const bestAttempt = attempts.reduce<ExamAttemptSummaryDto | null>(
+    (best, attempt) => {
+      if (!best) return attempt;
+
+      if (attempt.score > best.score) {
+        return attempt;
+      }
+
+      if (
+        attempt.score === best.score &&
+        new Date(attempt.submittedAt).getTime() >
+          new Date(best.submittedAt).getTime()
+      ) {
+        return attempt;
+      }
+
+      return best;
+    },
+    null,
+  );
+
+  const averageScore =
+    attempts.length > 0
+      ? attempts.reduce((total, attempt) => total + attempt.score, 0) /
+        attempts.length
+      : 0;
+
   return (
     <main className="min-h-[100dvh] bg-[#F8FAFC] px-4 py-6 text-[#0F172A] sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
@@ -126,59 +155,119 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
             </p>
           </section>
         )}
+        
+
 
         {!loading && !error && attempts.length > 0 && (
-          <section className="overflow-hidden rounded-xl border border-[#E2E8F0] bg-white">
-            <div className="border-b border-[#E2E8F0] px-4 py-4">
-              <h2 className="text-lg font-semibold">Danh sách lần làm</h2>
-            </div>
-
-            <div className="divide-y divide-[#E2E8F0]">
-              {attempts.map((attempt, index) => {
-                const accuracy = Math.round(
-                  (attempt.correctCount / attempt.totalQuestions) * 100,
-                );
-
-                return (
-                  <article
-                    key={attempt.id}
-                    className="grid gap-4 px-4 py-4 md:grid-cols-[1fr_auto] md:items-center"
+          <>
+              <section className="grid gap-4 md:grid-cols-3">
+              <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
+                <p className="text-xs font-semibold text-[#64748B]">
+                  Lần làm gần nhất
+                </p>
+                <p className="mt-2 text-2xl font-semibold text-[#0F172A]">
+                  {latestAttempt?.score}/10
+                </p>
+                <p className="mt-1 text-sm text-[#64748B]">
+                  {latestAttempt ? formatSubmittedAt(latestAttempt.submittedAt) : 'Chưa có dữ liệu'}
+                </p>
+                {latestAttempt && (
+                  <Link
+                    href={`/attempts/${latestAttempt.id}`}
+                    className="mt-4 inline-flex text-sm font-semibold text-[#3882F6] hover:text-blue-700"
                   >
-                    <div>
-                      <p className="text-sm font-semibold">
-                        Lần làm #{attempts.length - index}
-                      </p>
-                      <p className="mt-1 text-sm text-[#64748B]">
-                        {formatSubmittedAt(attempt.submittedAt)}
-                      </p>
+                    Xem chi tiết
+                  </Link>
+                )}
+              </div>
 
-                      <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold">
-                        <span className="rounded-md border border-[#E2E8F0] bg-white px-2.5 py-1 text-[#64748B]">
-                          Thời gian: {formatDurationSeconds(attempt.durationSeconds)}
-                        </span>
-                        <span className="rounded-md border border-blue-200 bg-blue-50 px-2.5 py-1 text-blue-700">
-                          {attempt.score}/10 điểm
-                        </span>
-                        <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-emerald-700">
-                          {attempt.correctCount}/{attempt.totalQuestions} câu đúng
-                        </span>
-                        <span className="rounded-md border border-[#E2E8F0] bg-[#F8FAFC] px-2.5 py-1 text-[#64748B]">
-                          {accuracy}% chính xác
-                        </span>
-                      </div>
-                    </div>
+              <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
+                <p className="text-xs font-semibold text-[#64748B]">
+                  Điểm cao nhất
+                </p>
+                <p className="mt-2 text-2xl font-semibold text-emerald-600">
+                  {bestAttempt?.score}/10
+                </p>
+                <p className="mt-1 text-sm text-[#64748B]">
+                  {bestAttempt
+                    ? `${bestAttempt.correctCount}/${bestAttempt.totalQuestions} câu đúng`
+                    : 'Chưa có dữ liệu'}
+                </p>
+                {bestAttempt && (
+                  <Link
+                    href={`/attempts/${bestAttempt.id}`}
+                    className="mt-4 inline-flex text-sm font-semibold text-[#3882F6] hover:text-blue-700"
+                  >
+                    Xem bài tốt nhất
+                  </Link>
+                )}
+              </div>
 
-                    <Link
-                      href={`/attempts/${attempt.id}`}
-                      className="inline-flex h-10 items-center justify-center rounded-lg bg-[#3882F6] px-4 text-sm font-semibold text-white hover:bg-blue-600"
+              <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
+                <p className="text-xs font-semibold text-[#64748B]">
+                  Số lần làm
+                </p>
+                <p className="mt-2 text-2xl font-semibold text-[#0F172A]">
+                  {attempts.length}
+                </p>
+                <p className="mt-1 text-sm text-[#64748B]">
+                  Điểm trung bình {averageScore.toFixed(1)}/10
+                </p>
+              </div>
+            </section>
+
+            <section className="overflow-hidden rounded-xl border border-[#E2E8F0] bg-white">
+              <div className="border-b border-[#E2E8F0] px-4 py-4">
+                <h2 className="text-lg font-semibold">Danh sách lần làm</h2>
+              </div>
+
+              <div className="divide-y divide-[#E2E8F0]">
+                {attempts.map((attempt, index) => {
+                  const accuracy = Math.round(
+                    (attempt.correctCount / attempt.totalQuestions) * 100,
+                  );
+
+                  return (
+                    <article
+                      key={attempt.id}
+                      className="grid gap-4 px-4 py-4 md:grid-cols-[1fr_auto] md:items-center"
                     >
-                      Xem chi tiết
-                    </Link>
-                  </article>
-                );
-              })}
-            </div>
-          </section>
+                      <div>
+                        <p className="text-sm font-semibold">
+                          Lần làm #{attempts.length - index}
+                        </p>
+                        <p className="mt-1 text-sm text-[#64748B]">
+                          {formatSubmittedAt(attempt.submittedAt)}
+                        </p>
+
+                        <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold">
+                          <span className="rounded-md border border-[#E2E8F0] bg-white px-2.5 py-1 text-[#64748B]">
+                            Thời gian: {formatDurationSeconds(attempt.durationSeconds)}
+                          </span>
+                          <span className="rounded-md border border-blue-200 bg-blue-50 px-2.5 py-1 text-blue-700">
+                            {attempt.score}/10 điểm
+                          </span>
+                          <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-emerald-700">
+                            {attempt.correctCount}/{attempt.totalQuestions} câu đúng
+                          </span>
+                          <span className="rounded-md border border-[#E2E8F0] bg-[#F8FAFC] px-2.5 py-1 text-[#64748B]">
+                            {accuracy}% chính xác
+                          </span>
+                        </div>
+                      </div>
+
+                      <Link
+                        href={`/attempts/${attempt.id}`}
+                        className="inline-flex h-10 items-center justify-center rounded-lg bg-[#3882F6] px-4 text-sm font-semibold text-white hover:bg-blue-600"
+                      >
+                        Xem chi tiết
+                      </Link>
+                    </article>
+                  );
+                })}
+              </div>
+            </section>
+          </>
         )}
       </div>
     </main>

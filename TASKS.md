@@ -99,9 +99,9 @@
 * [x] API chi tiết một lần làm bài
 * [x] Xem lịch sử làm bài
 * [x] Xem chi tiết một lần làm bài
-* [ ] Xem lần làm gần nhất
-* [ ] Xem điểm cao nhất
-* [ ] Thống kê số lần làm
+* [x] Xem lần làm gần nhất
+* [x] Xem điểm cao nhất
+* [x] Thống kê số lần làm
 
 ---
 
@@ -109,17 +109,19 @@
 
 ### KaTeX
 
-* [ ] Render công thức toán học
-* [ ] Render phân số
-* [ ] Render căn thức
-* [ ] Render tích phân
-* [ ] Render giới hạn
-* [ ] Render ma trận
-* [ ] Render hình học cơ bản
+* [x] Render công thức toán học
+* [x] Render phân số
+* [x] Render căn thức
+* [x] Render tích phân
+* [x] Render giới hạn
+* [x] Render ma trận
+* [x] Render hình học cơ bản
 
 ### Question Format
 
-* [ ] Hỗ trợ nội dung LaTeX trong đề
+* [x] Hỗ trợ nội dung LaTeX trong đề
+* [x] Hỗ trợ nội dung LaTeX trong đáp án
+* [x] Mock data LaTeX để kiểm thử KaTeX
 * [ ] Hỗ trợ hình ảnh trong câu hỏi
 * [ ] Hỗ trợ hình ảnh trong đáp án
 

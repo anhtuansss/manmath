@@ -1,3 +1,4 @@
+import 'katex/dist/katex.min.css';
 import './globals.css';
 import { Inter } from 'next/font/google';
 

@@ -1,4 +1,5 @@
 import { AnswerOptions } from './AnswerOptions';
+import { MathText } from './MathText';
 import type { Answers, Question } from './types';
 
 type QuestionListProps = {
@@ -61,9 +62,11 @@ export function QuestionList({
           </div>
 
           <div className="px-5 py-6 sm:px-7 sm:py-7">
-            <p className="max-w-3xl text-base leading-8 text-[#0F172A] sm:text-lg">
-              {question.question}
-            </p>
+            <MathText
+              as="p"
+              text={question.question}
+              className="max-w-3xl text-base leading-8 text-[#0F172A] sm:text-lg"
+            />
 
             <div className="mt-7">
               <AnswerOptions

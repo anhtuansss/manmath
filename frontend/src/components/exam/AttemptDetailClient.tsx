@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { API_BASE_URL } from '../../config/api';
+import { MathText } from './MathText';
 import type { ExamAttemptDetailDto } from './types';
 
 type AttemptDetailClientProps = {
@@ -227,21 +228,33 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
                   </span>
                 </div>
 
-                <p className="mt-4 text-base leading-7">{answer.question}</p>
+                <MathText
+                  as="p"
+                  text={answer.question}
+                  className="mt-4 text-base leading-7"
+                />
 
                 <div className="mt-4 grid gap-3 md:grid-cols-2">
                   <div className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-4">
                     <p className="text-xs font-semibold text-[#64748B]">
                       Đáp án của bạn
                     </p>
-                    <p className="mt-2 text-sm font-medium">{selectedAnswer}</p>
+                    <MathText
+                      as="p"
+                      text={selectedAnswer}
+                      className="mt-2 text-sm font-medium"
+                    />
                   </div>
 
                   <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
                     <p className="text-xs font-semibold text-emerald-700">
                       Đáp án đúng
                     </p>
-                    <p className="mt-2 text-sm font-medium">{correctAnswer}</p>
+                    <MathText
+                      as="p"
+                      text={correctAnswer}
+                      className="mt-2 text-sm font-medium"
+                    />
                   </div>
                 </div>
               </article>

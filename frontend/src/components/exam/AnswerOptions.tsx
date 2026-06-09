@@ -1,3 +1,4 @@
+import { MathText } from './MathText';
 import type { Answers, Question } from './types';
 
 type AnswerOptionsProps = {
@@ -51,9 +52,10 @@ export function AnswerOptions({
               {optionLabel}
             </span>
 
-            <span className="min-w-0 flex-1 pt-1 text-base leading-7">
-              {choice}
-            </span>
+            <MathText
+              text={choice}
+              className="min-w-0 flex-1 pt-1 text-base leading-7"
+            />
           </button>
         );
       })}

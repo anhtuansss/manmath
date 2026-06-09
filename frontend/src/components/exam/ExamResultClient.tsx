@@ -18,6 +18,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { MathText } from './MathText';
 import type { ExamDetailDto, ExamResultSession, QuestionDto } from './types';
 import { API_BASE_URL } from '../../config/api';
 import {
@@ -432,9 +433,11 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
                     </span>
                   </div>
 
-                  <p className="mt-4 text-base leading-7 text-[#0F172A]">
-                    {question.question}
-                  </p>
+                  <MathText
+                    as="p"
+                    text={question.question}
+                    className="mt-4 text-base leading-7 text-[#0F172A]"
+                  />
 
                   <div className="mt-4 grid gap-3 md:grid-cols-2">
                     <div
@@ -443,18 +446,22 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
                       <p className="text-xs font-semibold text-[#64748B]">
                         Đáp án của bạn
                       </p>
-                      <p className="mt-2 text-sm font-medium leading-6 text-[#0F172A]">
-                        {selectedAnswer}
-                      </p>
+                      <MathText
+                        as="p"
+                        text={selectedAnswer}
+                        className="mt-2 text-sm font-medium leading-6 text-[#0F172A]"
+                      />
                     </div>
 
                     <div className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-4">
                       <p className="text-xs font-semibold text-[#64748B]">
                         Đáp án đúng
                       </p>
-                      <p className="mt-2 text-sm font-medium leading-6 text-[#0F172A]">
-                        {question.correctAnswer}
-                      </p>
+                      <MathText
+                        as="p"
+                        text={question.correctAnswer}
+                        className="mt-2 text-sm font-medium leading-6 text-[#0F172A]"
+                      />
                     </div>
                   </div>
                 </article>

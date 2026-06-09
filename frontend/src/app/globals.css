@@ -6,3 +6,13 @@ body {
   background: #f8fafc;
   color: #0f172a;
 }
+
+.math-text .katex {
+  font-size: 1em;
+}
+
+.math-text .katex-display {
+  margin: 0.75rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
