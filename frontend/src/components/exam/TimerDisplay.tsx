@@ -40,7 +40,7 @@ export function TimerDisplay({ remainingSeconds }: TimerDisplayProps) {
       </svg>
       <span className="hidden text-xs font-semibold sm:inline">Thời gian</span>
       <span className="font-mono text-base font-semibold tabular-nums">
-        {formatTime(remainingSeconds)}
+        {remainingSeconds === 0 ? 'Hết giờ' : formatTime(remainingSeconds)}
       </span>
     </div>
   );

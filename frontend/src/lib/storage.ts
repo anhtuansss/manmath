@@ -77,9 +77,6 @@ export const clearDraftStorage = (storage: Storage, examId: string): void => {
   removeStorageItem(storage, getExamAnswersKey(examId)); // Clean up old key too
 };
 
-export const readAnswersStorage = (storage: Storage, examId: string): Answers | null => {
-  return readJsonStorage<Answers>(storage, getExamAnswersKey(examId));
-};
 
 export const readResultStorage = (
   storage: Storage,

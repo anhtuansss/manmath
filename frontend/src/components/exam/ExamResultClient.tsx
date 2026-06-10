@@ -98,15 +98,15 @@ function ResultEmptyState({ examId }: ExamResultClientProps) {
     <main className="flex min-h-[100dvh] items-center justify-center bg-background px-4 py-10 text-text-primary">
       <section className="w-full max-w-xl animate-fade-in rounded-xl border border-border bg-surface p-8 shadow-card">
         {/* Logo */}
-        <div className="flex items-center gap-3">
-          <Logo className="h-10 w-10" />
+        <Link href="/" aria-label="Về trang chủ" className="group flex cursor-pointer items-center gap-3 rounded-lg transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+          <Logo className="h-10 w-10 transition-transform group-hover:scale-105" />
           <div>
-            <p className="font-[family-name:var(--font-outfit)] text-base font-bold text-text-primary">ManMath</p>
+            <p className="font-[family-name:var(--font-outfit)] text-base font-bold text-text-primary transition-colors group-hover:text-primary">ManMath</p>
             <p className="text-xs font-medium text-text-secondary">
               Trang kết quả bài làm
             </p>
           </div>
-        </div>
+        </Link>
 
         {/* Empty icon */}
         <div className="mt-8 flex justify-center">
@@ -295,15 +295,15 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
         <header className="flex flex-col gap-4 border-b border-border pb-5 lg:flex-row lg:items-end lg:justify-between">
           <div className="min-w-0">
             {/* Logo */}
-            <div className="flex items-center gap-3">
-              <Logo className="h-10 w-10" />
+            <Link href="/" aria-label="Về trang chủ" className="group flex cursor-pointer items-center gap-3 rounded-lg transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+              <Logo className="h-10 w-10 transition-transform group-hover:scale-105" />
               <div>
-                <p className="font-[family-name:var(--font-outfit)] text-base font-bold text-text-primary">ManMath</p>
+                <p className="font-[family-name:var(--font-outfit)] text-base font-bold text-text-primary transition-colors group-hover:text-primary">ManMath</p>
                 <p className="text-xs font-medium text-text-secondary">
                   Kết quả bài thi
                 </p>
               </div>
-            </div>
+            </Link>
 
             <h1 className="mt-6 font-[family-name:var(--font-outfit)] text-3xl font-bold tracking-tight text-text-primary">
               Tổng kết bài làm
@@ -337,7 +337,7 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
             </button>
             <Link
               href={`/exam/${examId}/attempts`}
-              className="inline-flex h-10 cursor-pointer items-center gap-2 justify-center rounded-lg border border-transparent px-4 text-sm font-semibold text-text-secondary transition-colors duration-200 hover:bg-background-alt hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              className="inline-flex h-10 cursor-pointer items-center gap-2 justify-center rounded-lg border border-border bg-surface px-4 text-sm font-semibold text-text-primary transition-colors duration-200 hover:bg-background-alt focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <path d="M2 4h12M2 8h12M2 12h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { ExamCard } from './ExamCard';
 import { Logo } from './Logo';
 import { TypewriterText } from './TypewriterText';
@@ -42,17 +43,17 @@ export function ExamList({ exams }: ExamListProps) {
           <div className="flex flex-col gap-8 pt-2 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0">
               {/* Logo + Brand */}
-              <div className="flex items-center gap-3">
-                <Logo className="h-11 w-11" />
+              <Link href="/" aria-label="Về trang chủ" className="group flex cursor-pointer items-center gap-3 rounded-lg transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+                <Logo className="h-11 w-11 transition-transform group-hover:scale-105" />
                 <div>
-                  <p className="font-[family-name:var(--font-outfit)] text-lg font-bold tracking-tight text-text-primary">
+                  <p className="font-[family-name:var(--font-outfit)] text-lg font-bold tracking-tight text-text-primary transition-colors group-hover:text-primary">
                     ManMath
                   </p>
                   <p className="text-xs font-medium text-primary">
                     Nền tảng thi thử
                   </p>
                 </div>
-              </div>
+              </Link>
 
               {/* Breadcrumb + Heading */}
               <div className="mt-8">

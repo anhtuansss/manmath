@@ -23,11 +23,11 @@ export function ExamHeader({
         <div className="flex min-w-0 items-center gap-4">
           <Link
             href="/"
-            aria-label="Về trang chủ ManMath"
-            className="flex shrink-0 items-center gap-2 rounded-lg transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            aria-label="Về trang chủ"
+            className="group flex shrink-0 cursor-pointer items-center gap-2 rounded-lg transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
-            <Logo className="h-9 w-9" />
-            <span className="hidden text-sm font-semibold text-text-primary sm:inline">
+            <Logo className="h-9 w-9 transition-transform group-hover:scale-105" />
+            <span className="hidden text-sm font-semibold text-text-primary transition-colors group-hover:text-primary sm:inline">
               ManMath
             </span>
           </Link>
