@@ -93,7 +93,7 @@ export const submitExamController = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const result = await submitExam(req.body);
+    const result = await submitExam(req.body, req.user?.userId);
 
     if (!result.ok) {
       res.status(result.statusCode).json({ message: result.message });

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Logo } from './Logo';
 import { API_BASE_URL } from '../../config/api';
+import { getAuthToken } from '../../lib/authStorage';
 import { MathText } from './MathText';
 import type { ExamAttemptDetailDto } from './types';
 
@@ -50,7 +51,16 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`${API_BASE_URL}/api/attempts/${attemptId}`);
+      const authToken = getAuthToken();
+      const requestHeaders: HeadersInit = {};
+
+      if (authToken) {
+        requestHeaders.Authorization = `Bearer ${authToken}`;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/attempts/${attemptId}`, {
+        headers: requestHeaders,
+      });
 
       if (response.status === 404) {
         throw new Error('Không tìm thấy lần làm bài');

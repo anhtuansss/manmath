@@ -24,6 +24,7 @@ import { ExamHeader } from './ExamHeader';
 import { ExamSidebar } from './ExamSidebar';
 import { QuestionList } from './QuestionList';
 import { API_BASE_URL } from '../../config/api';
+import { getAuthToken } from '../../lib/authStorage';
 import { updateUserStats } from '../../lib/userStats';
 import {
   clearDraftStorage,
@@ -249,9 +250,19 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
         answers,
         durationSeconds,
       };
+
+      const authToken = getAuthToken();
+      const requestHeaders: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+
+      if (authToken) {
+        requestHeaders.Authorization = `Bearer ${authToken}`;
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/exam/submit`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: requestHeaders,
         body: JSON.stringify(payload),
       });
 

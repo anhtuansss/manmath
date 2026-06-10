@@ -10,4 +10,13 @@ const readRequiredEnv = (name: string): string => {
   return value;
 };
 
+const readOptionalEnv = (name: string, fallback: string): string => {
+  const value = process.env[name]?.trim();
+
+  return value && value.length > 0 ? value : fallback;
+};
+
 export const DATABASE_URL = readRequiredEnv('DATABASE_URL');
+export const GOOGLE_CLIENT_ID = readRequiredEnv('GOOGLE_CLIENT_ID');
+export const JWT_SECRET = readRequiredEnv('JWT_SECRET');
+export const JWT_EXPIRES_IN = readOptionalEnv('JWT_EXPIRES_IN', '7d');

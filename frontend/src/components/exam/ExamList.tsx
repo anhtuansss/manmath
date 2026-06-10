@@ -5,6 +5,7 @@ import { TypewriterText } from './TypewriterText';
 import type { ExamListItem } from './types';
 import type { UserStats } from '../../lib/userStats';
 import { Footer } from './Footer';
+import { AuthButton } from '../auth/AuthButton';
 
 type ExamListProps = {
   exams: ExamListItem[];
@@ -76,10 +77,11 @@ export function ExamList({ exams, stats, draftExamId }: ExamListProps) {
               </div>
             </div>
 
-            {/* Stat Cards / Streak */}
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:w-[380px]">
+            <div className="flex flex-col gap-3 lg:w-[380px] lg:items-end">
+              <AuthButton />
+
               {stats && stats.currentStreak > 0 ? (
-                <div className="col-span-2 sm:col-span-3 mb-2 flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 shadow-sm">
+                <div className="flex w-full max-w-[380px] items-center justify-between rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 shadow-sm">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -93,47 +95,6 @@ export function ExamList({ exams, stats, draftExamId }: ExamListProps) {
                   </div>
                 </div>
               ) : null}
-              <div className="rounded-lg border border-border bg-surface px-4 py-3 shadow-card">
-                <div className="flex items-center gap-2">
-                  {/* Document icon */}
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-primary">
-                    <path d="M4.5 2h7a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 3 12.5v-9A1.5 1.5 0 0 1 4.5 2Z" stroke="currentColor" strokeWidth="1.3"/>
-                    <path d="M5.5 5.5h5M5.5 8h5M5.5 10.5h3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
-                  </svg>
-                  <p className="text-xs font-medium text-text-secondary">Số đề</p>
-                </div>
-                <p className="mt-1.5 text-xl font-semibold text-text-primary">
-                  {exams.length}
-                </p>
-              </div>
-              <div className="rounded-lg border border-border border-l-2 border-l-accent bg-surface px-4 py-3 shadow-card">
-                <div className="flex items-center gap-2">
-                  {/* List icon */}
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-accent">
-                    <path d="M5 4h8M5 8h8M5 12h8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
-                    <circle cx="3" cy="4" r="0.75" fill="currentColor"/>
-                    <circle cx="3" cy="8" r="0.75" fill="currentColor"/>
-                    <circle cx="3" cy="12" r="0.75" fill="currentColor"/>
-                  </svg>
-                  <p className="text-xs font-medium text-text-secondary">Tổng câu</p>
-                </div>
-                <p className="mt-1.5 text-xl font-semibold text-text-primary">
-                  {totalQuestions}
-                </p>
-              </div>
-              <div className="col-span-2 rounded-lg border border-border border-l-2 border-l-slate-400 bg-surface px-4 py-3 shadow-card sm:col-span-1">
-                <div className="flex items-center gap-2">
-                  {/* Clock icon */}
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-slate-400">
-                    <circle cx="8" cy="8" r="5.5" stroke="currentColor" strokeWidth="1.3"/>
-                    <path d="M8 5v3l2 1.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  <p className="text-xs font-medium text-text-secondary">Trung bình</p>
-                </div>
-                <p className="mt-1.5 text-xl font-semibold text-text-primary">
-                  {averageDuration} phút
-                </p>
-              </div>
             </div>
           </div>
         </header>

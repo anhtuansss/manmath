@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Logo } from './Logo';
 import { API_BASE_URL } from '../../config/api';
+import { getAuthToken } from '../../lib/authStorage';
 import type { ExamAttemptSummaryDto } from './types';
 
 type ExamAttemptsClientProps = {
@@ -47,7 +48,16 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`${API_BASE_URL}/api/exams/${examId}/attempts`);
+      const authToken = getAuthToken();
+      const requestHeaders: HeadersInit = {};
+
+      if (authToken) {
+        requestHeaders.Authorization = `Bearer ${authToken}`;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/exams/${examId}/attempts`, {
+        headers: requestHeaders,
+      });
 
       if (!response.ok) {
         throw new Error('Không tải được lịch sử làm bài');
