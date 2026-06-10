@@ -17,6 +17,7 @@ import { useEffect, useState } from 'react';
 import { ExamList } from './ExamList';
 import type { ExamListApiItem, ExamListItem } from './types';
 import { API_BASE_URL } from '../../config/api';
+import { getUserStats, type UserStats } from '../../lib/userStats';
 
 const toExamListItem = (exam: ExamListApiItem): ExamListItem => ({
   ...exam,
@@ -238,6 +239,8 @@ export function ExamListClient() {
   const [exams, setExams] = useState<ExamListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [stats, setStats] = useState<UserStats | null>(null);
+  const [draftExamId, setDraftExamId] = useState<string | null>(null);
 
   /**
    * Tải danh sách đề từ backend và chuyển sang dữ liệu UI có href.
@@ -269,6 +272,18 @@ export function ExamListClient() {
 
   useEffect(() => {
     void fetchExams();
+    setStats(getUserStats());
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key?.startsWith('manmath:exam-draft:')) {
+          setDraftExamId(key.split(':')[2]);
+          break;
+        }
+      }
+    } catch (e) {
+      // safe localstorage access
+    }
   }, []);
 
   if (loading) {
@@ -283,5 +298,5 @@ export function ExamListClient() {
     return <ExamListEmpty onRetry={fetchExams} />;
   }
 
-  return <ExamList exams={exams} />;
+  return <ExamList exams={exams} stats={stats} draftExamId={draftExamId} />;
 }

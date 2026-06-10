@@ -60,6 +60,8 @@ export type ExamSummaryDto = {
   subject: string;
   difficulty: ExamDifficulty;
   year?: number;
+  source?: string;
+  type?: string;
   statusLabel: string;
 };
 
@@ -72,6 +74,8 @@ export type ExamListItem = {
   subject: string;
   difficulty: ExamDifficulty;
   year?: number;
+  source?: string;
+  type?: string;
   statusLabel: string;
   href: string;
 };

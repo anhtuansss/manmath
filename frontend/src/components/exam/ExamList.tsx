@@ -1,10 +1,15 @@
+import Link from 'next/link';
 import { ExamCard } from './ExamCard';
 import { Logo } from './Logo';
 import { TypewriterText } from './TypewriterText';
 import type { ExamListItem } from './types';
+import type { UserStats } from '../../lib/userStats';
+import { Footer } from './Footer';
 
 type ExamListProps = {
   exams: ExamListItem[];
+  stats?: UserStats | null;
+  draftExamId?: string | null;
 };
 
 const difficultyLabels: Record<ExamListItem['difficulty'], string> = {
@@ -13,7 +18,7 @@ const difficultyLabels: Record<ExamListItem['difficulty'], string> = {
   hard: 'Khó',
 };
 
-export function ExamList({ exams }: ExamListProps) {
+export function ExamList({ exams, stats, draftExamId }: ExamListProps) {
   const recommendedExams = exams.slice(0, 3);
   const totalQuestions = exams.reduce((sum, exam) => sum + exam.totalQuestions, 0);
   const averageDuration =
@@ -31,8 +36,11 @@ export function ExamList({ exams }: ExamListProps) {
     return currentShortest;
   }, null);
 
+  const draftExam = draftExamId ? exams.find((e) => e.id === draftExamId) : null;
+
   return (
-    <main className="min-h-screen bg-background text-text-primary">
+    <div className="flex min-h-[100dvh] flex-col">
+    <main className="flex-1 bg-background text-text-primary pb-16">
       <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         {/* ── Hero Section ── */}
         <header className="relative pb-10">
@@ -42,17 +50,17 @@ export function ExamList({ exams }: ExamListProps) {
           <div className="flex flex-col gap-8 pt-2 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0">
               {/* Logo + Brand */}
-              <div className="flex items-center gap-3">
-                <Logo className="h-11 w-11" />
+              <Link href="/" aria-label="Về trang chủ" className="group flex cursor-pointer items-center gap-3 rounded-lg transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+                <Logo className="h-11 w-11 transition-transform group-hover:scale-105" />
                 <div>
-                  <p className="font-[family-name:var(--font-outfit)] text-lg font-bold tracking-tight text-text-primary">
+                  <p className="font-[family-name:var(--font-outfit)] text-lg font-bold tracking-tight text-text-primary transition-colors group-hover:text-primary">
                     ManMath
                   </p>
                   <p className="text-xs font-medium text-primary">
                     Nền tảng thi thử
                   </p>
                 </div>
-              </div>
+              </Link>
 
               {/* Breadcrumb + Heading */}
               <div className="mt-8">
@@ -68,9 +76,24 @@ export function ExamList({ exams }: ExamListProps) {
               </div>
             </div>
 
-            {/* Stat Cards */}
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:w-[380px] lg:shrink-0">
-              <div className="rounded-lg border border-border border-l-2 border-l-primary bg-surface px-4 py-3 shadow-card">
+            {/* Stat Cards / Streak */}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:w-[380px]">
+              {stats && stats.currentStreak > 0 ? (
+                <div className="col-span-2 sm:col-span-3 mb-2 flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-amber-900">{stats.currentStreak} ngày liên tiếp!</p>
+                      <p className="text-xs text-amber-700">Giữ vững phong độ nhé.</p>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+              <div className="rounded-lg border border-border bg-surface px-4 py-3 shadow-card">
                 <div className="flex items-center gap-2">
                   {/* Document icon */}
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-primary">
@@ -118,6 +141,31 @@ export function ExamList({ exams }: ExamListProps) {
         {/* ── Main Content Grid ── */}
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
           <div className="space-y-8">
+            {draftExam && (
+              <section className="animate-fade-in rounded-xl border border-warning-border bg-warning-light p-5 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-warning-dark">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <h2 className="font-[family-name:var(--font-outfit)] text-lg font-bold text-warning-dark">
+                      Bạn có bài làm chưa hoàn thành
+                    </h2>
+                  </div>
+                  <p className="mt-1 text-sm font-medium text-warning-dark/80">
+                    {draftExam.title}
+                  </p>
+                </div>
+                <Link
+                  href={`/exam/${draftExam.id}`}
+                  className="shrink-0 inline-flex h-10 items-center justify-center rounded-lg bg-warning px-5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-warning/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning focus-visible:ring-offset-2"
+                >
+                  Tiếp tục làm bài
+                </Link>
+              </section>
+            )}
+
             {/* ── Featured Exams Section ── */}
             <section>
               <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
@@ -246,9 +294,44 @@ export function ExamList({ exams }: ExamListProps) {
                 </div>
               )}
             </section>
+            
+            {/* Personal Stats Section */}
+            {stats && stats.examsCompleted > 0 && (
+              <section className="rounded-xl border border-border bg-surface p-5 shadow-card">
+                <div className="flex items-center gap-2">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
+                    <path d="M12 20v-6M6 20V10M18 20V4" />
+                  </svg>
+                  <h2 className="font-[family-name:var(--font-outfit)] text-base font-semibold text-text-primary">
+                    Thống kê cá nhân
+                  </h2>
+                </div>
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  <div className="rounded-lg bg-background p-3">
+                    <p className="text-xs text-text-secondary">Đã hoàn thành</p>
+                    <p className="mt-1 text-lg font-bold text-text-primary">{stats.examsCompleted} <span className="text-sm font-medium text-text-secondary">đề</span></p>
+                  </div>
+                  <div className="rounded-lg bg-background p-3">
+                    <p className="text-xs text-text-secondary">Điểm trung bình</p>
+                    <p className="mt-1 text-lg font-bold text-primary">{stats.averageScore.toFixed(1)}</p>
+                  </div>
+                  <div className="rounded-lg bg-background p-3">
+                    <p className="text-xs text-text-secondary">Điểm cao nhất</p>
+                    <p className="mt-1 text-lg font-bold text-emerald-600">{stats.bestScore.toFixed(1)}</p>
+                  </div>
+                  <div className="rounded-lg bg-background p-3">
+                    <p className="text-xs text-text-secondary">Số câu đã trả lời</p>
+                    <p className="mt-1 text-lg font-bold text-text-primary">{stats.totalQuestionsAnswered}</p>
+                  </div>
+                </div>
+              </section>
+            )}
+
           </aside>
         </div>
       </div>
     </main>
+    <Footer />
+    </div>
   );
 }

@@ -105,9 +105,9 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
         {/* ── Header ── */}
         <header className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <Link href="/" className="inline-flex cursor-pointer items-center gap-3 text-sm font-semibold transition-colors duration-200">
-              <Logo className="h-9 w-9" />
-              ManMath
+            <Link href="/" aria-label="Về trang chủ" className="group inline-flex cursor-pointer items-center gap-3 rounded-lg text-sm font-semibold text-text-primary transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+              <Logo className="h-9 w-9 transition-transform group-hover:scale-105" />
+              <span className="transition-colors group-hover:text-primary">ManMath</span>
             </Link>
 
             <p className="mt-6 text-sm font-semibold text-primary">
@@ -116,7 +116,7 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
             <h1 className="mt-2 font-[family-name:var(--font-outfit)] text-3xl font-bold tracking-tight text-text-primary">
               Các lần làm đề
             </h1>
-            <p className="mt-2 text-sm text-text-secondary">Mã đề: {examId}</p>
+
           </div>
 
           <Link

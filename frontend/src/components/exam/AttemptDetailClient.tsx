@@ -143,16 +143,16 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
       <div className="mx-auto flex w-full max-w-6xl animate-fade-in flex-col gap-6">
         <header className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <Link href="/" className="inline-flex cursor-pointer items-center gap-3 text-sm font-semibold transition-colors duration-200">
-              <Logo className="h-9 w-9" />
-              ManMath
+            <Link href="/" aria-label="Về trang chủ" className="group inline-flex cursor-pointer items-center gap-3 rounded-lg text-sm font-semibold text-text-primary transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+              <Logo className="h-9 w-9 transition-transform group-hover:scale-105" />
+              <span className="transition-colors group-hover:text-primary">ManMath</span>
             </Link>
 
             <p className="mt-6 text-sm font-semibold text-primary">
-              Chi tiết lần làm bài
+              {exam.title}
             </p>
             <h1 className="mt-2 font-[family-name:var(--font-outfit)] text-3xl font-bold tracking-tight text-text-primary">
-              {exam.title}
+              Chi tiết lần làm bài
             </h1>
             <p className="mt-2 text-sm text-text-secondary">
               Thời gian làm bài: {durationLabel}
