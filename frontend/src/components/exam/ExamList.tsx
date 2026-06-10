@@ -77,68 +77,24 @@ export function ExamList({ exams, stats, draftExamId }: ExamListProps) {
               </div>
             </div>
 
-            <div className="flex flex-col gap-4 lg:w-[380px] lg:items-end">
+            <div className="flex flex-col gap-3 lg:w-[380px] lg:items-end">
               <AuthButton />
 
-              {/* Stat Cards / Streak */}
-              <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3">
-                {stats && stats.currentStreak > 0 ? (
-                  <div className="col-span-2 sm:col-span-3 mb-2 flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 shadow-sm">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z"></path>
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-amber-900">{stats.currentStreak} ngày liên tiếp!</p>
-                        <p className="text-xs text-amber-700">Giữ vững phong độ nhé.</p>
-                      </div>
+              {stats && stats.currentStreak > 0 ? (
+                <div className="flex w-full max-w-[380px] items-center justify-between rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-amber-900">{stats.currentStreak} ngày liên tiếp!</p>
+                      <p className="text-xs text-amber-700">Giữ vững phong độ nhé.</p>
                     </div>
                   </div>
-                ) : null}
-                <div className="rounded-lg border border-border bg-surface px-4 py-3 shadow-card">
-                  <div className="flex items-center gap-2">
-                    {/* Document icon */}
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-primary">
-                      <path d="M4.5 2h7a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 3 12.5v-9A1.5 1.5 0 0 1 4.5 2Z" stroke="currentColor" strokeWidth="1.3"/>
-                      <path d="M5.5 5.5h5M5.5 8h5M5.5 10.5h3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
-                    </svg>
-                    <p className="text-xs font-medium text-text-secondary">Số đề</p>
-                  </div>
-                  <p className="mt-1.5 text-xl font-semibold text-text-primary">
-                    {exams.length}
-                  </p>
                 </div>
-                <div className="rounded-lg border border-border border-l-2 border-l-accent bg-surface px-4 py-3 shadow-card">
-                  <div className="flex items-center gap-2">
-                    {/* List icon */}
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-accent">
-                      <path d="M5 4h8M5 8h8M5 12h8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
-                      <circle cx="3" cy="4" r="0.75" fill="currentColor"/>
-                      <circle cx="3" cy="8" r="0.75" fill="currentColor"/>
-                      <circle cx="3" cy="12" r="0.75" fill="currentColor"/>
-                    </svg>
-                    <p className="text-xs font-medium text-text-secondary">Tổng câu</p>
-                  </div>
-                  <p className="mt-1.5 text-xl font-semibold text-text-primary">
-                    {totalQuestions}
-                  </p>
-                </div>
-                <div className="col-span-2 rounded-lg border border-border border-l-2 border-l-slate-400 bg-surface px-4 py-3 shadow-card sm:col-span-1">
-                  <div className="flex items-center gap-2">
-                    {/* Clock icon */}
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-slate-400">
-                      <circle cx="8" cy="8" r="5.5" stroke="currentColor" strokeWidth="1.3"/>
-                      <path d="M8 5v3l2 1.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                    <p className="text-xs font-medium text-text-secondary">Trung bình</p>
-                  </div>
-                  <p className="mt-1.5 text-xl font-semibold text-text-primary">
-                    {averageDuration} phút
-                  </p>
-                </div>
-              </div>
+              ) : null}
             </div>
           </div>
         </header>
