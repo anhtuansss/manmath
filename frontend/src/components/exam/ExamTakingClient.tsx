@@ -24,6 +24,7 @@ import { ExamHeader } from './ExamHeader';
 import { ExamSidebar } from './ExamSidebar';
 import { QuestionList } from './QuestionList';
 import { API_BASE_URL } from '../../config/api';
+import { updateUserStats } from '../../lib/userStats';
 import {
   clearDraftStorage,
   getExamResultKey,
@@ -271,6 +272,9 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
 
       // Xóa nháp khi nộp bài thành công
       clearDraftStorage(localStorage, examId);
+      
+      // Cập nhật thống kê cá nhân
+      updateUserStats(result.score, Object.keys(answers).length);
 
       writeJsonStorage(sessionStorage, getExamResultKey(examId), resultSession);
       router.push(`/exam/${examId}/result`);
@@ -285,6 +289,42 @@ export function ExamTakingClient({ examId }: ExamTakingClientProps) {
       .getElementById(`question-${questionId}`)
       ?.scrollIntoView({ behavior: 'auto', block: 'start' });
   };
+
+  useEffect(() => {
+    if (!exam || showSubmitConfirm) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        document.activeElement?.tagName === 'INPUT' ||
+        document.activeElement?.tagName === 'TEXTAREA'
+      ) {
+        return;
+      }
+
+      const currentIndex = exam.questions.findIndex((q) => q.id === currentQuestionId);
+      
+      if (e.key === 'ArrowLeft') {
+        if (currentIndex > 0) {
+          e.preventDefault();
+          handleQuestionNavigate(exam.questions[currentIndex - 1].id);
+        }
+      } else if (e.key === 'ArrowRight') {
+        if (currentIndex < exam.questions.length - 1 && currentIndex !== -1) {
+          e.preventDefault();
+          handleQuestionNavigate(exam.questions[currentIndex + 1].id);
+        }
+      } else if (['1', '2', '3', '4'].includes(e.key)) {
+        if (currentQuestionId !== null) {
+          e.preventDefault();
+          const optionIndex = parseInt(e.key, 10) - 1;
+          handleSelectAnswer(currentQuestionId, optionIndex);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [exam, currentQuestionId, answers, remainingSeconds, showSubmitConfirm]);
 
   if (loading) {
     return (

@@ -150,6 +150,14 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
   const [exam, setExam] = useState<ExamDetailDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [reviewError, setReviewError] = useState<string | null>(null);
+  const [revealState, setRevealState] = useState<'calculating' | 'revealed'>('calculating');
+
+  useEffect(() => {
+    if (!loading && resultSession) {
+      const t = setTimeout(() => setRevealState('revealed'), 1500);
+      return () => clearTimeout(t);
+    }
+  }, [loading, resultSession]);
 
   /**
    * Tải kết quả nộp bài từ sessionStorage. Ở MVP, trang kết quả cố ý dựa vào
@@ -262,6 +270,28 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
     );
   }
 
+  if (revealState === 'calculating') {
+    return (
+      <main className="flex min-h-[100dvh] items-center justify-center bg-background px-4 py-10 text-text-primary">
+        <div className="flex flex-col items-center justify-center text-center">
+          <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-surface shadow-card">
+            <svg className="h-10 w-10 animate-spin text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <div className="absolute inset-0 rounded-full border border-primary/20 animate-ping"></div>
+          </div>
+          <h1 className="mt-8 font-[family-name:var(--font-outfit)] text-2xl font-bold tracking-tight text-text-primary">
+            Đang chấm điểm...
+          </h1>
+          <p className="mt-2 text-sm text-text-secondary">
+            Vui lòng đợi trong giây lát
+          </p>
+        </div>
+      </main>
+    );
+  }
+
   if (!resultSession) {
     return <ResultEmptyState examId={examId} />;
   }
@@ -357,12 +387,12 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
             <p className="text-sm font-semibold text-text-secondary">Điểm số</p>
             <div className="mt-5 flex items-center justify-center">
               <div
-                className="flex h-44 w-44 items-center justify-center rounded-full p-2"
+                className="flex h-44 w-44 animate-spring-up items-center justify-center rounded-full p-2"
                 style={{ background: scoreRingBackground }}
               >
                 <div className="flex h-full w-full items-center justify-center rounded-full bg-surface">
                   <div className="text-center">
-                    <p className="font-[family-name:var(--font-outfit)] text-5xl font-bold text-primary">
+                    <p className="font-[family-name:var(--font-outfit)] text-5xl font-bold text-primary transition-transform duration-500 hover:scale-110">
                       {submitResult.score.toFixed(1)}
                     </p>
                     <p className="mt-1 text-sm font-semibold text-text-secondary">
@@ -570,6 +600,51 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
           </div>
         </section>
       </div>
+
+      {revealState === 'revealed' && submitResult.score >= 8.0 && <Confetti />}
     </main>
+  );
+}
+
+function Confetti() {
+  const [show, setShow] = useState(true);
+  useEffect(() => {
+    const t = setTimeout(() => setShow(false), 5000);
+    return () => clearTimeout(t);
+  }, []);
+
+  if (!show) return null;
+
+  return (
+    <>
+      <style>{`
+        @keyframes confetti-fall {
+          0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+          100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+        @keyframes spring-up {
+          0% { transform: scale(0.8); opacity: 0; }
+          50% { transform: scale(1.05); opacity: 1; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-spring-up {
+          animation: spring-up 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+      `}</style>
+      <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden">
+        {Array.from({ length: 60 }).map((_, i) => (
+          <div
+            key={i}
+            className="absolute top-0 h-3 w-2 opacity-0"
+            style={{
+              left: `${Math.random() * 100}%`,
+              backgroundColor: ['#f59e0b', '#3b82f6', '#10b981', '#ef4444', '#8b5cf6'][Math.floor(Math.random() * 5)],
+              animation: `confetti-fall ${1.5 + Math.random() * 2}s ease-in ${Math.random() * 0.5}s forwards`,
+              transform: `rotate(${Math.random() * 360}deg)`,
+            }}
+          />
+        ))}
+      </div>
+    </>
   );
 }

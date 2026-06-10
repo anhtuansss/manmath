@@ -24,6 +24,12 @@ const getExamMeta = (exam: ExamListItem) => {
   if (exam.year) {
     parts.push(String(exam.year));
   }
+  if (exam.type) {
+    parts.push(exam.type);
+  }
+  if (exam.source) {
+    parts.push(exam.source);
+  }
 
   return parts.join(' · ');
 };
