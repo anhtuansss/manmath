@@ -1,6 +1,7 @@
 import 'katex/dist/katex.min.css';
 import './globals.css';
 import { Inter, Outfit } from 'next/font/google';
+import { AuthProvider } from '../components/auth/AuthProvider';
 
 const inter = Inter({
   subsets: ['latin', 'vietnamese'],
@@ -29,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="vi" className={`${inter.variable} ${outfit.variable}`}>
       <body className={`${inter.className} bg-background text-text-primary antialiased`}>
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

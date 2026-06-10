@@ -76,11 +76,12 @@
 * [x] Auth middleware
 * [x] Attempt gắn `userId` khi request có token hợp lệ
 * [x] API `/api/auth/me`
-* [ ] Frontend auth config/storage
-* [ ] Frontend Google Login
+* [x] Frontend auth config/storage
+* [x] Frontend Google Login
+* [x] Frontend gửi `Authorization` header khi có JWT
+* [x] Logout UI tối thiểu
 * [ ] Refresh Token
 * [ ] Email/password register/login
-* [ ] Logout UI
 
 ### User Profile
 
@@ -223,6 +224,12 @@
 * [x] Gắn `Attempt.userId` khi submit có token hợp lệ
 * [x] Tạo API `/api/auth/me`
 * [x] Smoke test backend Google Auth foundation
+* [x] Tạo frontend auth config/storage/API helper
+* [x] Cài Google OAuth package cho frontend
+* [x] Tạo Google Provider và Google Login button
+* [x] Frontend lưu JWT ManMath sau khi login
+* [x] Frontend gửi `Authorization` header khi submit/history/detail có token
+* [x] Smoke test auth flow cơ bản
 
 ### Không làm lúc này
 
