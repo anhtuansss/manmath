@@ -89,3 +89,21 @@ export const loginWithGoogleCredential = async (
     },
   };
 };
+
+export const getAuthUserById = async (
+  userId: string,
+): Promise<AuthUserDto | null> => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    select: {
+      id: true,
+      email: true,
+      fullName: true,
+      avatarUrl: true,
+    },
+  });
+
+  return user;
+};

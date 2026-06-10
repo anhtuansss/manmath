@@ -286,6 +286,7 @@ export const getAttemptDetailById = async (
 // Xử lý nộp bài thi, tính điểm và trả về kết quả
 export const submitExam = async (
   payload: unknown,
+  userId?: string,
 ): Promise<SubmitExamServiceResult> => {
   if (!isPlainObject(payload)) {
     return {
@@ -359,6 +360,7 @@ export const submitExam = async (
   await prisma.attempt.create({
     data: {
       examId: exam.id,
+      userId: userId ?? null,
       score,
       correctCount,
       totalQuestions,

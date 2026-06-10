@@ -70,11 +70,17 @@
 
 ### Authentication
 
-* [ ] Đăng ký
-* [ ] Đăng nhập
-* [ ] JWT Access Token
+* [x] User schema cho Google Login
+* [x] JWT Access Token backend
+* [x] Google auth endpoint backend
+* [x] Auth middleware
+* [x] Attempt gắn `userId` khi request có token hợp lệ
+* [x] API `/api/auth/me`
+* [ ] Frontend auth config/storage
+* [ ] Frontend Google Login
 * [ ] Refresh Token
-* [ ] Logout
+* [ ] Email/password register/login
+* [ ] Logout UI
 
 ### User Profile
 
@@ -211,6 +217,12 @@
 * [x] Tạo API chi tiết một lần làm bài
 * [x] Tạo giao diện xem lịch sử làm bài
 * [x] Tạo giao diện xem chi tiết một lần làm bài
+* [x] Tạo User schema và migration cho Google Auth
+* [x] Tạo JWT helper và backend auth endpoint
+* [x] Tạo auth middleware và optional auth middleware
+* [x] Gắn `Attempt.userId` khi submit có token hợp lệ
+* [x] Tạo API `/api/auth/me`
+* [x] Smoke test backend Google Auth foundation
 
 ### Không làm lúc này
 

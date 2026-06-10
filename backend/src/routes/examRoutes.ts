@@ -7,6 +7,7 @@ import {
   getHealth,
   submitExamController,
 } from '../controllers/examController';
+import { optionalAuthMiddleware } from '../middleware/authMiddleware';
 
 export const examRouter = Router();
 
@@ -26,4 +27,4 @@ examRouter.get('/exams/:id', getExamDetail);
 examRouter.get('/attempts/:attemptId', getAttemptDetail);
 
 // Xử lý nộp bài thi, tính điểm và trả về kết quả
-examRouter.post('/exam/submit', submitExamController);
+examRouter.post('/exam/submit', optionalAuthMiddleware, submitExamController);
