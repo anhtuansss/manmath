@@ -155,6 +155,7 @@ export const getExamDetailById = async (
 // Lấy danh sách các lần thi đã nộp cho một đề thi cụ thể
 export const getExamAttemptsByExamId = async (
   examId: string,
+  userId: string,
 ): Promise<ExamAttemptSummaryDto[] | null> => {
   const examRecord = await prisma.exam.findUnique({
     where: {
@@ -162,6 +163,9 @@ export const getExamAttemptsByExamId = async (
     },
     select: {
       attempts: {
+        where: {
+          userId,
+        },
         orderBy: {
           submittedAt: 'desc',
         },
@@ -198,8 +202,9 @@ export const getExamAttemptsByExamId = async (
 // Lấy chi tiết một lần thi theo ID, bao gồm cả thông tin đề thi và câu trả lời đã chọn
 export const getAttemptDetailById = async (
   attemptId: string,
+  userId: string,
 ): Promise<ExamAttemptDetailDto | null> => {
-  const attemptRecord = await prisma.attempt.findUnique({
+  const attemptRecord = await prisma.attempt.findFirst({
     where: {
       id: attemptId,
     },

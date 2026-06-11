@@ -80,6 +80,7 @@
 * [x] Frontend Google Login
 * [x] Frontend gửi `Authorization` header khi có JWT
 * [x] Logout UI tối thiểu
+* [x] Bảo vệ history/attempt detail theo user
 * [ ] Refresh Token
 * [ ] Email/password register/login
 
@@ -109,6 +110,8 @@
 * [x] Xem lần làm gần nhất
 * [x] Xem điểm cao nhất
 * [x] Thống kê số lần làm
+* [x] API lịch sử làm bài chỉ trả attempt của user hiện tại
+* [x] API chi tiết lần làm bài chỉ cho owner xem
 
 ---
 
@@ -230,6 +233,8 @@
 * [x] Frontend lưu JWT ManMath sau khi login
 * [x] Frontend gửi `Authorization` header khi submit/history/detail có token
 * [x] Smoke test auth flow cơ bản
+* [x] Protect `GET /api/exams/:id/attempts` theo user
+* [x] Protect `GET /api/attempts/:attemptId` theo owner
 
 ### Không làm lúc này
 
