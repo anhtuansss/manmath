@@ -11,6 +11,8 @@ type ExamAttemptsClientProps = {
   examId: string;
 };
 
+type AttemptsErrorType = 'unauthorized' | 'generic';
+
 const formatSubmittedAt = (submittedAt: string) => {
   return new Intl.DateTimeFormat('vi-VN', {
     dateStyle: 'short',
@@ -42,11 +44,13 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
   const [attempts, setAttempts] = useState<ExamAttemptSummaryDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [errorType, setErrorType] = useState<AttemptsErrorType | null>(null);
 
   const fetchAttempts = async () => {
     try {
       setLoading(true);
       setError(null);
+      setErrorType(null);
 
       const authToken = getAuthToken();
       const requestHeaders: HeadersInit = {};
@@ -59,13 +63,22 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
         headers: requestHeaders,
       });
 
+      if (response.status === 401) {
+        setAttempts([]);
+        setErrorType('unauthorized');
+        setError('Bạn cần đăng nhập để xem lịch sử làm bài.');
+        return;
+      }
+
       if (!response.ok) {
+        setErrorType('generic');
         throw new Error('Không tải được lịch sử làm bài');
       }
 
       const data: ExamAttemptSummaryDto[] = await response.json();
       setAttempts(data);
     } catch (fetchError) {
+      setErrorType('generic');
       setError(
         fetchError instanceof Error
           ? fetchError.message
@@ -180,7 +193,37 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
         )}
 
         {/* ── Error State ── */}
-        {error && (
+        {errorType === 'unauthorized' && (
+          <section className="rounded-xl border border-border bg-surface p-8 text-center shadow-card">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary-light text-primary">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M7 10V7a5 5 0 0110 0v3M6.5 10h11A1.5 1.5 0 0119 11.5v7A1.5 1.5 0 0117.5 20h-11A1.5 1.5 0 015 18.5v-7A1.5 1.5 0 016.5 10z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <h2 className="mt-5 font-[family-name:var(--font-outfit)] text-xl font-bold text-text-primary">
+              Bạn cần đăng nhập để xem lịch sử làm bài.
+            </h2>
+            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-text-secondary">
+              Hãy đăng nhập để xem các lần làm bài đã lưu của bạn.
+            </p>
+            <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+              <Link
+                href="/"
+                className="inline-flex h-10 cursor-pointer items-center justify-center rounded-lg bg-primary px-5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              >
+                Về danh sách đề
+              </Link>
+              <Link
+                href={`/exam/${examId}`}
+                className="inline-flex h-10 cursor-pointer items-center justify-center rounded-lg border border-border bg-surface px-5 text-sm font-semibold text-text-primary transition-colors duration-200 hover:bg-background-alt focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              >
+                Quay lại đề
+              </Link>
+            </div>
+          </section>
+        )}
+
+        {error && errorType !== 'unauthorized' && (
           <section className="rounded-xl border border-error-border bg-surface p-6 shadow-card">
             <div className="flex items-start gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-error-light">

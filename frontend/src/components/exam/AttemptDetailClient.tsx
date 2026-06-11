@@ -12,6 +12,8 @@ type AttemptDetailClientProps = {
   attemptId: string;
 };
 
+type AttemptDetailErrorType = 'unauthorized' | 'generic';
+
 const formatSubmittedAt = (submittedAt: string) => {
   return new Intl.DateTimeFormat('vi-VN', {
     dateStyle: 'short',
@@ -45,11 +47,13 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [errorType, setErrorType] = useState<AttemptDetailErrorType | null>(null);
 
   const fetchAttemptDetail = async () => {
     try {
       setLoading(true);
       setError(null);
+      setErrorType(null);
 
       const authToken = getAuthToken();
       const requestHeaders: HeadersInit = {};
@@ -62,17 +66,27 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
         headers: requestHeaders,
       });
 
+      if (response.status === 401) {
+        setAttemptDetail(null);
+        setErrorType('unauthorized');
+        setError('Bạn cần đăng nhập để xem lịch sử làm bài.');
+        return;
+      }
+
       if (response.status === 404) {
+        setErrorType('generic');
         throw new Error('Không tìm thấy lần làm bài');
       }
 
       if (!response.ok) {
+        setErrorType('generic');
         throw new Error('Không tải được chi tiết lần làm bài');
       }
 
       const data: ExamAttemptDetailDto = await response.json();
       setAttemptDetail(data);
     } catch (fetchError) {
+      setErrorType('generic');
       setError(
         fetchError instanceof Error
           ? fetchError.message
@@ -115,6 +129,32 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
             <div className="h-48 animate-pulse rounded-xl border border-border bg-surface shadow-card" />
           </div>
         </div>
+      </main>
+    );
+  }
+
+  if (errorType === 'unauthorized') {
+    return (
+      <main className="flex min-h-[100dvh] items-center justify-center bg-background px-4 py-10 text-text-primary">
+        <section className="flex w-full max-w-xl animate-fade-in flex-col items-center rounded-xl border border-border bg-surface p-8 text-center shadow-card">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-light text-primary">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M7 10V7a5 5 0 0110 0v3M6.5 10h11A1.5 1.5 0 0119 11.5v7A1.5 1.5 0 0117.5 20h-11A1.5 1.5 0 015 18.5v-7A1.5 1.5 0 016.5 10z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+          <h1 className="mt-5 font-[family-name:var(--font-outfit)] text-2xl font-bold tracking-tight text-text-primary">
+            Bạn cần đăng nhập để xem lịch sử làm bài.
+          </h1>
+          <p className="mt-2 max-w-md text-sm leading-6 text-text-secondary">
+            Chi tiết lần làm bài chỉ hiển thị cho tài khoản đã đăng nhập.
+          </p>
+          <Link
+            href="/"
+            className="mt-6 inline-flex h-10 cursor-pointer items-center justify-center rounded-lg bg-primary px-5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          >
+            Về danh sách đề
+          </Link>
+        </section>
       </main>
     );
   }

@@ -53,7 +53,12 @@ export const getExamAttempts = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const attempts = await getExamAttemptsByExamId(req.params.id);
+    if (!req.user) {
+      res.status(401).json({ message: 'Unauthorized' });
+      return;
+    }
+
+    const attempts = await getExamAttemptsByExamId(req.params.id, req.user.userId);
 
     if (!attempts) {
       res.status(404).json({ message: 'Khong tim thay de thi' });
@@ -73,7 +78,13 @@ export const getAttemptDetail = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const attemptDetail = await getAttemptDetailById(req.params.attemptId);
+    if (!req.user) {
+      res.status(401).json({ message: 'Unauthorized' });
+      return;
+    }
+
+
+    const attemptDetail = await getAttemptDetailById(req.params.attemptId, req.user.userId);
 
     if (!attemptDetail) {
       res.status(404).json({ message: 'Khong tim thay lan lam bai' });
