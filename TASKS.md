@@ -15,6 +15,7 @@
 * [x] Submit bài thi
 * [x] Chuyển sang trang kết quả
 * [x] Review đáp án
+* [x] Result Page hiển thị thống kê theo chuyên đề sau submit
 * [x] Loading / Error / Empty states
 * [x] UI polish theo Concept 2
 
@@ -24,6 +25,7 @@
 * [x] API lấy danh sách đề
 * [x] API lấy chi tiết đề
 * [x] API submit bài thi
+* [x] Submit response trả `topicStats`
 * [x] Validation cơ bản cho submit
 * [x] Error handling cơ bản
 
@@ -105,8 +107,10 @@
 
 * [x] API summary lịch sử làm bài theo đề
 * [x] API chi tiết một lần làm bài
+* [x] API chi tiết một lần làm bài trả `topicStats`
 * [x] Xem lịch sử làm bài
 * [x] Xem chi tiết một lần làm bài
+* [x] Attempt Detail hiển thị `topicStats`
 * [x] Xem lần làm gần nhất
 * [x] Xem điểm cao nhất
 * [x] Thống kê số lần làm
@@ -160,11 +164,14 @@
 
 * [x] Bảng Topics
 * [x] Mapping Question -> Topic
+* [x] Attempt Detail có `topicStats`
+* [x] Result Page sau submit hiển thị `topicStats`
 * [ ] Mapping Question -> Subtopic
 
 ### User Analytics
 
 * [x] Tính độ chính xác theo chuyên đề
+* [x] API `/api/me/topic-stats` tổng hợp topic analytics theo user
 * [ ] Tính độ chính xác theo thời gian
 * [ ] Theo dõi tiến bộ
 * [ ] Dashboard học tập
@@ -244,7 +251,7 @@
 * [x] Frontend hiển thị `topicStats` trong trang chi tiết lần làm
 * [x] API `/api/me/topic-stats` tổng hợp topic analytics theo user
 * [x] Submit response trả `topicStats`
-* [ ] Hiển thị topic stats ở result page sau submit nếu phù hợp
+* [x] Hiển thị topic stats ở result page sau submit nếu phù hợp
 
 ### Không làm lúc này
 

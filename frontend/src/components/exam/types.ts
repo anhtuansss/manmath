@@ -45,6 +45,7 @@ export type SubmitExamResultDto = {
   correctCount: number;
   totalQuestions: number;
   score: number;
+  topicStats: TopicStatDto[];
 };
 
 export type SubmitResult = SubmitExamResultDto;
