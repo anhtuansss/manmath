@@ -88,7 +88,8 @@
 
 ### User Profile
 
-* [ ] Hồ sơ người dùng
+* [x] Hồ sơ người dùng tối thiểu
+* [x] Link tới hồ sơ người dùng sau khi login
 * [ ] Thay đổi mật khẩu
 * [ ] Cập nhật thông tin cá nhân
 
@@ -239,6 +240,8 @@
 * [x] Tạo Google Provider và Google Login button
 * [x] Frontend lưu JWT ManMath sau khi login
 * [x] Frontend gửi `Authorization` header khi submit/history/detail có token
+* [x] Tạo route `/profile` hiển thị hồ sơ người dùng tối thiểu
+* [x] Thêm link tới `/profile` trong user card sau khi login
 * [x] Smoke test auth flow cơ bản
 * [x] Protect `GET /api/exams/:id/attempts` theo user
 * [x] Protect `GET /api/attempts/:attemptId` theo owner
