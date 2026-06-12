@@ -21,6 +21,7 @@ export type SubmitExamResultDto = {
   correctCount: number;
   totalQuestions: number;
   score: number;
+  topicStats: TopicStatDto[];
 };
 
 type ValidationResult =
@@ -30,6 +31,19 @@ type ValidationResult =
 export type SubmitExamServiceResult =
   | { ok: true; data: SubmitExamResultDto }
   | { ok: false; statusCode: 400 | 404; message: string };
+
+type SubmittedQuestionResult = {
+  questionId: number;
+  isCorrect: boolean;
+};
+
+type TopicStatAccumulator = {
+  topicId: string | null;
+  topicName: string;
+  topicSlug: string | null;
+  correct: number;
+  total: number;
+};
 
 const isPlainObject = (value: unknown): value is Record<string, unknown> => {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -348,6 +362,78 @@ export const getAttemptDetailById = async (
   };
 };
 
+const buildTopicStatsForSubmittedQuestions = async (
+  submittedQuestionResults: SubmittedQuestionResult[],
+): Promise<TopicStatDto[]> => {
+  if (submittedQuestionResults.length === 0) {
+    return [];
+  }
+
+  const questionTopics = await prisma.question.findMany({
+    where: {
+      id: {
+        in: submittedQuestionResults.map((questionResult) => questionResult.questionId),
+      },
+    },
+    select: {
+      id: true,
+      topic: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+    },
+  });
+
+  const topicByQuestionId = new Map(
+    questionTopics.map((question) => [question.id, question.topic]),
+  );
+
+  const topicStatMap = new Map<string, TopicStatAccumulator>();
+
+  for (const questionResult of submittedQuestionResults) {
+    const topic = topicByQuestionId.get(questionResult.questionId);
+    const topicKey = topic?.id ?? 'uncategorized';
+    const existingStat = topicStatMap.get(topicKey);
+
+    if (existingStat) {
+      existingStat.total += 1;
+
+      if (questionResult.isCorrect) {
+        existingStat.correct += 1;
+      }
+
+      continue;
+    }
+
+    topicStatMap.set(topicKey, {
+      topicId: topic?.id ?? null,
+      topicName: topic?.name ?? 'Chưa phân loại',
+      topicSlug: topic?.slug ?? null,
+      correct: questionResult.isCorrect ? 1 : 0,
+      total: 1,
+    });
+  }
+
+  return Array.from(topicStatMap.values())
+    .map((topicStat) => ({
+      ...topicStat,
+      accuracy:
+        topicStat.total > 0
+          ? Math.round((topicStat.correct / topicStat.total) * 100)
+          : 0,
+    }))
+    .sort((a, b) => {
+      if (a.accuracy !== b.accuracy) {
+        return a.accuracy - b.accuracy;
+      }
+
+      return a.topicName.localeCompare(b.topicName, 'vi');
+    });
+};
+
 // Xử lý nộp bài thi, tính điểm và trả về kết quả
 export const submitExam = async (
   payload: unknown,
@@ -406,14 +492,21 @@ export const submitExam = async (
   }
 
   let correctCount = 0;
+  const submittedQuestionResults: SubmittedQuestionResult[] = [];
 
   for (const question of exam.questions) {
     const selectedOptionIndex = validatedAnswers.answers[question.id];
     const correctIndex = question.options.indexOf(question.correctAnswer);
+    const isCorrect = selectedOptionIndex === correctIndex;
 
-    if (selectedOptionIndex === correctIndex) {
+    if (isCorrect) {
       correctCount++;
     }
+
+    submittedQuestionResults.push({
+      questionId: question.id,
+      isCorrect,
+    });
   }
 
   const totalQuestions = exam.questions.length;
@@ -421,6 +514,9 @@ export const submitExam = async (
     return validatedAnswers.answers[question.id] === undefined;
   }).length;
   const score = Math.round((correctCount / totalQuestions) * 10);
+  const topicStats = await buildTopicStatsForSubmittedQuestions(
+    submittedQuestionResults,
+  );
 
   await prisma.attempt.create({
     data: {
@@ -454,6 +550,7 @@ export const submitExam = async (
       correctCount,
       totalQuestions,
       score,
+      topicStats,
     },
   };
 };

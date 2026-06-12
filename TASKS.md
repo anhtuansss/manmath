@@ -243,6 +243,7 @@
 * [x] API attempt detail trả `topicStats` theo chuyên đề
 * [x] Frontend hiển thị `topicStats` trong trang chi tiết lần làm
 * [x] API `/api/me/topic-stats` tổng hợp topic analytics theo user
+* [x] Submit response trả `topicStats`
 * [ ] Hiển thị topic stats ở result page sau submit nếu phù hợp
 
 ### Không làm lúc này
