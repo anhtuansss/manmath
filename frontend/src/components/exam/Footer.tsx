@@ -67,8 +67,8 @@ export function Footer() {
             <h3 className="font-semibold text-text-primary font-[family-name:var(--font-outfit)]">Liên hệ</h3>
             <ul className="mt-4 space-y-3 text-sm text-text-secondary">
               <li>
-                <a href="mailto:hello@manmath.edu.vn" className="transition-colors hover:text-primary">
-                  hello@manmath.edu.vn
+                <a href="mailto:manmaththpt@gmail.com" className="transition-colors hover:text-primary">
+                  manmaththpt@gmail.com
                 </a>
               </li>
             </ul>

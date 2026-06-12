@@ -158,8 +158,8 @@
 
 ### Topic System
 
-* [ ] Bảng Topics
-* [ ] Mapping Question -> Topic
+* [x] Bảng Topics
+* [x] Mapping Question -> Topic
 * [ ] Mapping Question -> Subtopic
 
 ### User Analytics
@@ -235,6 +235,12 @@
 * [x] Smoke test auth flow cơ bản
 * [x] Protect `GET /api/exams/:id/attempts` theo user
 * [x] Protect `GET /api/attempts/:attemptId` theo owner
+* [x] Frontend xử lý 401 Unauthorized cho history/attempt detail
+* [x] Tạo schema Topic
+* [x] Mapping `Question -> Topic`
+* [x] Seed topic và gắn `Question.topicId`
+* [ ] Kiểm tra dữ liệu topic trong PostgreSQL
+* [ ] Thiết kế API topic stats cho attempt/result
 
 ### Không làm lúc này
 
