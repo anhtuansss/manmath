@@ -64,6 +64,7 @@ model Question {
   topicId       String?
   topic         Topic? @relation(fields: [topicId], references: [id], onDelete: SetNull)
   question      String
+  imageUrl      String?
   options       String[]
   correctAnswer String
   createdAt     DateTime @default(now())
