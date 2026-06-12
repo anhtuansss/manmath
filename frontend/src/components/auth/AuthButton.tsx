@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { GoogleLogin, type CredentialResponse } from '@react-oauth/google';
 import { IS_GOOGLE_AUTH_CONFIGURED } from '../../config/auth';
 import {
@@ -31,11 +32,13 @@ export function AuthButton() {
 
         if (isMounted) {
           setUser(currentUser);
+          setErrorMessage(null);
         }
       } catch {
         if (isMounted) {
           clearAuthToken();
-          setErrorMessage('Phiên đăng nhập đã hết hạn.');
+          setUser(null);
+          setErrorMessage('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
         }
       } finally {
         if (isMounted) {
@@ -55,7 +58,7 @@ export function AuthButton() {
     const credential = credentialResponse.credential;
 
     if (!credential) {
-      setErrorMessage('Google không trả về mã đăng nhập.');
+      setErrorMessage('Đăng nhập thất bại. Vui lòng thử lại.');
       return;
     }
 
@@ -66,12 +69,8 @@ export function AuthButton() {
       const loginResult = await loginWithGoogleCredential(credential);
       setAuthToken(loginResult.token);
       setUser(loginResult.user);
-    } catch (loginError) {
-      setErrorMessage(
-        loginError instanceof Error
-          ? loginError.message
-          : 'Không đăng nhập được bằng Google.',
-      );
+    } catch {
+      setErrorMessage('Đăng nhập thất bại. Vui lòng thử lại.');
     } finally {
       setIsLoading(false);
     }
@@ -99,16 +98,25 @@ export function AuthButton() {
               {(user.fullName ?? user.email).charAt(0).toUpperCase()}
             </span>
           )}
+
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold text-text-primary">
               {user.fullName ?? user.email}
             </p>
             <p className="truncate text-xs text-text-secondary">{user.email}</p>
           </div>
+
+          <Link
+            href="/profile"
+            className="ml-1 shrink-0 cursor-pointer rounded-md border border-border bg-background px-2.5 py-1.5 text-xs font-semibold text-text-secondary transition-colors hover:bg-background-alt hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          >
+            Hồ sơ
+          </Link>
+
           <button
             type="button"
             onClick={handleLogout}
-            className="ml-1 shrink-0 cursor-pointer rounded-md border border-border bg-background px-2.5 py-1.5 text-xs font-semibold text-text-secondary transition-colors hover:bg-background-alt hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            className="shrink-0 cursor-pointer rounded-md border border-border bg-background px-2.5 py-1.5 text-xs font-semibold text-text-secondary transition-colors hover:bg-background-alt hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
             Đăng xuất
           </button>
@@ -120,16 +128,26 @@ export function AuthButton() {
   return (
     <div className="flex flex-col items-start gap-2 sm:items-end">
       {IS_GOOGLE_AUTH_CONFIGURED ? (
-        <div style={{ colorScheme: 'light' }}>
-          <GoogleLogin
-            onSuccess={handleLoginSuccess}
-            onError={() => setErrorMessage('Không đăng nhập được bằng Google.')}
-            shape="rectangular"
-            size="medium"
-            text="signin_with"
-            width="220"
-          />
-        </div>
+        isLoading ? (
+          <button
+            type="button"
+            disabled
+            className="inline-flex h-10 cursor-wait items-center justify-center rounded-lg border border-border bg-surface px-4 text-sm font-semibold text-text-secondary"
+          >
+            Đang đăng nhập...
+          </button>
+        ) : (
+          <div style={{ colorScheme: 'light' }}>
+            <GoogleLogin
+              onSuccess={handleLoginSuccess}
+              onError={() => setErrorMessage('Đăng nhập thất bại. Vui lòng thử lại.')}
+              shape="rectangular"
+              size="medium"
+              text="signin_with"
+              width="220"
+            />
+          </div>
+        )
       ) : (
         <button
           type="button"
@@ -141,12 +159,10 @@ export function AuthButton() {
         </button>
       )}
 
-      {isLoading && (
-        <p className="text-xs font-medium text-text-secondary">Đang kiểm tra đăng nhập...</p>
-      )}
-
       {errorMessage && (
-        <p className="max-w-[220px] text-xs font-medium text-error">{errorMessage}</p>
+        <p className="max-w-[220px] text-xs font-medium text-error">
+          {errorMessage}
+        </p>
       )}
     </div>
   );

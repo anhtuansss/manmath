@@ -1,84 +1,136 @@
 # ManMath
 
-ManMath is a web app for practicing Vietnamese high school math exams.
+## Giới thiệu
 
-The current goal is to finish a clean MVP before moving the data layer to PostgreSQL.
+ManMath là web luyện đề Toán THPT, tập trung vào trải nghiệm làm bài rõ ràng, ít gây mỏi mắt và gần với một môi trường thi thật.
+
+Project hiện hỗ trợ chọn đề, làm bài trắc nghiệm, nộp bài, xem kết quả, xem lịch sử làm bài và theo dõi phân tích theo chuyên đề. Hệ thống dùng PostgreSQL + Prisma ở backend và Next.js ở frontend.
+
+## Tính năng chính
+
+- [x] Luyện đề Toán THPT
+- [x] Làm bài trắc nghiệm theo đề
+- [x] Chấm điểm, result page, review đáp án
+- [x] Lịch sử làm bài và chi tiết attempt
+- [x] Google Login + JWT
+- [x] Topic analytics
+- [x] KaTeX math rendering
 
 ## Tech Stack
 
-- Frontend: Next.js App Router + TypeScript + Tailwind CSS
-- Backend: Express + TypeScript
-- Current data source: backend mock data
-- Future database: PostgreSQL + Prisma
+| Thành phần | Công nghệ |
+| --- | --- |
+| Frontend | Next.js App Router, React, TypeScript, Tailwind CSS |
+| Backend | Express, TypeScript |
+| Database | PostgreSQL |
+| ORM | Prisma |
+| Auth | Google Login, JWT |
+| Math rendering | KaTeX |
 
-## Current MVP Routes
+## Kiến trúc tổng quan
 
-- `/` - exam list page
-- `/exams` - exam list page alias
-- `/exam/[id]` - exam taking page
-- `/exam/[id]/result` - result and answer review page
+```text
+Browser
+↓
+Next.js Frontend
+↓
+Express API
+↓
+Prisma ORM
+↓
+PostgreSQL
+```
 
-## Current MVP Features
+## Chạy local
 
-- Backend serves multiple mock exams.
-- Frontend fetches exam list and exam detail from backend.
-- Exam taking page renders questions and A/B/C/D answer choices.
-- Sidebar question navigator supports click-to-scroll.
-- Timer runs and disables answer/submit flow when time is up.
-- Answers are autosaved in `localStorage` and restored on reload.
-- Submit calls backend scoring API.
-- Result page reads temporary result data from `sessionStorage`.
-- Result page shows score, correct count, accuracy, and answer review.
-- Retake flow clears the exam autosave/result storage for that exam.
-
-## Backend API
-
-- `GET /api/health`
-- `GET /api/exams`
-- `GET /api/exams/:id`
-- `POST /api/exam/submit`
-
-## How to Run
-
-Run backend:
+### 1. Cài backend
 
 ```bash
 cd backend
 npm install
-npm run dev
 ```
 
-Run frontend:
+### 2. Cài frontend
 
 ```bash
 cd frontend
 npm install
+```
+
+### 3. Tạo env
+
+`backend/.env`
+
+```env
+DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/manmath_db"
+GOOGLE_CLIENT_ID="your-google-client-id.apps.googleusercontent.com"
+JWT_SECRET="your-dev-secret-at-least-32-characters"
+JWT_EXPIRES_IN="7d"
+```
+
+`frontend/.env.local`
+
+```env
+NEXT_PUBLIC_API_BASE_URL="http://localhost:5000"
+NEXT_PUBLIC_GOOGLE_CLIENT_ID="your-google-client-id.apps.googleusercontent.com"
+```
+
+### 4. Migrate và seed
+
+```bash
+cd backend
+npx prisma migrate dev
+npm run seed
+```
+
+### 5. Chạy backend
+
+```bash
+cd backend
 npm run dev
 ```
 
-Default local URLs:
+### 6. Chạy frontend
 
-- Frontend: `http://localhost:3000`
-- Backend: `http://localhost:5000`
+```bash
+cd frontend
+npm run dev
+```
 
-## MVP Smoke Test
+## Env chính
 
-1. Open `http://localhost:3000/`.
-2. Confirm the exam list loads from the backend.
-3. Open an exam, for example `/exam/thpt-mock-01`.
-4. Select answers for a few questions.
-5. Reload the page and confirm selected answers are restored.
-6. Confirm the timer is running.
-7. Submit the exam.
-8. Confirm the app redirects to `/exam/thpt-mock-01/result`.
-9. Confirm score, correct count, accuracy, and answer review are visible.
-10. Click retake and confirm the exam opens again with cleared saved answers.
+### Backend
 
-## Not in Current MVP
+- `DATABASE_URL`
+- `GOOGLE_CLIENT_ID`
+- `JWT_SECRET`
+- `JWT_EXPIRES_IN`
 
-- Authentication
-- Admin dashboard
-- OCR
-- AI explanation
-- Ranking or leaderboard
-- Payment or subscription
+### Frontend
+
+- `NEXT_PUBLIC_API_BASE_URL`
+- `NEXT_PUBLIC_GOOGLE_CLIENT_ID`
+
+Ghi chú:
+
+- Không commit `.env` hoặc `.env.local`
+- `JWT_SECRET` chỉ dùng ở backend
+- Các biến `NEXT_PUBLIC_*` là public env cho browser
+
+## Docs chi tiết
+
+- [Kiến trúc hệ thống](docs/ARCHITECTURE.md)
+- [API hiện có](docs/API.md)
+- [Auth flow](docs/AUTH.md)
+- [Database và Prisma](docs/DATABASE.md)
+- [Hướng dẫn phát triển](docs/DEVELOPMENT.md)
+
+## Roadmap ngắn
+
+- Refresh Token
+- Email/password login
+- Cập nhật thông tin cá nhân
+- Hỗ trợ hình ảnh trong câu hỏi/đáp án
+- Dashboard analytics sâu hơn
+- Import đề từ file
+- AI feedback

@@ -15,6 +15,7 @@
 * [x] Submit bài thi
 * [x] Chuyển sang trang kết quả
 * [x] Review đáp án
+* [x] Result Page hiển thị thống kê theo chuyên đề sau submit
 * [x] Loading / Error / Empty states
 * [x] UI polish theo Concept 2
 
@@ -24,6 +25,7 @@
 * [x] API lấy danh sách đề
 * [x] API lấy chi tiết đề
 * [x] API submit bài thi
+* [x] Submit response trả `topicStats`
 * [x] Validation cơ bản cho submit
 * [x] Error handling cơ bản
 
@@ -86,7 +88,8 @@
 
 ### User Profile
 
-* [ ] Hồ sơ người dùng
+* [x] Hồ sơ người dùng tối thiểu
+* [x] Link tới hồ sơ người dùng sau khi login
 * [ ] Thay đổi mật khẩu
 * [ ] Cập nhật thông tin cá nhân
 
@@ -105,8 +108,10 @@
 
 * [x] API summary lịch sử làm bài theo đề
 * [x] API chi tiết một lần làm bài
+* [x] API chi tiết một lần làm bài trả `topicStats`
 * [x] Xem lịch sử làm bài
 * [x] Xem chi tiết một lần làm bài
+* [x] Attempt Detail hiển thị `topicStats`
 * [x] Xem lần làm gần nhất
 * [x] Xem điểm cao nhất
 * [x] Thống kê số lần làm
@@ -132,7 +137,8 @@
 * [x] Hỗ trợ nội dung LaTeX trong đề
 * [x] Hỗ trợ nội dung LaTeX trong đáp án
 * [x] Mock data LaTeX để kiểm thử KaTeX
-* [ ] Hỗ trợ hình ảnh trong câu hỏi
+* [x] Hỗ trợ hình ảnh trong câu hỏi
+* [x] Render ảnh câu hỏi ở màn làm bài, result review và attempt detail
 * [ ] Hỗ trợ hình ảnh trong đáp án
 
 ---
@@ -158,13 +164,16 @@
 
 ### Topic System
 
-* [ ] Bảng Topics
-* [ ] Mapping Question -> Topic
+* [x] Bảng Topics
+* [x] Mapping Question -> Topic
+* [x] Attempt Detail có `topicStats`
+* [x] Result Page sau submit hiển thị `topicStats`
 * [ ] Mapping Question -> Subtopic
 
 ### User Analytics
 
-* [ ] Tính độ chính xác theo chuyên đề
+* [x] Tính độ chính xác theo chuyên đề
+* [x] API `/api/me/topic-stats` tổng hợp topic analytics theo user
 * [ ] Tính độ chính xác theo thời gian
 * [ ] Theo dõi tiến bộ
 * [ ] Dashboard học tập
@@ -232,9 +241,22 @@
 * [x] Tạo Google Provider và Google Login button
 * [x] Frontend lưu JWT ManMath sau khi login
 * [x] Frontend gửi `Authorization` header khi submit/history/detail có token
+* [x] Tạo route `/profile` hiển thị hồ sơ người dùng tối thiểu
+* [x] Thêm link tới `/profile` trong user card sau khi login
 * [x] Smoke test auth flow cơ bản
 * [x] Protect `GET /api/exams/:id/attempts` theo user
 * [x] Protect `GET /api/attempts/:attemptId` theo owner
+* [x] Frontend xử lý 401 Unauthorized cho history/attempt detail
+* [x] Tạo schema Topic
+* [x] Mapping `Question -> Topic`
+* [x] Seed topic và gắn `Question.topicId`
+* [x] Kiểm tra dữ liệu topic trong PostgreSQL
+* [x] API attempt detail trả `topicStats` theo chuyên đề
+* [x] Frontend hiển thị `topicStats` trong trang chi tiết lần làm
+* [x] API `/api/me/topic-stats` tổng hợp topic analytics theo user
+* [x] Submit response trả `topicStats`
+* [x] Hiển thị topic stats ở result page sau submit nếu phù hợp
+* [x] Hoàn thiện Question Image Support MVP với `Question.imageUrl` và ảnh static path
 
 ### Không làm lúc này
 

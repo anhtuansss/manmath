@@ -3,8 +3,18 @@ export type ExamDifficulty = 'easy' | 'medium' | 'hard';
 export type QuestionDto = {
   id: number;
   question: string;
+  imageUrl: string | null;
   options: string[];
   correctAnswer: string;
+};
+
+export type TopicStatDto = {
+  topicId: string | null;
+  topicName: string;
+  topicSlug: string | null;
+  correct: number;
+  total: number;
+  accuracy: number;
 };
 
 export type ExamSummaryDto = {
@@ -40,6 +50,7 @@ export type ExamAttemptSummaryDto = {
 export type AttemptAnswerDetailDto = {
   questionId: number;
   question: string;
+  imageUrl: string | null;
   options: string[];
   selectedOptionIndex: number | null;
   correctOptionIndex: number;
@@ -54,4 +65,5 @@ export type ExamAttemptDetailDto = {
     durationMinutes: number;
   };
   answers: AttemptAnswerDetailDto[];
+  topicStats: TopicStatDto[];
 };

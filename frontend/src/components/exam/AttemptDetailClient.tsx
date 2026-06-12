@@ -3,9 +3,13 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Logo } from './Logo';
-import { API_BASE_URL } from '../../config/api';
-import { getAuthToken } from '../../lib/authStorage';
+import {
+  fetchProtectedJson,
+  isUnauthorizedError,
+} from '../../lib/authApi';
+import { subscribeAuthTokenChange } from '../../lib/authStorage';
 import { MathText } from './MathText';
+import { QuestionImage } from './QuestionImage';
 import type { ExamAttemptDetailDto } from './types';
 
 type AttemptDetailClientProps = {
@@ -55,43 +59,23 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
       setError(null);
       setErrorType(null);
 
-      const authToken = getAuthToken();
-      const requestHeaders: HeadersInit = {};
-
-      if (authToken) {
-        requestHeaders.Authorization = `Bearer ${authToken}`;
-      }
-
-      const response = await fetch(`${API_BASE_URL}/api/attempts/${attemptId}`, {
-        headers: requestHeaders,
-      });
-
-      if (response.status === 401) {
+      const data = await fetchProtectedJson<ExamAttemptDetailDto>(
+        `/api/attempts/${attemptId}`,
+      );
+      setAttemptDetail(data);
+    } catch (fetchError: unknown) {
+      if (isUnauthorizedError(fetchError)) {
         setAttemptDetail(null);
         setErrorType('unauthorized');
         setError('Bạn cần đăng nhập để xem lịch sử làm bài.');
-        return;
-      }
-
-      if (response.status === 404) {
+      } else {
         setErrorType('generic');
-        throw new Error('Không tìm thấy lần làm bài');
+        setError(
+          fetchError instanceof Error
+            ? fetchError.message
+            : 'Lỗi không xác định khi tải chi tiết lần làm bài',
+        );
       }
-
-      if (!response.ok) {
-        setErrorType('generic');
-        throw new Error('Không tải được chi tiết lần làm bài');
-      }
-
-      const data: ExamAttemptDetailDto = await response.json();
-      setAttemptDetail(data);
-    } catch (fetchError) {
-      setErrorType('generic');
-      setError(
-        fetchError instanceof Error
-          ? fetchError.message
-          : 'Lỗi không xác định khi tải chi tiết lần làm bài',
-      );
     } finally {
       setLoading(false);
     }
@@ -99,6 +83,13 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
 
   useEffect(() => {
     void fetchAttemptDetail();
+    const unsubscribeAuthTokenChange = subscribeAuthTokenChange(() => {
+      void fetchAttemptDetail();
+    });
+
+    return () => {
+      unsubscribeAuthTokenChange();
+    };
   }, [attemptId]);
 
   if (loading) {
@@ -183,9 +174,13 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
     );
   }
 
-  const { attempt, exam, answers } = attemptDetail;
-  const accuracy = attempt.totalQuestions > 0 ? Math.round((attempt.correctCount / attempt.totalQuestions) * 100) : 0;
-  const incorrectCount = attempt.totalQuestions - attempt.correctCount - attempt.unansweredCount;
+  const { attempt, exam, answers, topicStats } = attemptDetail;
+  const accuracy =
+    attempt.totalQuestions > 0
+      ? Math.round((attempt.correctCount / attempt.totalQuestions) * 100)
+      : 0;
+  const incorrectCount =
+    attempt.totalQuestions - attempt.correctCount - attempt.unansweredCount;
   const durationLabel = formatDurationSeconds(attempt.durationSeconds);
 
   return (
@@ -193,7 +188,11 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
       <div className="mx-auto flex w-full max-w-6xl animate-fade-in flex-col gap-6">
         <header className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <Link href="/" aria-label="Về trang chủ" className="group inline-flex cursor-pointer items-center gap-3 rounded-lg text-sm font-semibold text-text-primary transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+            <Link
+              href="/"
+              aria-label="Về trang chủ"
+              className="group inline-flex cursor-pointer items-center gap-3 rounded-lg text-sm font-semibold text-text-primary transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            >
               <Logo className="h-9 w-9 transition-transform group-hover:scale-105" />
               <span className="transition-colors group-hover:text-primary">ManMath</span>
             </Link>
@@ -267,6 +266,47 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
             </p>
           </div>
         </section>
+        
+        {topicStats.length > 0 && (
+          <section className="rounded-xl border border-border bg-surface p-5 shadow-card">
+            <div className="flex flex-col gap-1">
+              <h2 className="font-[family-name:var(--font-outfit)] text-xl font-bold text-text-primary">
+                Phân tích theo chuyên đề
+              </h2>
+              <p className="text-sm text-text-secondary">
+                Tỷ lệ đúng của từng nhóm kiến thức trong lần làm bài này.
+              </p>
+            </div>
+
+            <div className="mt-5 space-y-4">
+              {topicStats.map((topicStat) => (
+                <div key={topicStat.topicId ?? topicStat.topicName}>
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-text-primary">
+                        {topicStat.topicName}
+                      </p>
+                      <p className="mt-1 text-xs text-text-secondary">
+                        {topicStat.correct}/{topicStat.total} câu đúng
+                      </p>
+                    </div>
+
+                    <span className="rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold text-text-secondary">
+                      {topicStat.accuracy}%
+                    </span>
+                  </div>
+
+                  <div className="mt-2 h-2 overflow-hidden rounded-full bg-background-alt">
+                    <div
+                      className="h-full rounded-full bg-primary"
+                      style={{ width: `${topicStat.accuracy}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         <section className="space-y-4">
           <div className="flex flex-col gap-1">
@@ -288,30 +328,30 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
               const correctAnswer = answer.options[answer.correctOptionIndex];
 
               const isUnanswered = answer.selectedOptionIndex === null;
-              
+
               const statusAccentClass = isUnanswered
                 ? 'border-l-warning'
                 : answer.isCorrect
-                ? 'border-l-success'
-                : 'border-l-error';
+                  ? 'border-l-success'
+                  : 'border-l-error';
 
               const statusBadgeClass = isUnanswered
                 ? 'bg-warning-light text-warning border-warning-border'
                 : answer.isCorrect
-                ? 'bg-success-light text-success border-success-border'
-                : 'bg-error-light text-error border-error-border';
+                  ? 'bg-success-light text-success border-success-border'
+                  : 'bg-error-light text-error border-error-border';
 
               const statusLabel = isUnanswered
                 ? 'Chưa làm'
                 : answer.isCorrect
-                ? 'Đúng'
-                : 'Sai';
+                  ? 'Đúng'
+                  : 'Sai';
 
               const answerBoxClass = isUnanswered
                 ? 'border-warning-border bg-warning-light'
                 : answer.isCorrect
-                ? 'border-success-border bg-success-light'
-                : 'border-error-border bg-error-light';
+                  ? 'border-success-border bg-success-light'
+                  : 'border-error-border bg-error-light';
 
               return (
                 <article
@@ -334,6 +374,12 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
                     as="p"
                     text={answer.question}
                     className="mt-4 text-base leading-7 text-text-primary"
+                  />
+
+                  <QuestionImage
+                    imageUrl={answer.imageUrl}
+                    alt={`Hình minh họa câu ${index + 1}`}
+                    className="mt-4"
                   />
 
                   <div className="mt-4 grid gap-3 md:grid-cols-2">

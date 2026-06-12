@@ -20,6 +20,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { MathText } from './MathText';
 import { Logo } from './Logo';
+import { QuestionImage } from './QuestionImage';
 import type { ExamDetailDto, ExamResultSession, QuestionDto } from './types';
 import { API_BASE_URL } from '../../config/api';
 import {
@@ -297,6 +298,7 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
   }
 
   const { submitResult } = resultSession;
+  const topicStats = submitResult.topicStats ?? [];
   const answeredCount =
     exam?.questions.filter((question) => resultSession.answers[question.id] !== undefined)
       .length ?? Object.keys(resultSession.answers).length;
@@ -492,6 +494,50 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
         </section>
 
         {/* ── Review Section ── */}
+        {topicStats.length > 0 && (
+          <section className="rounded-xl border border-border bg-surface p-6 shadow-card">
+            <div className="flex flex-col gap-1">
+              <h2 className="font-[family-name:var(--font-outfit)] text-xl font-bold text-text-primary">
+                Phân tích theo chuyên đề
+              </h2>
+              <p className="text-sm leading-6 text-text-secondary">
+                Các chuyên đề có tỷ lệ đúng thấp hơn được đặt lên trước để bạn ưu tiên xem lại.
+              </p>
+            </div>
+
+            <div className="mt-5 grid gap-4 md:grid-cols-2">
+              {topicStats.map((topicStat) => (
+                <div
+                  key={topicStat.topicId ?? topicStat.topicName}
+                  className="rounded-lg border border-border bg-background p-4"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-text-primary">
+                        {topicStat.topicName}
+                      </p>
+                      <p className="mt-1 text-xs text-text-secondary">
+                        {topicStat.correct}/{topicStat.total} câu đúng
+                      </p>
+                    </div>
+
+                    <span className="rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold text-text-secondary">
+                      {topicStat.accuracy}%
+                    </span>
+                  </div>
+
+                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-background-alt">
+                    <div
+                      className="h-full rounded-full bg-primary transition-all duration-500"
+                      style={{ width: `${topicStat.accuracy}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         <section id="review-section" className="space-y-4 scroll-mt-24">
           <div className="flex flex-col gap-1">
             <h2 className="font-[family-name:var(--font-outfit)] text-xl font-bold text-text-primary">
@@ -566,6 +612,12 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
                       as="p"
                       text={question.question}
                       className="text-base leading-7 text-text-primary"
+                    />
+
+                    <QuestionImage
+                      imageUrl={question.imageUrl}
+                      alt={`Hình minh họa câu ${index + 1}`}
+                      className="mt-4"
                     />
 
                     <div className="mt-5 grid gap-4 md:grid-cols-2">
