@@ -66,6 +66,7 @@ export function AuthButton() {
       const loginResult = await loginWithGoogleCredential(credential);
       setAuthToken(loginResult.token);
       setUser(loginResult.user);
+      window.location.reload();
     } catch (loginError) {
       setErrorMessage(
         loginError instanceof Error
@@ -81,6 +82,7 @@ export function AuthButton() {
     clearAuthToken();
     setUser(null);
     setErrorMessage(null);
+    window.location.reload();
   };
 
   if (user) {

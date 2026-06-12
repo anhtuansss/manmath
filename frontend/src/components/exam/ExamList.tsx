@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ExamCard } from './ExamCard';
 import { Logo } from './Logo';
 import { TypewriterText } from './TypewriterText';
+import { UserTopicStatsCard } from './UserTopicStatsCard';
 import type { ExamListItem } from './types';
 import type { UserStats } from '../../lib/userStats';
 import { Footer } from './Footer';
@@ -288,6 +289,7 @@ export function ExamList({ exams, stats, draftExamId }: ExamListProps) {
               </section>
             )}
 
+            <UserTopicStatsCard />
           </aside>
         </div>
       </div>
