@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { API_BASE_URL } from '../../config/api';
-import { getAuthToken } from '../../lib/authStorage';
+import {
+  clearAuthToken,
+  getAuthToken,
+  subscribeAuthTokenChange,
+} from '../../lib/authStorage';
 import type { TopicStatDto } from './types';
 
 type TopicStatsResponse = {
@@ -51,6 +55,8 @@ export function UserTopicStatsCard() {
         });
 
         if (response.status === 401) {
+          clearAuthToken();
+
           if (isMounted) {
             setStatus('unauthenticated');
             setTopicStats([]);
@@ -83,9 +89,13 @@ export function UserTopicStatsCard() {
     };
 
     void fetchTopicStats();
+    const unsubscribeAuthTokenChange = subscribeAuthTokenChange(() => {
+      void fetchTopicStats();
+    });
 
     return () => {
       isMounted = false;
+      unsubscribeAuthTokenChange();
     };
   }, []);
 

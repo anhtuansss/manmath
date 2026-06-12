@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Logo } from '../exam/Logo';
+import { UserTopicStatsCard } from '../exam/UserTopicStatsCard';
 import { getCurrentUser, type AuthUser } from '../../lib/authApi';
-import { clearAuthToken } from '../../lib/authStorage';
+import { clearAuthToken, getAuthToken, subscribeAuthTokenChange } from '../../lib/authStorage';
 
 type ProfileStatus = 'loading' | 'unauthorized' | 'ready' | 'error';
 
@@ -58,9 +59,17 @@ export function ProfileClient() {
     };
 
     void loadProfile();
+    const unsubscribeAuthTokenChange = subscribeAuthTokenChange(() => {
+      if (!getAuthToken()) {
+        setUser(null);
+        setStatus('unauthorized');
+        setErrorMessage(null);
+      }
+    });
 
     return () => {
       isMounted = false;
+      unsubscribeAuthTokenChange();
     };
   }, []);
 
@@ -164,59 +173,63 @@ export function ProfileClient() {
         )}
 
         {status === 'ready' && user && (
-          <section className="rounded-xl border border-border bg-surface p-6 shadow-card">
-            <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-              {user.avatarUrl ? (
-                <img
-                  src={user.avatarUrl}
-                  alt=""
-                  className="h-20 w-20 rounded-full border border-border object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              ) : (
-                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary-light text-2xl font-bold text-primary">
-                  {(user.fullName ?? user.email).charAt(0).toUpperCase()}
-                </div>
-              )}
+          <>
+            <section className="rounded-xl border border-border bg-surface p-6 shadow-card">
+              <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+                {user.avatarUrl ? (
+                  <img
+                    src={user.avatarUrl}
+                    alt=""
+                    className="h-20 w-20 rounded-full border border-border object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary-light text-2xl font-bold text-primary">
+                    {(user.fullName ?? user.email).charAt(0).toUpperCase()}
+                  </div>
+                )}
 
-              <div className="min-w-0 flex-1">
-                <p className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
-                  Đang đăng nhập
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                    Đang đăng nhập
+                  </p>
+                  <h2 className="mt-1 truncate font-[family-name:var(--font-outfit)] text-2xl font-bold text-text-primary">
+                    {user.fullName ?? 'Người dùng ManMath'}
+                  </h2>
+                  <p className="mt-2 truncate text-sm text-text-secondary">
+                    {user.email}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 rounded-lg border border-border bg-background p-4">
+                <p className="text-sm font-semibold text-text-primary">
+                  Trạng thái đăng nhập
                 </p>
-                <h2 className="mt-1 truncate font-[family-name:var(--font-outfit)] text-2xl font-bold text-text-primary">
-                  {user.fullName ?? 'Người dùng ManMath'}
-                </h2>
-                <p className="mt-2 truncate text-sm text-text-secondary">
-                  {user.email}
+                <p className="mt-1 text-sm leading-6 text-text-secondary">
+                  Tài khoản này đang dùng Google Login và JWT Access Token của ManMath.
                 </p>
               </div>
-            </div>
 
-            <div className="mt-6 rounded-lg border border-border bg-background p-4">
-              <p className="text-sm font-semibold text-text-primary">
-                Trạng thái đăng nhập
-              </p>
-              <p className="mt-1 text-sm leading-6 text-text-secondary">
-                Tài khoản này đang dùng Google Login và JWT Access Token của ManMath.
-              </p>
-            </div>
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                <Link
+                  href="/"
+                  className="inline-flex h-10 cursor-pointer items-center justify-center rounded-lg bg-primary px-5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                >
+                  Quay về danh sách đề
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="inline-flex h-10 cursor-pointer items-center justify-center rounded-lg border border-border bg-surface px-5 text-sm font-semibold text-text-primary transition-colors duration-200 hover:bg-background-alt focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                >
+                  Đăng xuất
+                </button>
+              </div>
+            </section>
 
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Link
-                href="/"
-                className="inline-flex h-10 cursor-pointer items-center justify-center rounded-lg bg-primary px-5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-              >
-                Quay về danh sách đề
-              </Link>
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="inline-flex h-10 cursor-pointer items-center justify-center rounded-lg border border-border bg-surface px-5 text-sm font-semibold text-text-primary transition-colors duration-200 hover:bg-background-alt focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-              >
-                Đăng xuất
-              </button>
-            </div>
-          </section>
+            <UserTopicStatsCard />
+          </>
         )}
       </div>
     </main>
