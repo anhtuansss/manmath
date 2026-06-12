@@ -9,6 +9,7 @@ import {
 } from '../../lib/authApi';
 import { subscribeAuthTokenChange } from '../../lib/authStorage';
 import { MathText } from './MathText';
+import { QuestionImage } from './QuestionImage';
 import type { ExamAttemptDetailDto } from './types';
 
 type AttemptDetailClientProps = {
@@ -373,6 +374,12 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
                     as="p"
                     text={answer.question}
                     className="mt-4 text-base leading-7 text-text-primary"
+                  />
+
+                  <QuestionImage
+                    imageUrl={answer.imageUrl}
+                    alt={`Hình minh họa câu ${index + 1}`}
+                    className="mt-4"
                   />
 
                   <div className="mt-4 grid gap-3 md:grid-cols-2">

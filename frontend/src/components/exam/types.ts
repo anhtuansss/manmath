@@ -16,6 +16,7 @@
 export type QuestionDto = {
   id: number;
   question: string;
+  imageUrl?: string | null;
   options: string[];
   correctAnswer: string;
 };
@@ -110,6 +111,7 @@ export type ExamAttemptSummaryDto = {
 export type AttemptAnswerDetailDto = {
   questionId: number;
   question: string;
+  imageUrl?: string | null;
   options: string[];
   selectedOptionIndex: number | null;
   correctOptionIndex: number;

@@ -20,6 +20,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { MathText } from './MathText';
 import { Logo } from './Logo';
+import { QuestionImage } from './QuestionImage';
 import type { ExamDetailDto, ExamResultSession, QuestionDto } from './types';
 import { API_BASE_URL } from '../../config/api';
 import {
@@ -611,6 +612,12 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
                       as="p"
                       text={question.question}
                       className="text-base leading-7 text-text-primary"
+                    />
+
+                    <QuestionImage
+                      imageUrl={question.imageUrl}
+                      alt={`Hình minh họa câu ${index + 1}`}
+                      className="mt-4"
                     />
 
                     <div className="mt-5 grid gap-4 md:grid-cols-2">

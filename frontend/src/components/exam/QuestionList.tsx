@@ -1,5 +1,6 @@
 import { AnswerOptions } from './AnswerOptions';
 import { MathText } from './MathText';
+import { QuestionImage } from './QuestionImage';
 import type { Answers, Question } from './types';
 
 type QuestionListProps = {
@@ -84,6 +85,12 @@ export function QuestionList({
               as="p"
               text={question.question}
               className="max-w-3xl text-base leading-8 text-text-primary sm:text-lg sm:leading-9"
+            />
+
+            <QuestionImage
+              imageUrl={question.imageUrl}
+              alt={`Hình minh họa câu ${index + 1}`}
+              className="mt-5"
             />
 
             <div className="mt-7">
