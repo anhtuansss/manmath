@@ -1,12 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { API_BASE_URL } from '../../config/api';
 import {
-  clearAuthToken,
-  getAuthToken,
-  subscribeAuthTokenChange,
-} from '../../lib/authStorage';
+  fetchProtectedJson,
+  isUnauthorizedError,
+} from '../../lib/authApi';
+import { subscribeAuthTokenChange } from '../../lib/authStorage';
 import type { TopicStatDto } from './types';
 
 type TopicStatsResponse = {
@@ -34,42 +33,12 @@ export function UserTopicStatsCard() {
     let isMounted = true;
 
     const fetchTopicStats = async () => {
-      const authToken = getAuthToken();
-
-      if (!authToken) {
-        if (isMounted) {
-          setStatus('unauthenticated');
-          setTopicStats([]);
-        }
-
-        return;
-      }
-
       try {
         setStatus('loading');
 
-        const response = await fetch(`${API_BASE_URL}/api/me/topic-stats`, {
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-          },
-        });
-
-        if (response.status === 401) {
-          clearAuthToken();
-
-          if (isMounted) {
-            setStatus('unauthenticated');
-            setTopicStats([]);
-          }
-
-          return;
-        }
-
-        if (!response.ok) {
-          throw new Error('Failed to load topic stats');
-        }
-
-        const data = (await response.json()) as TopicStatsResponse;
+        const data = await fetchProtectedJson<TopicStatsResponse>(
+          '/api/me/topic-stats',
+        );
         const nextTopicStats = Array.isArray(data.topicStats)
           ? data.topicStats
           : [];
@@ -80,11 +49,19 @@ export function UserTopicStatsCard() {
 
         setTopicStats(nextTopicStats);
         setStatus(nextTopicStats.length > 0 ? 'ready' : 'empty');
-      } catch {
-        if (isMounted) {
-          setStatus('error');
-          setTopicStats([]);
+      } catch (error: unknown) {
+        if (!isMounted) {
+          return;
         }
+
+        if (isUnauthorizedError(error)) {
+          setStatus('unauthenticated');
+          setTopicStats([]);
+          return;
+        }
+
+        setStatus('error');
+        setTopicStats([]);
       }
     };
 

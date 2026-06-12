@@ -3,8 +3,11 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Logo } from './Logo';
-import { API_BASE_URL } from '../../config/api';
-import { getAuthToken } from '../../lib/authStorage';
+import {
+  fetchProtectedJson,
+  isUnauthorizedError,
+} from '../../lib/authApi';
+import { subscribeAuthTokenChange } from '../../lib/authStorage';
 import { MathText } from './MathText';
 import type { ExamAttemptDetailDto } from './types';
 
@@ -55,43 +58,23 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
       setError(null);
       setErrorType(null);
 
-      const authToken = getAuthToken();
-      const requestHeaders: HeadersInit = {};
-
-      if (authToken) {
-        requestHeaders.Authorization = `Bearer ${authToken}`;
-      }
-
-      const response = await fetch(`${API_BASE_URL}/api/attempts/${attemptId}`, {
-        headers: requestHeaders,
-      });
-
-      if (response.status === 401) {
+      const data = await fetchProtectedJson<ExamAttemptDetailDto>(
+        `/api/attempts/${attemptId}`,
+      );
+      setAttemptDetail(data);
+    } catch (fetchError: unknown) {
+      if (isUnauthorizedError(fetchError)) {
         setAttemptDetail(null);
         setErrorType('unauthorized');
         setError('Bạn cần đăng nhập để xem lịch sử làm bài.');
-        return;
-      }
-
-      if (response.status === 404) {
+      } else {
         setErrorType('generic');
-        throw new Error('Không tìm thấy lần làm bài');
+        setError(
+          fetchError instanceof Error
+            ? fetchError.message
+            : 'Lỗi không xác định khi tải chi tiết lần làm bài',
+        );
       }
-
-      if (!response.ok) {
-        setErrorType('generic');
-        throw new Error('Không tải được chi tiết lần làm bài');
-      }
-
-      const data: ExamAttemptDetailDto = await response.json();
-      setAttemptDetail(data);
-    } catch (fetchError) {
-      setErrorType('generic');
-      setError(
-        fetchError instanceof Error
-          ? fetchError.message
-          : 'Lỗi không xác định khi tải chi tiết lần làm bài',
-      );
     } finally {
       setLoading(false);
     }
@@ -99,6 +82,13 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
 
   useEffect(() => {
     void fetchAttemptDetail();
+    const unsubscribeAuthTokenChange = subscribeAuthTokenChange(() => {
+      void fetchAttemptDetail();
+    });
+
+    return () => {
+      unsubscribeAuthTokenChange();
+    };
   }, [attemptId]);
 
   if (loading) {
@@ -184,8 +174,12 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
   }
 
   const { attempt, exam, answers, topicStats } = attemptDetail;
-  const accuracy = attempt.totalQuestions > 0 ? Math.round((attempt.correctCount / attempt.totalQuestions) * 100) : 0;
-  const incorrectCount = attempt.totalQuestions - attempt.correctCount - attempt.unansweredCount;
+  const accuracy =
+    attempt.totalQuestions > 0
+      ? Math.round((attempt.correctCount / attempt.totalQuestions) * 100)
+      : 0;
+  const incorrectCount =
+    attempt.totalQuestions - attempt.correctCount - attempt.unansweredCount;
   const durationLabel = formatDurationSeconds(attempt.durationSeconds);
 
   return (
@@ -193,7 +187,11 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
       <div className="mx-auto flex w-full max-w-6xl animate-fade-in flex-col gap-6">
         <header className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <Link href="/" aria-label="Về trang chủ" className="group inline-flex cursor-pointer items-center gap-3 rounded-lg text-sm font-semibold text-text-primary transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+            <Link
+              href="/"
+              aria-label="Về trang chủ"
+              className="group inline-flex cursor-pointer items-center gap-3 rounded-lg text-sm font-semibold text-text-primary transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            >
               <Logo className="h-9 w-9 transition-transform group-hover:scale-105" />
               <span className="transition-colors group-hover:text-primary">ManMath</span>
             </Link>
@@ -329,30 +327,30 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
               const correctAnswer = answer.options[answer.correctOptionIndex];
 
               const isUnanswered = answer.selectedOptionIndex === null;
-              
+
               const statusAccentClass = isUnanswered
                 ? 'border-l-warning'
                 : answer.isCorrect
-                ? 'border-l-success'
-                : 'border-l-error';
+                  ? 'border-l-success'
+                  : 'border-l-error';
 
               const statusBadgeClass = isUnanswered
                 ? 'bg-warning-light text-warning border-warning-border'
                 : answer.isCorrect
-                ? 'bg-success-light text-success border-success-border'
-                : 'bg-error-light text-error border-error-border';
+                  ? 'bg-success-light text-success border-success-border'
+                  : 'bg-error-light text-error border-error-border';
 
               const statusLabel = isUnanswered
                 ? 'Chưa làm'
                 : answer.isCorrect
-                ? 'Đúng'
-                : 'Sai';
+                  ? 'Đúng'
+                  : 'Sai';
 
               const answerBoxClass = isUnanswered
                 ? 'border-warning-border bg-warning-light'
                 : answer.isCorrect
-                ? 'border-success-border bg-success-light'
-                : 'border-error-border bg-error-light';
+                  ? 'border-success-border bg-success-light'
+                  : 'border-error-border bg-error-light';
 
               return (
                 <article

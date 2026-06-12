@@ -4,8 +4,12 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Logo } from '../exam/Logo';
 import { UserTopicStatsCard } from '../exam/UserTopicStatsCard';
-import { getCurrentUser, type AuthUser } from '../../lib/authApi';
-import { clearAuthToken, getAuthToken, subscribeAuthTokenChange } from '../../lib/authStorage';
+import {
+  getCurrentUser,
+  isUnauthorizedError,
+  type AuthUser,
+} from '../../lib/authApi';
+import { clearAuthToken, subscribeAuthTokenChange } from '../../lib/authStorage';
 
 type ProfileStatus = 'loading' | 'unauthorized' | 'ready' | 'error';
 
@@ -36,20 +40,15 @@ export function ProfileClient() {
 
         setUser(currentUser);
         setStatus('ready');
-      } catch (error) {
+      } catch (error: unknown) {
         if (!isMounted) {
           return;
         }
 
-        const message = error instanceof Error ? error.message : '';
-        const shouldClearToken =
-          message.toLowerCase().includes('unauthorized') ||
-          message.toLowerCase().includes('user not found');
-
-        if (shouldClearToken) {
-          clearAuthToken();
+        if (isUnauthorizedError(error)) {
           setUser(null);
           setStatus('unauthorized');
+          setErrorMessage(null);
           return;
         }
 
@@ -60,11 +59,7 @@ export function ProfileClient() {
 
     void loadProfile();
     const unsubscribeAuthTokenChange = subscribeAuthTokenChange(() => {
-      if (!getAuthToken()) {
-        setUser(null);
-        setStatus('unauthorized');
-        setErrorMessage(null);
-      }
+      void loadProfile();
     });
 
     return () => {
@@ -96,9 +91,7 @@ export function ProfileClient() {
               </span>
             </Link>
 
-            <p className="mt-6 text-sm font-semibold text-primary">
-              Tài khoản
-            </p>
+            <p className="mt-6 text-sm font-semibold text-primary">Tài khoản</p>
             <h1 className="mt-2 font-[family-name:var(--font-outfit)] text-3xl font-bold tracking-tight text-text-primary">
               Hồ sơ người dùng
             </h1>

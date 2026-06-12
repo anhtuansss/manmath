@@ -3,8 +3,11 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Logo } from './Logo';
-import { API_BASE_URL } from '../../config/api';
-import { getAuthToken } from '../../lib/authStorage';
+import {
+  fetchProtectedJson,
+  isUnauthorizedError,
+} from '../../lib/authApi';
+import { subscribeAuthTokenChange } from '../../lib/authStorage';
 import type { ExamAttemptSummaryDto } from './types';
 
 type ExamAttemptsClientProps = {
@@ -52,38 +55,23 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
       setError(null);
       setErrorType(null);
 
-      const authToken = getAuthToken();
-      const requestHeaders: HeadersInit = {};
-
-      if (authToken) {
-        requestHeaders.Authorization = `Bearer ${authToken}`;
-      }
-
-      const response = await fetch(`${API_BASE_URL}/api/exams/${examId}/attempts`, {
-        headers: requestHeaders,
-      });
-
-      if (response.status === 401) {
+      const data = await fetchProtectedJson<ExamAttemptSummaryDto[]>(
+        `/api/exams/${examId}/attempts`,
+      );
+      setAttempts(data);
+    } catch (fetchError: unknown) {
+      if (isUnauthorizedError(fetchError)) {
         setAttempts([]);
         setErrorType('unauthorized');
         setError('Bạn cần đăng nhập để xem lịch sử làm bài.');
-        return;
-      }
-
-      if (!response.ok) {
+      } else {
         setErrorType('generic');
-        throw new Error('Không tải được lịch sử làm bài');
+        setError(
+          fetchError instanceof Error
+            ? fetchError.message
+            : 'Lỗi không xác định khi tải lịch sử làm bài',
+        );
       }
-
-      const data: ExamAttemptSummaryDto[] = await response.json();
-      setAttempts(data);
-    } catch (fetchError) {
-      setErrorType('generic');
-      setError(
-        fetchError instanceof Error
-          ? fetchError.message
-          : 'Lỗi không xác định khi tải lịch sử làm bài',
-      );
     } finally {
       setLoading(false);
     }
@@ -91,6 +79,13 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
 
   useEffect(() => {
     void fetchAttempts();
+    const unsubscribeAuthTokenChange = subscribeAuthTokenChange(() => {
+      void fetchAttempts();
+    });
+
+    return () => {
+      unsubscribeAuthTokenChange();
+    };
   }, [examId]);
 
   const latestAttempt = attempts[0] ?? null;
@@ -125,10 +120,13 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
   return (
     <main className="min-h-[100dvh] bg-background px-4 py-6 text-text-primary sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-5xl animate-fade-in flex-col gap-6">
-        {/* ── Header ── */}
         <header className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <Link href="/" aria-label="Về trang chủ" className="group inline-flex cursor-pointer items-center gap-3 rounded-lg text-sm font-semibold text-text-primary transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+            <Link
+              href="/"
+              aria-label="Về trang chủ"
+              className="group inline-flex cursor-pointer items-center gap-3 rounded-lg text-sm font-semibold text-text-primary transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            >
               <Logo className="h-9 w-9 transition-transform group-hover:scale-105" />
               <span className="transition-colors group-hover:text-primary">ManMath</span>
             </Link>
@@ -139,7 +137,6 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
             <h1 className="mt-2 font-[family-name:var(--font-outfit)] text-3xl font-bold tracking-tight text-text-primary">
               Các lần làm đề
             </h1>
-
           </div>
 
           <Link
@@ -153,10 +150,8 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
           </Link>
         </header>
 
-        {/* ── Loading State ── */}
         {loading && (
           <section className="space-y-6">
-            {/* Stats skeleton */}
             <div className="grid gap-4 md:grid-cols-3">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="rounded-xl border border-border bg-surface p-5 shadow-card">
@@ -167,7 +162,7 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
                 </div>
               ))}
             </div>
-            {/* List skeleton */}
+
             <div className="overflow-hidden rounded-xl border border-border bg-surface shadow-card">
               <div className="border-b border-border px-5 py-4">
                 <div className="h-5 w-40 animate-pulse rounded bg-background-alt" />
@@ -192,7 +187,6 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
           </section>
         )}
 
-        {/* ── Error State ── */}
         {errorType === 'unauthorized' && (
           <section className="rounded-xl border border-border bg-surface p-8 text-center shadow-card">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary-light text-primary">
@@ -248,7 +242,6 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
           </section>
         )}
 
-        {/* ── Empty State ── */}
         {!loading && !error && attempts.length === 0 && (
           <section className="rounded-xl border border-border bg-surface p-8 shadow-card">
             <div className="flex flex-col items-center text-center">
@@ -267,12 +260,9 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
           </section>
         )}
 
-        {/* ── Data Loaded ── */}
         {!loading && !error && attempts.length > 0 && (
           <>
-            {/* Stats Cards */}
             <section className="grid gap-4 md:grid-cols-3">
-              {/* Latest attempt */}
               <div className="rounded-xl border border-border border-t-[3px] border-t-primary bg-surface p-5 shadow-card">
                 <div className="flex items-center gap-2">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-text-muted" aria-hidden="true">
@@ -302,7 +292,6 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
                 )}
               </div>
 
-              {/* Best attempt */}
               <div className="rounded-xl border border-border border-t-[3px] border-t-success bg-surface p-5 shadow-card">
                 <div className="flex items-center gap-2">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-text-muted" aria-hidden="true">
@@ -333,7 +322,6 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
                 )}
               </div>
 
-              {/* Total attempts */}
               <div className="rounded-xl border border-border border-t-[3px] border-t-text-secondary bg-surface p-5 shadow-card">
                 <div className="flex items-center gap-2">
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-text-muted" aria-hidden="true">
@@ -352,7 +340,6 @@ export function ExamAttemptsClient({ examId }: ExamAttemptsClientProps) {
               </div>
             </section>
 
-            {/* Attempt List */}
             <section className="overflow-hidden rounded-xl border border-border bg-surface shadow-card">
               <div className="border-b border-border px-5 py-4">
                 <h2 className="font-[family-name:var(--font-outfit)] text-lg font-bold text-text-primary">

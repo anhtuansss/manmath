@@ -1,5 +1,5 @@
 import { API_BASE_URL } from '../config/api';
-import { getAuthToken } from './authStorage';
+import { clearAuthToken, getAuthToken } from './authStorage';
 
 export type AuthUser = {
   id: string;
@@ -17,6 +17,16 @@ export type CurrentUserResponse = {
   user: AuthUser;
 };
 
+export class AuthApiError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = 'AuthApiError';
+    this.status = status;
+  }
+}
+
 const readErrorMessage = async (
   response: Response,
   fallback: string,
@@ -28,6 +38,36 @@ const readErrorMessage = async (
   } catch {
     return fallback;
   }
+};
+
+export const isUnauthorizedError = (error: unknown): boolean => {
+  return error instanceof AuthApiError && error.status === 401;
+};
+
+export const fetchProtectedJson = async <T>(path: string): Promise<T> => {
+  const token = getAuthToken();
+
+  if (!token) {
+    throw new AuthApiError('Unauthorized', 401);
+  }
+
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (response.status === 401) {
+    clearAuthToken();
+    throw new AuthApiError('Unauthorized', 401);
+  }
+
+  if (!response.ok) {
+    const message = await readErrorMessage(response, 'Request failed');
+    throw new AuthApiError(message, response.status);
+  }
+
+  return response.json() as Promise<T>;
 };
 
 export const loginWithGoogleCredential = async (
@@ -56,18 +96,15 @@ export const getCurrentUser = async (): Promise<AuthUser | null> => {
     return null;
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  try {
+    const data = await fetchProtectedJson<CurrentUserResponse>('/api/auth/me');
+    return data.user;
+  } catch (error) {
+    if (error instanceof AuthApiError && error.status === 404) {
+      clearAuthToken();
+      throw new AuthApiError('Unauthorized', 401);
+    }
 
-  if (!response.ok) {
-    const message = await readErrorMessage(response, 'Failed to load current user');
-    throw new Error(message);
+    throw error;
   }
-
-  const data = (await response.json()) as CurrentUserResponse;
-
-  return data.user;
 };
