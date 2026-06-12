@@ -137,7 +137,8 @@
 * [x] Hỗ trợ nội dung LaTeX trong đề
 * [x] Hỗ trợ nội dung LaTeX trong đáp án
 * [x] Mock data LaTeX để kiểm thử KaTeX
-* [ ] Hỗ trợ hình ảnh trong câu hỏi
+* [x] Hỗ trợ hình ảnh trong câu hỏi
+* [x] Render ảnh câu hỏi ở màn làm bài, result review và attempt detail
 * [ ] Hỗ trợ hình ảnh trong đáp án
 
 ---
@@ -255,6 +256,7 @@
 * [x] API `/api/me/topic-stats` tổng hợp topic analytics theo user
 * [x] Submit response trả `topicStats`
 * [x] Hiển thị topic stats ở result page sau submit nếu phù hợp
+* [x] Hoàn thiện Question Image Support MVP với `Question.imageUrl` và ảnh static path
 
 ### Không làm lúc này
 

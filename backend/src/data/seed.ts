@@ -46,6 +46,7 @@ async function main(): Promise<void> {
                             connect: { slug: question.topicSlug },
                         },
                         question: question.question,
+                        imageUrl: question.imageUrl ?? null,
                         options: question.options,
                         correctAnswer: question.correctAnswer,
                     })),
