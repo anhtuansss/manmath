@@ -8,6 +8,7 @@ import type {
   ExamAttemptSummaryDto,
   ExamDetailDto,
   ExamSummaryDto,
+  TopicStatDto,
 } from '../types/exam';
 
 export type SubmitExamRequestDto = {
@@ -207,6 +208,7 @@ export const getAttemptDetailById = async (
   const attemptRecord = await prisma.attempt.findFirst({
     where: {
       id: attemptId,
+      userId,
     },
     select: {
       id: true,
@@ -230,6 +232,13 @@ export const getAttemptDetailById = async (
               id: true,
               question: true,
               options: true,
+              topic: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                },
+              },
             },
           },
         },
@@ -251,6 +260,56 @@ export const getAttemptDetailById = async (
 
   const answerMap = new Map(
     attemptRecord.answers.map((answer) => [answer.questionId, answer]),
+  );
+
+  const topicStatMap = new Map<
+    string,
+    {
+      topicId: string | null;
+      topicName: string;
+      topicSlug: string | null;
+      correct: number;
+      total: number;
+    }
+  >();
+
+  for (const question of attemptRecord.exam.questions) {
+    const answer = answerMap.get(question.id);
+
+    if (!answer) {
+      continue;
+    }
+
+    const topicKey = question.topic?.id ?? 'uncategorized';
+    const existingStat = topicStatMap.get(topicKey);
+
+    if (existingStat) {
+      existingStat.total += 1;
+
+      if (answer.isCorrect) {
+        existingStat.correct += 1;
+      }
+
+      continue;
+    }
+
+    topicStatMap.set(topicKey, {
+      topicId: question.topic?.id ?? null,
+      topicName: question.topic?.name ?? 'Chưa phân loại',
+      topicSlug: question.topic?.slug ?? null,
+      correct: answer.isCorrect ? 1 : 0,
+      total: 1,
+    });
+  }
+
+  const topicStats: TopicStatDto[] = Array.from(topicStatMap.values()).map(
+    (topicStat) => ({
+      ...topicStat,
+      accuracy:
+        topicStat.total > 0
+          ? Math.round((topicStat.correct / topicStat.total) * 100)
+          : 0,
+    }),
   );
 
   return {
@@ -285,6 +344,7 @@ export const getAttemptDetailById = async (
         isCorrect: answer.isCorrect,
       };
     }),
+    topicStats,
   };
 };
 

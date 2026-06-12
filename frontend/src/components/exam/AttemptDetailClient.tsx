@@ -183,7 +183,7 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
     );
   }
 
-  const { attempt, exam, answers } = attemptDetail;
+  const { attempt, exam, answers, topicStats } = attemptDetail;
   const accuracy = attempt.totalQuestions > 0 ? Math.round((attempt.correctCount / attempt.totalQuestions) * 100) : 0;
   const incorrectCount = attempt.totalQuestions - attempt.correctCount - attempt.unansweredCount;
   const durationLabel = formatDurationSeconds(attempt.durationSeconds);
@@ -267,6 +267,47 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
             </p>
           </div>
         </section>
+        
+        {topicStats.length > 0 && (
+          <section className="rounded-xl border border-border bg-surface p-5 shadow-card">
+            <div className="flex flex-col gap-1">
+              <h2 className="font-[family-name:var(--font-outfit)] text-xl font-bold text-text-primary">
+                Phân tích theo chuyên đề
+              </h2>
+              <p className="text-sm text-text-secondary">
+                Tỷ lệ đúng của từng nhóm kiến thức trong lần làm bài này.
+              </p>
+            </div>
+
+            <div className="mt-5 space-y-4">
+              {topicStats.map((topicStat) => (
+                <div key={topicStat.topicId ?? topicStat.topicName}>
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-text-primary">
+                        {topicStat.topicName}
+                      </p>
+                      <p className="mt-1 text-xs text-text-secondary">
+                        {topicStat.correct}/{topicStat.total} câu đúng
+                      </p>
+                    </div>
+
+                    <span className="rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold text-text-secondary">
+                      {topicStat.accuracy}%
+                    </span>
+                  </div>
+
+                  <div className="mt-2 h-2 overflow-hidden rounded-full bg-background-alt">
+                    <div
+                      className="h-full rounded-full bg-primary"
+                      style={{ width: `${topicStat.accuracy}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         <section className="space-y-4">
           <div className="flex flex-col gap-1">

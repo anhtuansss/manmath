@@ -7,6 +7,15 @@ export type QuestionDto = {
   correctAnswer: string;
 };
 
+export type TopicStatDto = {
+  topicId: string | null;
+  topicName: string;
+  topicSlug: string | null;
+  correct: number;
+  total: number;
+  accuracy: number;
+};
+
 export type ExamSummaryDto = {
   id: string;
   title: string;
@@ -54,4 +63,5 @@ export type ExamAttemptDetailDto = {
     durationMinutes: number;
   };
   answers: AttemptAnswerDetailDto[];
+  topicStats: TopicStatDto[];
 };

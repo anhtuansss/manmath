@@ -164,7 +164,7 @@
 
 ### User Analytics
 
-* [ ] Tính độ chính xác theo chuyên đề
+* [x] Tính độ chính xác theo chuyên đề
 * [ ] Tính độ chính xác theo thời gian
 * [ ] Theo dõi tiến bộ
 * [ ] Dashboard học tập
@@ -239,8 +239,11 @@
 * [x] Tạo schema Topic
 * [x] Mapping `Question -> Topic`
 * [x] Seed topic và gắn `Question.topicId`
-* [ ] Kiểm tra dữ liệu topic trong PostgreSQL
-* [ ] Thiết kế API topic stats cho attempt/result
+* [x] Kiểm tra dữ liệu topic trong PostgreSQL
+* [x] API attempt detail trả `topicStats` theo chuyên đề
+* [x] Frontend hiển thị `topicStats` trong trang chi tiết lần làm
+* [x] API `/api/me/topic-stats` tổng hợp topic analytics theo user
+* [ ] Hiển thị topic stats ở result page sau submit nếu phù hợp
 
 ### Không làm lúc này
 

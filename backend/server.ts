@@ -15,6 +15,7 @@ import express from 'express';
 import cors from 'cors';
 import { examRouter } from './src/routes/examRoutes';
 import { authRouter } from './src/routes/authRoutes';
+import { meRouter } from './src/routes/meRoutes';
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/auth', authRouter);
+app.use('/api/me', meRouter);
 app.use('/api', examRouter);
 
 const PORT = process.env.PORT || 5000;

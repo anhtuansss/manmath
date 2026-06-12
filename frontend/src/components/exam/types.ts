@@ -83,6 +83,16 @@ export type ExamListItem = {
 // Dữ liệu API của danh sách đề không có href; frontend tự gắn href để điều hướng.
 export type ExamListApiItem = ExamSummaryDto;
 
+// Dữ liệu API của thống kê theo chủ đề, dùng trong trang kết quả và chi tiết kết quả
+export type TopicStatDto = {
+  topicId: string | null;
+  topicName: string;
+  topicSlug: string | null;
+  correct: number;
+  total: number;
+  accuracy: number;
+};
+
 // Dữ liệu API của danh sách số lần làm
 export type ExamAttemptSummaryDto = {
   id: string;
@@ -113,6 +123,7 @@ export type ExamAttemptDetailDto = {
     durationMinutes: number;
   };
   answers: AttemptAnswerDetailDto[];
+  topicStats: TopicStatDto[];
 };
 
 // Model lưu tạm trong sessionStorage sau khi nộp bài, không phải API DTO.
