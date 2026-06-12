@@ -18,8 +18,9 @@ import type {
   QuestionDto,
 } from '../types/exam';
 
-export type MockQuestion = QuestionDto & {
+export type MockQuestion = Omit<QuestionDto, 'imageUrl'> & {
   topicSlug: string;
+  imageUrl?: string;
 };
 
 export type Question = MockQuestion;
@@ -79,6 +80,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 4,
         topicSlug: 'gioi-han',
+        imageUrl: '/images/questions/sample-unit-circle.svg',
         question: 'Tính giới hạn $\\lim_{x\\to 0}\\frac{\\sin x}{x}$.',
         options: ['A. $0$', 'B. $1$', 'C. $+\\infty$', 'D. $-1$'],
         correctAnswer: 'B. $1$',
@@ -196,6 +198,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 105,
         topicSlug: 'ham-so',
+        imageUrl: '/images/questions/sample-parabola.svg',
         question: 'Tiếp tuyến của đồ thị $y=x^2$ tại điểm có hoành độ $x=1$ là:',
         options: ['A. $y=x+1$', 'B. $y=2x-1$', 'C. $y=2x+1$', 'D. $y=x-1$'],
         correctAnswer: 'B. $y=2x-1$',
@@ -330,6 +333,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 210,
         topicSlug: 'vector-toa-do',
+        imageUrl: '/images/questions/sample-plane-point.svg',
         question: 'Khoảng cách từ $A(1;2;3)$ đến mặt phẳng $x+2y+2z-9=0$ bằng:',
         options: ['A. $\\frac{1}{3}$', 'B. $\\frac{2}{3}$', 'C. $1$', 'D. $2$'],
         correctAnswer: 'B. $\\frac{2}{3}$',

@@ -21,6 +21,7 @@ type ExamSummaryDbRecord = {
 type QuestionDbRecord = {
   id: number;
   question: string;
+  imageUrl: string | null;
   options: string[];
   correctAnswer: string;
 };
@@ -58,6 +59,7 @@ export const mapExamRecordToDetailDto = (
     questions: examRecord.questions.map((question) => ({
       id: question.id,
       question: question.question,
+      imageUrl: question.imageUrl,
       options: question.options,
       correctAnswer: question.correctAnswer,
     })),

@@ -153,6 +153,7 @@ export const getExamDetailById = async (
         select: {
           id: true,
           question: true,
+          imageUrl: true,
           options: true,
           correctAnswer: true,
         },
@@ -245,6 +246,7 @@ export const getAttemptDetailById = async (
             select: {
               id: true,
               question: true,
+              imageUrl: true,
               options: true,
               topic: {
                 select: {
@@ -352,6 +354,7 @@ export const getAttemptDetailById = async (
       return {
         questionId: question.id,
         question: question.question,
+        imageUrl: question.imageUrl,
         options: question.options,
         selectedOptionIndex: answer.selectedOptionIndex,
         correctOptionIndex: answer.correctOptionIndex,
