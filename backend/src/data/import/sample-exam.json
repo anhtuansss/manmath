@@ -1,0 +1,66 @@
+{
+  "id": "sample-json-exam-01",
+  "title": "Đề import mẫu từ JSON",
+  "description": "Đề mẫu để kiểm tra import pipeline JSON vào PostgreSQL",
+  "durationMinutes": 90,
+  "subject": "Toán",
+  "difficulty": "medium",
+  "year": 2026,
+  "statusLabel": "Imported JSON",
+  "questions": [
+    {
+      "id": 1001,
+      "question": "Cho hàm số $y=x^2$. Đồ thị của hàm số là gì?",
+      "imageUrl": "/images/questions/sample-parabola.svg",
+      "options": [
+        "A. Đường thẳng",
+        "B. Parabol",
+        "C. Đường tròn",
+        "D. Hyperbol"
+      ],
+      "optionImageUrls": ["", "", "", ""],
+      "correctAnswer": "B. Parabol",
+      "topic": {
+        "name": "Hàm số",
+        "slug": "ham-so"
+      }
+    },
+    {
+      "id": 1002,
+      "question": "Tính tích phân $$\\int_0^1 x^2\\,dx$$",
+      "options": [
+        "A. $\\frac{1}{2}$",
+        "B. $\\frac{1}{3}$",
+        "C. $1$",
+        "D. $0$"
+      ],
+      "optionImageUrls": ["", "", "", ""],
+      "correctAnswer": "B. $\\frac{1}{3}$",
+      "topic": {
+        "name": "Tích phân",
+        "slug": "tich-phan"
+      }
+    },
+    {
+      "id": 1003,
+      "question": "Cho ma trận $$A=\\begin{pmatrix}1&2\\\\3&4\\end{pmatrix}$$. Giá trị định thức của $A$ là:",
+      "options": [
+        "A. $-2$",
+        "B. $2$",
+        "C. $10$",
+        "D. $-10$"
+      ],
+      "optionImageUrls": [
+        "/images/questions/option-determinant-a.svg",
+        "",
+        "",
+        ""
+      ],
+      "correctAnswer": "A. $-2$",
+      "topic": {
+        "name": "Ma trận",
+        "slug": "ma-tran"
+      }
+    }
+  ]
+}
