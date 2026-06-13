@@ -33,7 +33,15 @@ Field chinh:
 - `durationMinutes`
 - `subject`
 - `difficulty`
+- `source`
+- `year`
 - `statusLabel`
+
+Ghi chu:
+
+- `difficulty` hien dung enum `easy | medium | hard`
+- `source` la metadata string optional cho nguon de
+- `year` la metadata number optional cho nam thi
 
 ### Topic
 

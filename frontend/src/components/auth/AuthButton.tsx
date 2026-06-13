@@ -85,7 +85,7 @@ export function AuthButton() {
   if (user) {
     return (
       <div className="flex flex-col items-start gap-2 sm:items-end">
-        <div className="inline-flex max-w-full items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 shadow-card">
+        <div className="inline-flex max-w-full flex-wrap items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 shadow-card">
           {user.avatarUrl ? (
             <img
               src={user.avatarUrl}
@@ -118,6 +118,13 @@ export function AuthButton() {
             className="shrink-0 cursor-pointer rounded-md border border-border bg-background px-2.5 py-1.5 text-xs font-semibold text-text-secondary transition-colors hover:bg-background-alt hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
             Analytics
+          </Link>
+
+          <Link
+            href="/history"
+            className="shrink-0 cursor-pointer rounded-md border border-border bg-background px-2.5 py-1.5 text-xs font-semibold text-text-secondary transition-colors hover:bg-background-alt hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          >
+            Lich su
           </Link>
 
           <button

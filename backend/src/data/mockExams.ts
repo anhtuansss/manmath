@@ -13,7 +13,6 @@
  */
 import type {
   ExamDetailDto,
-  ExamDifficulty,
   ExamSummaryDto,
   QuestionDto,
 } from '../types/exam';
@@ -32,10 +31,6 @@ export type Question = MockQuestion;
 
 export type ExamMock = Omit<ExamDetailDto, 'questions'> & {
   description: string;
-  subject: string;
-  difficulty: ExamDifficulty;
-  year?: number;
-  statusLabel: string;
   questions: MockQuestion[];
 };
 
@@ -53,6 +48,7 @@ export const mockExams: ExamMock[] = [
     durationMinutes: 50,
     subject: 'Toán',
     difficulty: 'medium',
+    source: 'ManMath Mock',
     year: 2026,
     statusLabel: 'Dữ liệu mẫu',
     questions: [
@@ -165,6 +161,7 @@ export const mockExams: ExamMock[] = [
     durationMinutes: 45,
     subject: 'Toán',
     difficulty: 'easy',
+    source: 'ManMath Mock',
     year: 2026,
     statusLabel: 'Dữ liệu mẫu',
     questions: [
@@ -275,6 +272,7 @@ export const mockExams: ExamMock[] = [
     durationMinutes: 90,
     subject: 'Toán',
     difficulty: 'hard',
+    source: 'ManMath Mock',
     year: 2026,
     statusLabel: 'Dữ liệu mẫu',
     questions: [

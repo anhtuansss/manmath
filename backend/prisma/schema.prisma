@@ -63,6 +63,7 @@ model Exam {
   durationMinutes  Int
   subject          String
   difficulty       ExamDifficulty
+  source           String?
   year             Int?
   statusLabel      String
   questions        Question[]

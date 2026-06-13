@@ -11,6 +11,7 @@ type ExamSummaryDbRecord = {
   durationMinutes: number;
   subject: string;
   difficulty: ExamDifficulty;
+  source: string | null;
   year: number | null;
   statusLabel: string;
   _count: {
@@ -36,6 +37,11 @@ type ExamDetailDbRecord = {
   id: string;
   title: string;
   durationMinutes: number;
+  subject: string;
+  difficulty: ExamDifficulty;
+  source: string | null;
+  year: number | null;
+  statusLabel: string;
   questions: QuestionDbRecord[];
 };
 
@@ -65,6 +71,7 @@ export const mapExamRecordToSummaryDto = (
     totalQuestions: examRecord._count.questions,
     subject: examRecord.subject,
     difficulty: examRecord.difficulty,
+    source: examRecord.source,
     year: examRecord.year ?? undefined,
     statusLabel: examRecord.statusLabel,
   };
@@ -77,6 +84,11 @@ export const mapExamRecordToDetailDto = (
     id: examRecord.id,
     examTitle: examRecord.title,
     durationMinutes: examRecord.durationMinutes,
+    subject: examRecord.subject,
+    difficulty: examRecord.difficulty,
+    source: examRecord.source,
+    year: examRecord.year,
+    statusLabel: examRecord.statusLabel,
     questions: examRecord.questions.map((question) => ({
       id: question.id,
       question: question.question,

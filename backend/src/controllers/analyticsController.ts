@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
 import {
+  getUserAttemptHistory,
   getUserProgress,
   getUserRecommendations,
   getUserTopicStats,
@@ -60,6 +61,63 @@ export const getMyProgress = async (
     res.json(progress);
   } catch (error) {
     console.error('Failed to load user progress:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const parseOptionalPositiveInteger = (
+  rawValue: unknown,
+): number | null | 'invalid' => {
+  if (rawValue === undefined) {
+    return null;
+  }
+
+  if (typeof rawValue !== 'string' || rawValue.trim().length === 0) {
+    return 'invalid';
+  }
+
+  const parsedValue = Number(rawValue);
+
+  if (!Number.isInteger(parsedValue) || parsedValue <= 0) {
+    return 'invalid';
+  }
+
+  return parsedValue;
+};
+
+export const getMyAttempts = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    if (!req.user) {
+      res.status(401).json({ message: 'Unauthorized' });
+      return;
+    }
+
+    const limit = parseOptionalPositiveInteger(req.query.limit);
+    const examId =
+      typeof req.query.examId === 'string' ? req.query.examId.trim() : undefined;
+    const sort = typeof req.query.sort === 'string' ? req.query.sort.trim() : undefined;
+
+    if (limit === 'invalid') {
+      res.status(400).json({ message: 'limit khong hop le' });
+      return;
+    }
+
+    if (sort && sort !== 'latest') {
+      res.status(400).json({ message: 'sort khong hop le' });
+      return;
+    }
+
+    const attempts = await getUserAttemptHistory(req.user.userId, {
+      limit: limit === null ? undefined : limit,
+      examId: examId && examId.length > 0 ? examId : undefined,
+    });
+
+    res.json(attempts);
+  } catch (error) {
+    console.error('Failed to load user attempt history:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };

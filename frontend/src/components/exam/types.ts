@@ -33,6 +33,11 @@ export type ExamDetailDto = {
   id: string;
   examTitle: string;
   durationMinutes: number;
+  subject: string;
+  difficulty: ExamDifficulty;
+  source: string | null;
+  year: number | null;
+  statusLabel: string;
   questions: QuestionDto[];
 };
 
@@ -74,7 +79,7 @@ export type ExamSummaryDto = {
   subject: string;
   difficulty: ExamDifficulty;
   year?: number;
-  source?: string;
+  source: string | null;
   type?: string;
   statusLabel: string;
 };
@@ -94,6 +99,17 @@ export type TopicsResponseDto = {
   topics: TopicFilterDto[];
 };
 
+export type PracticeTopicDto = {
+  practiceId: string;
+  topic: {
+    name: string;
+    slug: string;
+  };
+  title: string;
+  durationMinutes: number;
+  questions: QuestionDto[];
+};
+
 export type ExamListItem = {
   id: string;
   title: string;
@@ -103,7 +119,7 @@ export type ExamListItem = {
   subject: string;
   difficulty: ExamDifficulty;
   year?: number;
-  source?: string;
+  source: string | null;
   type?: string;
   statusLabel: string;
   href: string;

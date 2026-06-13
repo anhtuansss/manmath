@@ -15,6 +15,17 @@ export type TopicFilterDto = {
   subtopics: SubtopicDto[];
 };
 
+export type PracticeTopicDto = {
+  practiceId: string;
+  topic: {
+    name: string;
+    slug: string;
+  };
+  title: string;
+  durationMinutes: number;
+  questions: QuestionDto[];
+};
+
 export type QuestionDto = {
   id: number;
   question: string;
@@ -42,6 +53,7 @@ export type ExamSummaryDto = {
   totalQuestions: number;
   subject: string;
   difficulty: ExamDifficulty;
+  source: string | null;
   year?: number;
   statusLabel: string;
 };
@@ -50,6 +62,11 @@ export type ExamDetailDto = {
   id: string;
   examTitle: string;
   durationMinutes: number;
+  subject: string;
+  difficulty: ExamDifficulty;
+  source: string | null;
+  year: number | null;
+  statusLabel: string;
   questions: QuestionDto[];
 };
 

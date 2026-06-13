@@ -28,6 +28,7 @@ export type NormalizedExamInput = {
   durationMinutes: number;
   subject: string;
   difficulty: ExamDifficulty;
+  source: string | null;
   year: number | null;
   statusLabel: string;
   questions: NormalizedQuestionInput[];
@@ -59,6 +60,8 @@ const DEFAULT_DIFFICULTY: ExamDifficulty = 'medium';
 const DEFAULT_STATUS_LABEL = 'Imported JSON';
 const EXPECTED_OPTION_COUNT = 4;
 const TOPIC_SLUG_PATTERN = /^[a-z0-9-]+$/;
+const MIN_EXAM_YEAR = 1900;
+const MAX_EXAM_YEAR = 2100;
 
 const isPlainObject = (value: unknown): value is Record<string, unknown> => {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -123,6 +126,27 @@ const readOptionalInteger = (
   }
 
   return value;
+};
+
+const readOptionalExamYear = (
+  value: unknown,
+  path: string,
+  issues: string[],
+): number | null => {
+  const year = readOptionalInteger(value, path, issues);
+
+  if (year === null) {
+    return null;
+  }
+
+  if (year < MIN_EXAM_YEAR || year > MAX_EXAM_YEAR) {
+    issues.push(
+      `${path} must be between ${MIN_EXAM_YEAR} and ${MAX_EXAM_YEAR}`,
+    );
+    return null;
+  }
+
+  return year;
 };
 
 const readDifficulty = (
@@ -359,13 +383,14 @@ export const validateExamImportPayload = (
     issues.push(`questions contain duplicate id: ${questionId}`);
   }
 
-  const year = readOptionalInteger(rawValue.year, 'year', issues);
+  const year = readOptionalExamYear(rawValue.year, 'year', issues);
   const difficulty = readDifficulty(rawValue.difficulty, 'difficulty', issues);
   const description =
     readOptionalString(rawValue.description, 'description', issues) ??
     DEFAULT_DESCRIPTION;
   const subject =
     readOptionalString(rawValue.subject, 'subject', issues) ?? DEFAULT_SUBJECT;
+  const source = readOptionalString(rawValue.source, 'source', issues);
   const statusLabel =
     readOptionalString(rawValue.statusLabel, 'statusLabel', issues) ??
     DEFAULT_STATUS_LABEL;
@@ -381,6 +406,7 @@ export const validateExamImportPayload = (
     durationMinutes,
     subject,
     difficulty,
+    source,
     year,
     statusLabel,
     questions,

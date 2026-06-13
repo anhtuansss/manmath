@@ -136,6 +136,25 @@ User đã login
 → Frontend hiển thị card gợi ý ở Exam List / Profile
 ```
 
+## Luồng luyện theo chuyên đề yếu
+
+```text
+User vào /analytics
+→ Bấm “Luyện chuyên đề này” ở weak topic card
+→ Frontend mở /practice/topic/[topicSlug]
+→ GET /api/practice/topic/:topicSlug?limit=10
+→ Backend tạo practice payload động từ Question theo topic
+→ Frontend render câu hỏi bằng QuestionList / AnswerOptions
+→ User chọn đáp án, submit local
+→ Frontend tự chấm điểm và review, không ghi Attempt vào DB
+```
+
+Ghi chú:
+
+- flow này không đi qua `POST /api/exam/submit`
+- không làm ảnh hưởng exam taking flow cũ
+- không ghi dữ liệu vào history hoặc analytics hiện tại
+
 ## Luồng analytics dashboard nhỏ
 
 ```text

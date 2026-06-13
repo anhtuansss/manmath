@@ -5,6 +5,7 @@
   "durationMinutes": 90,
   "subject": "Toán",
   "difficulty": "medium",
+  "source": "JSON Demo",
   "year": 2026,
   "statusLabel": "Imported JSON",
   "questions": [

@@ -258,6 +258,8 @@ export function ExamListClient() {
     useState<ExamDurationFilter>('all');
   const [selectedDifficulty, setSelectedDifficulty] =
     useState<'' | ExamDifficulty>('');
+  const [selectedYear, setSelectedYear] = useState('');
+  const [selectedSource, setSelectedSource] = useState('');
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
   const selectedTopicData = useMemo(
@@ -294,6 +296,8 @@ export function ExamListClient() {
     durationMin?: number;
     durationMax?: number;
     difficulty?: '' | ExamDifficulty;
+    year?: string;
+    source?: string;
     initialLoad?: boolean;
   }) => {
     const isInitialLoad = params?.initialLoad ?? false;
@@ -331,6 +335,14 @@ export function ExamListClient() {
 
       if (params?.difficulty) {
         searchParams.set('difficulty', params.difficulty);
+      }
+
+      if (params?.year?.trim()) {
+        searchParams.set('year', params.year.trim());
+      }
+
+      if (params?.source?.trim()) {
+        searchParams.set('source', params.source.trim());
       }
 
       const queryString = searchParams.toString();
@@ -421,6 +433,8 @@ export function ExamListClient() {
         durationMin: durationRange.durationMin,
         durationMax: durationRange.durationMax,
         difficulty: selectedDifficulty,
+        year: selectedYear,
+        source: selectedSource,
       });
     }, 250);
 
@@ -432,6 +446,8 @@ export function ExamListClient() {
     selectedSubtopic,
     selectedDuration,
     selectedDifficulty,
+    selectedYear,
+    selectedSource,
   ]);
 
   const handleRetry = () => {
@@ -452,6 +468,8 @@ export function ExamListClient() {
             ? 90
             : undefined,
       difficulty: selectedDifficulty,
+      year: selectedYear,
+      source: selectedSource,
       initialLoad: !hasLoadedOnce,
     });
   };
@@ -462,6 +480,8 @@ export function ExamListClient() {
     setSelectedSubtopic('');
     setSelectedDuration('all');
     setSelectedDifficulty('');
+    setSelectedYear('');
+    setSelectedSource('');
   };
 
   if (loading) {
@@ -478,7 +498,9 @@ export function ExamListClient() {
     !selectedTopic &&
     !selectedSubtopic &&
     selectedDuration === 'all' &&
-    !selectedDifficulty
+    !selectedDifficulty &&
+    !selectedYear &&
+    !selectedSource
   ) {
     return <ExamListEmpty onRetry={handleRetry} />;
   }
@@ -493,6 +515,8 @@ export function ExamListClient() {
       selectedSubtopic={selectedSubtopic}
       selectedDuration={selectedDuration}
       selectedDifficulty={selectedDifficulty}
+      selectedYear={selectedYear}
+      selectedSource={selectedSource}
       topics={topics}
       listError={error}
       topicsError={topicsError}
@@ -505,6 +529,8 @@ export function ExamListClient() {
       onSubtopicChange={setSelectedSubtopic}
       onDurationChange={setSelectedDuration}
       onDifficultyChange={setSelectedDifficulty}
+      onYearChange={setSelectedYear}
+      onSourceChange={setSelectedSource}
       onClearFilters={handleClearFilters}
     />
   );

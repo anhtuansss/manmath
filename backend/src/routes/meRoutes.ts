@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  getMyAttempts,
   getMyProgress,
   getMyRecommendations,
   getMyTopicStats,
@@ -11,3 +12,4 @@ export const meRouter = Router();
 meRouter.get('/topic-stats', authMiddleware, getMyTopicStats);
 meRouter.get('/recommendations', authMiddleware, getMyRecommendations);
 meRouter.get('/progress', authMiddleware, getMyProgress);
+meRouter.get('/attempts', authMiddleware, getMyAttempts);

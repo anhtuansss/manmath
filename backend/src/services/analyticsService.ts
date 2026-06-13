@@ -67,12 +67,41 @@ export type UserProgressDto = {
   progressByAttempt: ProgressByAttemptDto[];
 };
 
+export type UserAttemptHistoryItemDto = {
+  attemptId: string;
+  examId: string;
+  examTitle: string;
+  score: number;
+  correctCount: number;
+  totalQuestions: number;
+  unansweredCount: number;
+  durationSeconds: number | null;
+  submittedAt: string;
+};
+
+export type UserAttemptHistorySummaryDto = {
+  totalAttempts: number;
+  averageScore: number;
+  bestScore: number;
+};
+
+export type UserAttemptHistoryDto = {
+  attempts: UserAttemptHistoryItemDto[];
+  summary: UserAttemptHistorySummaryDto;
+};
+
+export type GetUserAttemptsFilters = {
+  limit?: number;
+  examId?: string;
+};
+
 const MAX_WEAK_TOPICS = 3;
 const MAX_RECOMMENDED_EXAMS = 3;
 const MAX_RECENT_ATTEMPTS = 5;
 const MAX_PROGRESS_ATTEMPTS = 10;
 const MAX_RECENT_RECOMMENDATION_ATTEMPTS = 3;
 const WEAK_TOPIC_ACCURACY_THRESHOLD = 85;
+const DEFAULT_ATTEMPT_HISTORY_LIMIT = 20;
 
 const buildWeakTopicReason = (topicStat: TopicStatDto): string => {
   if (topicStat.accuracy < 40) {
@@ -522,5 +551,80 @@ export const getUserProgress = async (
     },
     recentAttempts,
     progressByAttempt,
+  };
+};
+
+export const getUserAttemptHistory = async (
+  userId: string,
+  filters?: GetUserAttemptsFilters,
+): Promise<UserAttemptHistoryDto> => {
+  const take = filters?.limit ?? DEFAULT_ATTEMPT_HISTORY_LIMIT;
+  const where = {
+    userId,
+    ...(filters?.examId ? { examId: filters.examId } : {}),
+  };
+
+  const [summaryAggregate, attempts] = await prisma.$transaction([
+    prisma.attempt.aggregate({
+      where,
+      _avg: {
+        score: true,
+      },
+      _max: {
+        score: true,
+      },
+      _count: {
+        _all: true,
+      },
+    }),
+    prisma.attempt.findMany({
+      where,
+      orderBy: {
+        submittedAt: 'desc',
+      },
+      take,
+      select: {
+        id: true,
+        examId: true,
+        score: true,
+        correctCount: true,
+        totalQuestions: true,
+        unansweredCount: true,
+        durationSeconds: true,
+        submittedAt: true,
+        exam: {
+          select: {
+            title: true,
+          },
+        },
+      },
+    }),
+  ]);
+
+  const totalAttempts = summaryAggregate._count._all;
+
+  return {
+    attempts: attempts.map((attempt) => ({
+      attemptId: attempt.id,
+      examId: attempt.examId,
+      examTitle: attempt.exam.title,
+      score: attempt.score,
+      correctCount: attempt.correctCount,
+      totalQuestions: attempt.totalQuestions,
+      unansweredCount: attempt.unansweredCount,
+      durationSeconds: attempt.durationSeconds,
+      submittedAt: attempt.submittedAt.toISOString(),
+    })),
+    summary: {
+      totalAttempts,
+      averageScore:
+        totalAttempts > 0 && typeof summaryAggregate._avg.score === 'number'
+          ? Math.round(summaryAggregate._avg.score * 10) / 10
+          : 0,
+      bestScore:
+        totalAttempts > 0 && typeof summaryAggregate._max.score === 'number'
+          ? summaryAggregate._max.score
+          : 0,
+    },
   };
 };

@@ -23,6 +23,8 @@ type ExamListProps = {
   selectedSubtopic: string;
   selectedDuration: ExamDurationFilter;
   selectedDifficulty: '' | ExamDifficulty;
+  selectedYear: string;
+  selectedSource: string;
   topics: TopicFilterDto[];
   listError?: string | null;
   topicsError?: string | null;
@@ -32,6 +34,8 @@ type ExamListProps = {
   onSubtopicChange: (value: string) => void;
   onDurationChange: (value: ExamDurationFilter) => void;
   onDifficultyChange: (value: '' | ExamDifficulty) => void;
+  onYearChange: (value: string) => void;
+  onSourceChange: (value: string) => void;
   onClearFilters: () => void;
 };
 
@@ -50,6 +54,8 @@ export function ExamList({
   selectedSubtopic,
   selectedDuration,
   selectedDifficulty,
+  selectedYear,
+  selectedSource,
   topics,
   listError,
   topicsError,
@@ -59,6 +65,8 @@ export function ExamList({
   onSubtopicChange,
   onDurationChange,
   onDifficultyChange,
+  onYearChange,
+  onSourceChange,
   onClearFilters,
 }: ExamListProps) {
   const recommendedExams = exams.slice(0, 3);
@@ -86,7 +94,9 @@ export function ExamList({
     selectedTopic.length > 0 ||
     selectedSubtopic.length > 0 ||
     selectedDuration !== 'all' ||
-    selectedDifficulty.length > 0;
+    selectedDifficulty.length > 0 ||
+    selectedYear.trim().length > 0 ||
+    selectedSource.trim().length > 0;
 
   return (
     <div className="flex min-h-[100dvh] flex-col">
@@ -236,7 +246,7 @@ export function ExamList({
                     </span>
                   </div>
 
-                  <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1.2fr)_minmax(160px,0.8fr)_minmax(160px,0.8fr)_minmax(160px,0.75fr)_minmax(160px,0.75fr)_auto]">
+                  <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(150px,0.8fr)_minmax(150px,0.8fr)_minmax(150px,0.75fr)_minmax(150px,0.75fr)_minmax(120px,0.6fr)_minmax(160px,0.8fr)_auto]">
                     <label className="flex flex-col gap-1.5">
                       <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
                         Tu khoa
@@ -325,6 +335,34 @@ export function ExamList({
                         <option value="medium">Trung binh</option>
                         <option value="hard">Kho</option>
                       </select>
+                    </label>
+
+                    <label className="flex flex-col gap-1.5">
+                      <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                        Nam
+                      </span>
+                      <input
+                        type="number"
+                        min={1900}
+                        max={2100}
+                        value={selectedYear}
+                        onChange={(event) => onYearChange(event.target.value)}
+                        placeholder="Vi du 2026"
+                        className="h-11 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+                      />
+                    </label>
+
+                    <label className="flex flex-col gap-1.5">
+                      <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                        Nguon de
+                      </span>
+                      <input
+                        type="text"
+                        value={selectedSource}
+                        onChange={(event) => onSourceChange(event.target.value)}
+                        placeholder="Vi du ManMath"
+                        className="h-11 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+                      />
                     </label>
 
                     <div className="flex items-end">

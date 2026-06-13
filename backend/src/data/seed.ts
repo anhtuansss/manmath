@@ -73,6 +73,7 @@ export async function seedMockData(): Promise<void> {
         durationMinutes: exam.durationMinutes,
         subject: exam.subject,
         difficulty: exam.difficulty,
+        source: exam.source,
         year: exam.year,
         statusLabel: exam.statusLabel,
         questions: {

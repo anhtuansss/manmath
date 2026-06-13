@@ -115,6 +115,7 @@ Batch mode hien in:
   "durationMinutes": 90,
   "subject": "Toan",
   "difficulty": "medium",
+  "source": "JSON Demo",
   "year": 2026,
   "statusLabel": "Imported JSON",
   "questions": [
@@ -184,6 +185,7 @@ Ghi chu:
 - `description`
 - `subject`
 - `difficulty`
+- `source`
 - `year`
 - `statusLabel`
 
@@ -218,6 +220,7 @@ Script hien bao loi ro theo field/path, vi du:
 
 - `id is required`
 - `durationMinutes must be a positive integer`
+- `year must be between 1900 and 2100`
 - `questions must be a non-empty array`
 - `questions[2].id must be a positive integer`
 - `questions[3].question is required`

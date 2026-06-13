@@ -4,6 +4,7 @@ import {
   getExamAttemptsByExamId,
   getExamDetailById,
   getExamSummaries,
+  getPracticeByTopicSlug,
   getTopicFilters,
   submitExam,
 } from '../services/examService';
@@ -66,12 +67,19 @@ export const getExamList = async (
       typeof req.query.topic === 'string' ? req.query.topic : undefined;
     const subtopic =
       typeof req.query.subtopic === 'string' ? req.query.subtopic : undefined;
+    const source =
+      typeof req.query.source === 'string' ? req.query.source : undefined;
     const durationMin = parseOptionalInteger(req.query.durationMin);
     const durationMax = parseOptionalInteger(req.query.durationMax);
+    const year = parseOptionalInteger(req.query.year);
     const difficulty = parseOptionalDifficulty(req.query.difficulty);
 
-    if (durationMin === 'invalid' || durationMax === 'invalid') {
-      res.status(400).json({ message: 'Bo loc thoi luong khong hop le' });
+    if (
+      durationMin === 'invalid' ||
+      durationMax === 'invalid' ||
+      year === 'invalid'
+    ) {
+      res.status(400).json({ message: 'Bo loc duration/year khong hop le' });
       return;
     }
 
@@ -93,9 +101,11 @@ export const getExamList = async (
       search,
       topic,
       subtopic,
+      source,
       durationMin: durationMin === null ? undefined : durationMin,
       durationMax: durationMax === null ? undefined : durationMax,
       difficulty: difficulty === null ? undefined : difficulty,
+      year: year === null ? undefined : year,
     });
 
     res.json(examSummaries);
@@ -120,6 +130,35 @@ export const getTopicList = async (
 };
 
 // Xử lý nộp bài thi, tính điểm và trả về kết quả
+export const getTopicPractice = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const limit = parseOptionalInteger(req.query.limit);
+
+    if (limit === 'invalid' || (typeof limit === 'number' && limit <= 0)) {
+      res.status(400).json({ message: 'limit khong hop le' });
+      return;
+    }
+
+    const practice = await getPracticeByTopicSlug(
+      req.params.topicSlug,
+      limit === null ? undefined : limit,
+    );
+
+    if (!practice) {
+      res.status(404).json({ message: 'Khong tim thay chuyen de de luyen tap' });
+      return;
+    }
+
+    res.json(practice);
+  } catch (error) {
+    console.error('Failed to load topic practice:', error);
+    res.status(500).json({ message: 'Khong the tao bo luyen tap theo chuyen de' });
+  }
+};
+
 export const getExamDetail = async (
   req: Request,
   res: Response,

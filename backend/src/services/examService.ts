@@ -10,6 +10,7 @@ import type {
   ExamAttemptDetailDto,
   ExamAttemptSummaryDto,
   ExamDetailDto,
+  PracticeTopicDto,
   ExamSummaryDto,
   TopicFilterDto,
   TopicStatDto,
@@ -22,6 +23,8 @@ export type GetExamSummariesFilters = {
   durationMin?: number;
   durationMax?: number;
   difficulty?: ExamDifficulty;
+  source?: string;
+  year?: number;
 };
 
 export type SubmitExamRequestDto = {
@@ -57,6 +60,9 @@ type TopicStatAccumulator = {
   correct: number;
   total: number;
 };
+
+const DEFAULT_PRACTICE_LIMIT = 10;
+const MAX_PRACTICE_LIMIT = 20;
 
 const isPlainObject = (value: unknown): value is Record<string, unknown> => {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -138,6 +144,8 @@ export const getExamSummaries = async (
   const durationMin = filters?.durationMin;
   const durationMax = filters?.durationMax;
   const difficulty = filters?.difficulty;
+  const source = filters?.source?.trim();
+  const year = filters?.year;
   const whereConditions: Prisma.ExamWhereInput[] = [];
 
   if (normalizedTopic) {
@@ -179,6 +187,21 @@ export const getExamSummaries = async (
     });
   }
 
+  if (source) {
+    whereConditions.push({
+      source: {
+        contains: source,
+        mode: 'insensitive',
+      },
+    });
+  }
+
+  if (typeof year === 'number') {
+    whereConditions.push({
+      year,
+    });
+  }
+
   const exams = await prisma.exam.findMany({
     where: whereConditions.length > 0 ? { AND: whereConditions } : undefined,
     orderBy: {
@@ -191,6 +214,7 @@ export const getExamSummaries = async (
       durationMinutes: true,
       subject: true,
       difficulty: true,
+      source: true,
       year: true,
       statusLabel: true,
       _count: {
@@ -245,6 +269,77 @@ export const getTopicFilters = async (): Promise<TopicFilterDto[]> => {
   }));
 };
 
+export const getPracticeByTopicSlug = async (
+  topicSlug: string,
+  limit = DEFAULT_PRACTICE_LIMIT,
+): Promise<PracticeTopicDto | null> => {
+  const normalizedTopicSlug = topicSlug.trim();
+
+  if (normalizedTopicSlug.length === 0) {
+    return null;
+  }
+
+  const safeLimit = Math.min(Math.max(limit, 1), MAX_PRACTICE_LIMIT);
+  const topic = await prisma.topic.findUnique({
+    where: {
+      slug: normalizedTopicSlug,
+    },
+    select: {
+      name: true,
+      slug: true,
+      questions: {
+        take: safeLimit,
+        orderBy: [{ exam: { createdAt: 'desc' } }, { order: 'asc' }],
+        select: {
+          id: true,
+          question: true,
+          imageUrl: true,
+          options: true,
+          optionImageUrls: true,
+          subtopic: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+          correctAnswer: true,
+        },
+      },
+    },
+  });
+
+  if (!topic) {
+    return null;
+  }
+
+  const questionCount = topic.questions.length;
+  const durationMinutes =
+    questionCount > 0 ? Math.max(10, Math.ceil(questionCount * 1.5)) : 10;
+
+  return {
+    practiceId: `practice-topic-${topic.slug}-${questionCount}`,
+    topic: {
+      name: topic.name,
+      slug: topic.slug,
+    },
+    title: `Luyen chuyen de: ${topic.name}`,
+    durationMinutes,
+    questions: topic.questions.map((question) => ({
+      id: question.id,
+      question: question.question,
+      imageUrl: question.imageUrl,
+      options: question.options,
+      optionImageUrls: normalizeOptionImageUrls(
+        question.options,
+        question.optionImageUrls,
+      ),
+      subtopic: question.subtopic,
+      correctAnswer: question.correctAnswer,
+    })),
+  };
+};
+
 // Lấy chi tiết đề thi theo ID, bao gồm cả câu hỏi và đáp án
 export const getExamDetailById = async (
   examId: string,
@@ -257,6 +352,11 @@ export const getExamDetailById = async (
       id: true,
       title: true,
       durationMinutes: true,
+      subject: true,
+      difficulty: true,
+      source: true,
+      year: true,
+      statusLabel: true,
       questions: {
         orderBy: {
           order: 'asc',
