@@ -113,6 +113,7 @@ Ghi chú:
 | Method | Endpoint | Auth | Mục đích |
 | --- | --- | --- | --- |
 | `GET` | `/api/me/topic-stats` | Protected | Lấy thống kê độ chính xác theo chuyên đề của user hiện tại |
+| `GET` | `/api/me/recommendations` | Protected | Lấy chuyên đề yếu và các đề nên làm tiếp cho user hiện tại |
 
 ### Shape ngắn của topic stats
 
@@ -125,6 +126,30 @@ Ghi chú:
     correct: number;
     total: number;
     accuracy: number;
+  }>;
+}
+```
+
+### Shape ngắn của recommendations
+
+```ts
+{
+  weakTopics: Array<{
+    topicId: string | null;
+    topicName: string;
+    topicSlug: string | null;
+    correct: number;
+    total: number;
+    accuracy: number;
+    reason: string;
+  }>;
+  recommendedExams: Array<{
+    examId: string;
+    title: string;
+    durationMinutes: number;
+    matchedWeakTopicCount: number;
+    matchedWeakQuestionCount: number;
+    reason: string;
   }>;
 }
 ```

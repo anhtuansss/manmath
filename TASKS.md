@@ -90,6 +90,8 @@
 
 * [x] Hồ sơ người dùng tối thiểu
 * [x] Link tới hồ sơ người dùng sau khi login
+* [x] CTA từ hồ sơ sang analytics
+* [x] CTA đề nên làm tiếp trong hồ sơ
 * [ ] Thay đổi mật khẩu
 * [ ] Cập nhật thông tin cá nhân
 
@@ -175,15 +177,16 @@
 
 * [x] Tính độ chính xác theo chuyên đề
 * [x] API `/api/me/topic-stats` tổng hợp topic analytics theo user
+* [x] Analytics dashboard nhỏ tại `/analytics`
 * [ ] Tính độ chính xác theo thời gian
 * [ ] Theo dõi tiến bộ
 * [ ] Dashboard học tập
 
 ### Recommendation Engine (Không AI)
 
-* [ ] Xác định chuyên đề yếu
-* [ ] Gợi ý chuyên đề cần luyện
-* [ ] Gợi ý đề thi phù hợp
+* [x] Xác định chuyên đề yếu
+* [x] Gợi ý chuyên đề cần luyện
+* [x] Gợi ý đề thi phù hợp
 
 ---
 
@@ -259,6 +262,8 @@
 * [x] Hiển thị topic stats ở result page sau submit nếu phù hợp
 * [x] Hoàn thiện Question Image Support MVP với `Question.imageUrl` và ảnh static path
 * [x] Hoàn thiện Option Image Support MVP với `options: string[]` + `optionImageUrls` map theo index
+* [x] Hoàn thiện Recommendation MVP với API `/api/me/recommendations`
+* [x] Tạo analytics dashboard nhỏ tại route `/analytics`
 
 ### Không làm lúc này
 

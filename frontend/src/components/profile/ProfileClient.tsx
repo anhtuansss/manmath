@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Logo } from '../exam/Logo';
 import { UserTopicStatsCard } from '../exam/UserTopicStatsCard';
 import {
+  fetchProtectedJson,
   getCurrentUser,
   isUnauthorizedError,
   type AuthUser,
@@ -13,10 +14,33 @@ import { clearAuthToken, subscribeAuthTokenChange } from '../../lib/authStorage'
 
 type ProfileStatus = 'loading' | 'unauthorized' | 'ready' | 'error';
 
+type RecommendedExam = {
+  examId: string;
+  title: string;
+  durationMinutes: number;
+  matchedWeakTopicCount: number;
+  matchedWeakQuestionCount: number;
+  reason: string;
+};
+
+type RecommendationsResponse = {
+  weakTopics: Array<{
+    topicId: string | null;
+    topicName: string;
+    topicSlug: string | null;
+    correct: number;
+    total: number;
+    accuracy: number;
+    reason: string;
+  }>;
+  recommendedExams: RecommendedExam[];
+};
+
 export function ProfileClient() {
   const [status, setStatus] = useState<ProfileStatus>('loading');
   const [user, setUser] = useState<AuthUser | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [recommendedExam, setRecommendedExam] = useState<RecommendedExam | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -39,6 +63,38 @@ export function ProfileClient() {
         }
 
         setUser(currentUser);
+        setRecommendedExam(null);
+
+        try {
+          const recommendationData = await fetchProtectedJson<RecommendationsResponse>(
+            '/api/me/recommendations',
+          );
+
+          if (!isMounted) {
+            return;
+          }
+
+          const nextRecommendedExam = Array.isArray(recommendationData.recommendedExams)
+            ? recommendationData.recommendedExams[0] ?? null
+            : null;
+
+          setRecommendedExam(nextRecommendedExam);
+        } catch (recommendationError: unknown) {
+          if (!isMounted) {
+            return;
+          }
+
+          if (isUnauthorizedError(recommendationError)) {
+            setUser(null);
+            setRecommendedExam(null);
+            setStatus('unauthorized');
+            setErrorMessage(null);
+            return;
+          }
+
+          setRecommendedExam(null);
+        }
+
         setStatus('ready');
       } catch (error: unknown) {
         if (!isMounted) {
@@ -71,6 +127,7 @@ export function ProfileClient() {
   const handleLogout = () => {
     clearAuthToken();
     setUser(null);
+    setRecommendedExam(null);
     setStatus('unauthorized');
     setErrorMessage(null);
   };
@@ -211,6 +268,12 @@ export function ProfileClient() {
                 >
                   Quay về danh sách đề
                 </Link>
+                <Link
+                  href="/analytics"
+                  className="inline-flex h-10 cursor-pointer items-center justify-center rounded-lg border border-border bg-surface px-5 text-sm font-semibold text-text-primary transition-colors duration-200 hover:bg-background-alt focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                >
+                  Xem analytics
+                </Link>
                 <button
                   type="button"
                   onClick={handleLogout}
@@ -220,6 +283,52 @@ export function ProfileClient() {
                 </button>
               </div>
             </section>
+
+            {recommendedExam && (
+              <section className="rounded-xl border border-border bg-surface p-6 shadow-card">
+                <div className="flex flex-col gap-2">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+                    Gợi ý tiếp theo
+                  </p>
+                  <h2 className="font-[family-name:var(--font-outfit)] text-xl font-bold text-text-primary">
+                    Đề nên làm tiếp
+                  </h2>
+                  <p className="text-sm leading-6 text-text-secondary">
+                    Một gợi ý nhanh dựa trên các chuyên đề bạn đang cần ôn lại.
+                  </p>
+                </div>
+
+                <div className="mt-5 rounded-lg border border-border bg-background p-4">
+                  <p className="text-sm font-semibold text-text-primary">
+                    {recommendedExam.title}
+                  </p>
+                  <p className="mt-2 text-xs text-text-secondary">
+                    {recommendedExam.durationMinutes} phút
+                    {recommendedExam.matchedWeakQuestionCount > 0
+                      ? ` · ${recommendedExam.matchedWeakQuestionCount} câu bám topic yếu`
+                      : ''}
+                  </p>
+                  <p className="mt-3 text-sm leading-6 text-text-secondary">
+                    {recommendedExam.reason}
+                  </p>
+                </div>
+
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <Link
+                    href={`/exam/${recommendedExam.examId}`}
+                    className="inline-flex h-10 cursor-pointer items-center justify-center rounded-lg bg-primary px-5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                  >
+                    Làm đề này
+                  </Link>
+                  <Link
+                    href="/analytics"
+                    className="inline-flex h-10 cursor-pointer items-center justify-center rounded-lg border border-border bg-surface px-5 text-sm font-semibold text-text-primary transition-colors duration-200 hover:bg-background-alt focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                  >
+                    Xem phân tích chi tiết
+                  </Link>
+                </div>
+              </section>
+            )}
 
             <UserTopicStatsCard />
           </>

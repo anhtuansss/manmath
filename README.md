@@ -14,6 +14,7 @@ Project hiện hỗ trợ chọn đề, làm bài trắc nghiệm, nộp bài, x
 - [x] Lịch sử làm bài và chi tiết attempt
 - [x] Google Login + JWT
 - [x] Topic analytics
+- [x] Recommendation MVP và analytics dashboard nhỏ
 - [x] KaTeX math rendering
 - [x] Hỗ trợ ảnh câu hỏi và ảnh đáp án bằng static public path
 
@@ -132,6 +133,6 @@ Ghi chú:
 - Email/password login
 - Cập nhật thông tin cá nhân
 - Upload và quản lý ảnh câu hỏi/đáp án
-- Dashboard analytics sâu hơn
+- Dashboard analytics sâu hơn và theo dõi tiến bộ dài hạn
 - Import đề từ file
 - AI feedback
