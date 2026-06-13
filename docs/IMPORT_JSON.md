@@ -1,119 +1,132 @@
-# Import đề từ JSON
+# Import de tu JSON
 
-## Mục đích
+## Muc dich
 
-Import JSON dùng để thêm hoặc cập nhật đề thi vào PostgreSQL mà không cần sửa trực tiếp file seed. Đây là pipeline MVP để:
+Import JSON dung de them hoac cap nhat de thi vao PostgreSQL ma khong can sua truc tiep file seed.
 
-- thêm đề mới nhanh hơn
-- chuẩn bị dữ liệu thật theo format ổn định
-- tránh phải hardcode toàn bộ đề trong source code
+MVP hien tai phu hop cho:
 
-Hiện tại tính năng này chạy qua backend script, chưa có admin UI và chưa hỗ trợ upload file từ web.
+- them de moi nhanh hon
+- chuan hoa du lieu truoc khi dua de that vao he thong
+- test image support, topic, subtopic va option image
 
-## Workflow khuyến nghị
+Hien tai chua co admin UI va chua ho tro upload file qua web.
 
-### Khi cần reset dữ liệu mock chuẩn
+## Workflow khuyen nghi
+
+### Reset du lieu mock chuan
 
 ```bash
 cd backend
 npm run seed
 ```
 
-Lệnh này chỉ tạo lại các đề mock chuẩn trong `mockExams`.
-
-### Khi cần setup demo đầy đủ
+### Setup demo day du
 
 ```bash
 cd backend
 npm run seed:demo
 ```
 
-Lệnh này sẽ:
+Lenh nay:
 
-- chạy `seed` để tạo lại dữ liệu mock chuẩn
-- import thêm `sample-json-exam-01` từ file JSON mẫu
+- seed lai cac de mock chuan
+- import them `sample-json-exam-01`
 
-Nếu bạn muốn có ngay cả đề mock và đề JSON mẫu để mở trên web, đây là lệnh nên dùng.
-
-## Lệnh chạy import
+## Lenh import
 
 ```bash
 cd backend
 npm run import:exam -- ./src/data/import/sample-exam.json
 ```
 
-### Dry-run mode
+### Dry-run
 
 ```bash
 cd backend
 npm run import:exam -- ./src/data/import/sample-exam.json --dry-run
 ```
 
-Script hiện tại:
+Dry-run se:
 
-- đọc file JSON từ đường dẫn truyền vào
-- validate dữ liệu trước khi ghi DB
-- hỗ trợ `--dry-run` để kiểm tra file mà không ghi database
+- doc file JSON
+- validate du lieu
+- in summary
+- khong ghi vao database
+
+## Script hien tai lam gi
+
 - upsert `Exam`
-- upsert `Topic` theo `slug` nếu có
+- upsert `Topic` theo `slug`
+- upsert `Subtopic` theo `slug` neu co
 - upsert `Question` theo `id`
-- hỗ trợ cả `imageUrl` và `optionImageUrls` nếu file JSON có cung cấp
+- ho tro `imageUrl`
+- ho tro `optionImageUrls`
+- ho tro `topic`
+- ho tro `subtopic`
 
-Nếu import lại cùng một file hoặc cùng `exam.id`, dữ liệu sẽ được cập nhật thay vì tạo duplicate.
+Import lai cung `exam.id` se update, khong tao duplicate.
 
-Với `--dry-run`, script sẽ in summary:
+## Summary cua dry-run
+
+Dry-run hien in:
 
 - `exam id`
 - `title`
-- số câu hỏi
-- số topic detect được
-- số câu có `imageUrl`
-- số câu có `optionImageUrls`
+- so cau hoi
+- so topic detect duoc
+- so subtopic detect duoc
+- so cau co `imageUrl`
+- so cau co `optionImageUrls`
 
-## JSON format đầy đủ
+## JSON format day du
 
 ```json
 {
   "id": "sample-json-exam-01",
-  "title": "Đề import mẫu từ JSON",
-  "description": "Đề mẫu để kiểm tra import pipeline JSON vào PostgreSQL",
+  "title": "De import mau tu JSON",
+  "description": "De mau de test import pipeline",
   "durationMinutes": 90,
-  "subject": "Toán",
+  "subject": "Toan",
   "difficulty": "medium",
   "year": 2026,
   "statusLabel": "Imported JSON",
   "questions": [
     {
       "id": 1001,
-      "question": "Cho hàm số $y=x^2$. Đồ thị của hàm số là gì?",
+      "question": "Cho ham so $y=x^2$. Do thi cua ham so la gi?",
       "imageUrl": "/images/questions/sample-parabola.svg",
       "options": [
-        "A. Đường thẳng",
+        "A. Duong thang",
         "B. Parabol",
-        "C. Đường tròn",
+        "C. Duong tron",
         "D. Hyperbol"
       ],
       "optionImageUrls": ["", "", "", ""],
       "correctAnswer": "B. Parabol",
       "topic": {
-        "name": "Hàm số",
+        "name": "Ham so",
         "slug": "ham-so"
+      },
+      "subtopic": {
+        "name": "Do thi ham so",
+        "slug": "do-thi-ham-so"
       }
     }
   ]
 }
 ```
 
-## Field bắt buộc
+## Field bat buoc
 
-### Cấp độ exam
+### Cap do exam
 
 - `id`
 - `title`
 - `durationMinutes`
 - `questions`
 
-### Cấp độ question
+### Cap do question
 
 - `id`
 - `question`
@@ -122,7 +135,7 @@ Với `--dry-run`, script sẽ in summary:
 
 ## Field optional
 
-### Cấp độ exam
+### Cap do exam
 
 - `description`
 - `subject`
@@ -130,32 +143,32 @@ Với `--dry-run`, script sẽ in summary:
 - `year`
 - `statusLabel`
 
-### Cấp độ question
+### Cap do question
 
 - `imageUrl`
 - `optionImageUrls`
 - `topic`
+- `subtopic`
 
-### Cấp độ topic
+### Cap do topic / subtopic
 
 - `name`
 - `slug`
 
-Lưu ý: object `topic` là optional, nhưng nếu đã có `topic` thì cả `name` và `slug` đều phải hợp lệ.
+## Rule du lieu
 
-## Quy tắc dữ liệu
+- `correctAnswer` phai nam trong `options`
+- `options` hien nen co dung 4 dap an
+- `optionImageUrls` map theo index voi `options`
+- `optionImageUrls[index] = ""` duoc hieu la dap an do khong co anh
+- `question.id` khong duoc trung trong cung file import
+- `question.id` cung khong duoc trung voi question dang thuoc exam khac
+- neu co `subtopic` thi phai co `topic`
+- `subtopic` duoc import vao dung `topic`; khong co co che infer topic tu dong de tranh sai taxonomy
 
-- `correctAnswer` phải nằm trong `options`
-- `options` hiện nên có đúng 4 đáp án
-- `optionImageUrls` map theo index với `options`
-- `optionImageUrls[index] = ""` được hiểu là đáp án đó không có ảnh
-- import lại cùng `exam.id` sẽ update, không tạo duplicate exam
-- `question.id` không được trùng trong cùng file import
-- `question.id` cũng không được “mượn” từ exam khác; script sẽ chặn nếu câu hỏi đó đã thuộc một đề khác
+## Validation hien co
 
-## Validation report hiện có
-
-Script hiện đã báo lỗi rõ theo field/path, ví dụ:
+Script hien bao loi ro theo field/path, vi du:
 
 - `id is required`
 - `durationMinutes must be a positive integer`
@@ -165,131 +178,58 @@ Script hiện đã báo lỗi rõ theo field/path, ví dụ:
 - `questions[1].options must contain exactly 4 items`
 - `questions[3].correctAnswer must be one of options`
 - `questions[0].optionImageUrls must be an array of strings`
-- `questions[4].topic.slug must contain only lowercase letters, numbers, and hyphens`
+- `questions[0].topic.slug must contain only lowercase letters, numbers, and hyphens`
+- `questions[0].subtopic requires topic to be provided`
 - `questions contain duplicate id: 1001`
 
-Nếu file có nhiều lỗi, script sẽ in toàn bộ danh sách lỗi thay vì dừng ngay ở lỗi đầu tiên.
+Neu file co nhieu loi, script se in toan bo danh sach loi.
 
-## Giới hạn hiện tại của MVP
+## Gioi han hien tai
 
-- chưa import Word
-- chưa import PDF
-- chưa import Excel
-- chưa có OCR
-- chưa có AI parse đề
-- chưa có upload ảnh
-- chưa có admin UI để import qua web
-- ảnh hiện dùng static public path, ví dụ `/images/questions/sample-parabola.svg`
-
-## Ví dụ JSON ngắn
-
-```json
-{
-  "id": "mini-json-exam-01",
-  "title": "Đề JSON ngắn",
-  "durationMinutes": 45,
-  "questions": [
-    {
-      "id": 2001,
-      "question": "Tính $$\\int_0^1 x^2\\,dx$$",
-      "options": [
-        "A. $\\frac{1}{2}$",
-        "B. $\\frac{1}{3}$",
-        "C. $1$",
-        "D. $0$"
-      ],
-      "correctAnswer": "B. $\\frac{1}{3}$",
-      "topic": {
-        "name": "Tích phân",
-        "slug": "tich-phan"
-      }
-    }
-  ]
-}
-```
+- chua import Word
+- chua import PDF
+- chua import Excel
+- chua co OCR
+- chua co AI parse de
+- chua co upload anh
+- chua co admin UI
+- image support hien dung static public path
+- topic/subtopic taxonomy hien van la MVP, chua co taxonomy manager
 
 ## Troubleshooting
 
-### Thiếu `DATABASE_URL`
+### Thieu `DATABASE_URL`
 
-Triệu chứng:
+- kiem tra `backend/.env`
+- dam bao database local dang chay
 
-- script báo lỗi kết nối Prisma/PostgreSQL
-
-Cách xử lý:
-
-- kiểm tra `backend/.env`
-- đảm bảo `DATABASE_URL` trỏ đúng database local đang dùng
-
-### Prisma Client chưa sẵn sàng
-
-Triệu chứng:
-
-- TypeScript hoặc runtime báo lỗi liên quan Prisma client
-
-Cách xử lý:
+### Prisma Client chua san sang
 
 ```bash
 cd backend
 npx prisma generate
 ```
 
-### `correctAnswer` không nằm trong `options`
+### `correctAnswer` khong nam trong `options`
 
-Triệu chứng:
+- kiem tra chuoi trong `correctAnswer`
+- chuoi nay phai khop mot phan tu trong `options`
 
-- script dừng với lỗi validation
+### `subtopic` co nhưng `topic` thieu
 
-Cách xử lý:
+- bo sung object `topic`
+- dam bao `subtopic` thuoc dung topic do
 
-- kiểm tra chính xác chuỗi trong `correctAnswer`
-- chuỗi này phải khớp một phần tử trong `options`
+### Dry-run pass nhung import that fail
 
-### Dry-run pass nhưng import thật vẫn fail
+- kiem tra `question.id` co dang thuoc exam khac trong DB khong
+- neu la de moi, doi sang dai `question.id` chua dung
 
-Triệu chứng:
+### Sai path file JSON
 
-- validation pass
-- nhưng import thật báo lỗi `question id ... dang thuoc exam ...`
-
-Cách xử lý:
-
-- kiểm tra `question.id` có đang được dùng bởi một đề khác trong DB không
-- nếu đây là đề mới, đổi sang dải `question.id` chưa dùng
-- nếu đây là cập nhật đề cũ, xác nhận `exam.id` đang đúng
-
-### Đường dẫn file JSON sai
-
-Triệu chứng:
-
-- script báo không tìm thấy file hoặc JSON không hợp lệ
-
-Cách xử lý:
-
-- kiểm tra path truyền vào sau `npm run import:exam --`
-- ưu tiên dùng path tương đối từ thư mục `backend/`
-
-Ví dụ đúng:
+Vi du dung:
 
 ```bash
 cd backend
 npm run import:exam -- ./src/data/import/sample-exam.json
 ```
-
-Ví dụ dry-run:
-
-```bash
-cd backend
-npm run import:exam -- ./src/data/import/sample-exam.json --dry-run
-```
-
-### `question.id` bị trùng với đề khác
-
-Triệu chứng:
-
-- script báo không thể import vì câu hỏi đang thuộc exam khác
-
-Cách xử lý:
-
-- đổi `question.id` sang id chưa dùng
-- hoặc xác nhận bạn thực sự đang cập nhật đúng đề cũ

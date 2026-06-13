@@ -157,6 +157,13 @@ export const getExamDetailById = async (
           imageUrl: true,
           options: true,
           optionImageUrls: true,
+          subtopic: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
           correctAnswer: true,
         },
       },
@@ -251,6 +258,13 @@ export const getAttemptDetailById = async (
               imageUrl: true,
               options: true,
               optionImageUrls: true,
+              subtopic: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                },
+              },
               topic: {
                 select: {
                   id: true,
@@ -363,6 +377,7 @@ export const getAttemptDetailById = async (
           question.options,
           question.optionImageUrls,
         ),
+        subtopic: question.subtopic,
         selectedOptionIndex: answer.selectedOptionIndex,
         correctOptionIndex: answer.correctOptionIndex,
         isCorrect: answer.isCorrect,

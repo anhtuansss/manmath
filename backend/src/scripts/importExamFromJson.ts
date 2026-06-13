@@ -5,6 +5,7 @@ import { disconnectPrisma, prisma } from '../lib/prisma';
 import {
   ImportValidationError,
   type NormalizedExamInput,
+  type NormalizedSubtopicInput,
   type NormalizedTopicInput,
   printImportSummary,
   validateExamImportPayload,
@@ -67,6 +68,43 @@ const upsertTopic = async (
   return upsertedTopic.id;
 };
 
+const upsertSubtopic = async (
+  tx: Prisma.TransactionClient,
+  params: {
+    topicId: string | null;
+    subtopic: NormalizedSubtopicInput | null;
+  },
+): Promise<string | null> => {
+  const { topicId, subtopic } = params;
+
+  if (!subtopic) {
+    return null;
+  }
+
+  if (!topicId) {
+    throw new Error(
+      `Subtopic ${subtopic.slug} yeu cau topic hop le truoc khi import`,
+    );
+  }
+
+  const upsertedSubtopic = await tx.subtopic.upsert({
+    where: {
+      slug: subtopic.slug,
+    },
+    update: {
+      name: subtopic.name,
+      topicId,
+    },
+    create: {
+      name: subtopic.name,
+      slug: subtopic.slug,
+      topicId,
+    },
+  });
+
+  return upsertedSubtopic.id;
+};
+
 export const importNormalizedExam = async (
   exam: NormalizedExamInput,
 ): Promise<void> => {
@@ -119,6 +157,10 @@ export const importNormalizedExam = async (
 
     for (const [index, question] of exam.questions.entries()) {
       const topicId = await upsertTopic(tx, question.topic);
+      const subtopicId = await upsertSubtopic(tx, {
+        topicId,
+        subtopic: question.subtopic,
+      });
 
       await tx.question.upsert({
         where: {
@@ -128,6 +170,7 @@ export const importNormalizedExam = async (
           examId: exam.id,
           order: index + 1,
           topicId,
+          subtopicId,
           question: question.question,
           imageUrl: question.imageUrl,
           options: question.options,
@@ -139,6 +182,7 @@ export const importNormalizedExam = async (
           examId: exam.id,
           order: index + 1,
           topicId,
+          subtopicId,
           question: question.question,
           imageUrl: question.imageUrl,
           options: question.options,

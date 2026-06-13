@@ -175,10 +175,11 @@
 
 * [x] Bảng Topics
 * [x] Mapping Question -> Topic
+* [x] Mapping Question -> Subtopic MVP
 * [x] Attempt Detail có `topicStats`
 * [x] Result Page sau submit hiển thị `topicStats`
 * [x] Topic taxonomy cleanup MVP
-* [ ] Mapping Question -> Subtopic
+* [ ] Mapping Question -> Subtopic analytics nâng cao
 
 ### User Analytics
 

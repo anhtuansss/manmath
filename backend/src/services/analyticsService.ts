@@ -121,12 +121,14 @@ const rankWeakTopics = (topicStats: TopicStatDto[]): RankedWeakTopic[] => {
 
 const buildRecommendationReason = (params: {
   primaryWeakTopic: RankedWeakTopic | null;
+  primaryMatchedSubtopicName: string | null;
   matchedWeakQuestionCount: number;
   matchedWeakTopicCount: number;
   wasAttemptedRecently: boolean;
 }): string => {
   const {
     primaryWeakTopic,
+    primaryMatchedSubtopicName,
     matchedWeakQuestionCount,
     matchedWeakTopicCount,
     wasAttemptedRecently,
@@ -136,15 +138,19 @@ const buildRecommendationReason = (params: {
     ? `De nay co ${matchedWeakQuestionCount} cau thuoc chuyen de ${primaryWeakTopic.topicName}, do chinh xac hien tai cua ban la ${primaryWeakTopic.accuracy}%.`
     : `De nay co ${matchedWeakQuestionCount} cau thuoc ${matchedWeakTopicCount} chuyen de ban dang yeu.`;
 
+  const subtopicNote = primaryMatchedSubtopicName
+    ? ` Trong do tap trung vao mang ${primaryMatchedSubtopicName}.`
+    : '';
+
   if (wasAttemptedRecently) {
-    return `${baseReason} Ban da lam de nay gan day, nen de moi hon se duoc uu tien neu muc do phu hop tuong duong.`;
+    return `${baseReason}${subtopicNote} Ban da lam de nay gan day, nen de moi hon se duoc uu tien neu muc do phu hop tuong duong.`;
   }
 
   if (matchedWeakTopicCount >= 2) {
-    return `${baseReason} De nay dong thoi phu duoc ${matchedWeakTopicCount} chuyen de ban can on lai.`;
+    return `${baseReason}${subtopicNote} De nay dong thoi phu duoc ${matchedWeakTopicCount} chuyen de ban can on lai.`;
   }
 
-  return baseReason;
+  return `${baseReason}${subtopicNote}`;
 };
 
 export const getUserTopicStats = async (
@@ -264,6 +270,11 @@ export const getUserRecommendations = async (
       questions: {
         select: {
           topicId: true,
+          subtopic: {
+            select: {
+              name: true,
+            },
+          },
         },
       },
     },
@@ -309,6 +320,7 @@ export const getUserRecommendations = async (
   const rankedExams = exams
     .map((exam) => {
       const matchedTopicIds = new Set<string>();
+      const matchedSubtopicCount = new Map<string, number>();
       let matchedWeakQuestionCount = 0;
       let primaryWeakTopic: RankedWeakTopic | null = null;
 
@@ -326,6 +338,13 @@ export const getUserRecommendations = async (
         matchedWeakQuestionCount += 1;
         matchedTopicIds.add(question.topicId);
 
+        if (question.subtopic?.name) {
+          matchedSubtopicCount.set(
+            question.subtopic.name,
+            (matchedSubtopicCount.get(question.subtopic.name) ?? 0) + 1,
+          );
+        }
+
         if (
           !primaryWeakTopic ||
           matchedWeakTopic.weaknessScore > primaryWeakTopic.weaknessScore
@@ -335,6 +354,14 @@ export const getUserRecommendations = async (
       }
 
       const wasAttemptedRecently = recentlyAttemptedExamIds.has(exam.id);
+      const primaryMatchedSubtopicName = Array.from(matchedSubtopicCount.entries())
+        .sort((a, b) => {
+          if (a[1] !== b[1]) {
+            return b[1] - a[1];
+          }
+
+          return a[0].localeCompare(b[0], 'vi');
+        })[0]?.[0] ?? null;
       const recommendationScore =
         matchedWeakQuestionCount * 10 +
         matchedTopicIds.size * 4 -
@@ -349,6 +376,7 @@ export const getUserRecommendations = async (
         recommendationScore,
         wasAttemptedRecently,
         primaryWeakTopic,
+        primaryMatchedSubtopicName,
       };
     })
     .filter((exam) => exam.matchedWeakQuestionCount > 0)
@@ -384,6 +412,7 @@ export const getUserRecommendations = async (
       matchedWeakQuestionCount: exam.matchedWeakQuestionCount,
       reason: buildRecommendationReason({
         primaryWeakTopic: exam.primaryWeakTopic,
+        primaryMatchedSubtopicName: exam.primaryMatchedSubtopicName,
         matchedWeakQuestionCount: exam.matchedWeakQuestionCount,
         matchedWeakTopicCount: exam.matchedWeakTopicCount,
         wasAttemptedRecently: exam.wasAttemptedRecently,

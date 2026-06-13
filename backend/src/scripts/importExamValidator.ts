@@ -5,6 +5,11 @@ export type NormalizedTopicInput = {
   slug: string;
 };
 
+export type NormalizedSubtopicInput = {
+  name: string;
+  slug: string;
+};
+
 export type NormalizedQuestionInput = {
   id: number;
   question: string;
@@ -13,6 +18,7 @@ export type NormalizedQuestionInput = {
   optionImageUrls: string[];
   correctAnswer: string;
   topic: NormalizedTopicInput | null;
+  subtopic: NormalizedSubtopicInput | null;
 };
 
 export type NormalizedExamInput = {
@@ -32,6 +38,7 @@ export type ImportSummary = {
   title: string;
   questionCount: number;
   detectedTopicCount: number;
+  detectedSubtopicCount: number;
   questionImageCount: number;
   optionImageQuestionCount: number;
 };
@@ -194,6 +201,39 @@ const normalizeTopic = (
   };
 };
 
+const normalizeSubtopic = (
+  value: unknown,
+  path: string,
+  issues: string[],
+): NormalizedSubtopicInput | null => {
+  if (value === undefined || value === null) {
+    return null;
+  }
+
+  if (!isPlainObject(value)) {
+    issues.push(`${path} must be an object`);
+    return null;
+  }
+
+  const name = readRequiredString(value.name, `${path}.name`, issues);
+  const slug = readRequiredString(value.slug, `${path}.slug`, issues);
+
+  if (slug && !TOPIC_SLUG_PATTERN.test(slug)) {
+    issues.push(
+      `${path}.slug must contain only lowercase letters, numbers, and hyphens`,
+    );
+  }
+
+  if (!name || !slug) {
+    return null;
+  }
+
+  return {
+    name,
+    slug,
+  };
+};
+
 const normalizeQuestion = (
   value: unknown,
   index: number,
@@ -220,6 +260,7 @@ const normalizeQuestion = (
       ? []
       : readStringArray(value.optionImageUrls, `${path}.optionImageUrls`, issues);
   const topic = normalizeTopic(value.topic, `${path}.topic`, issues);
+  const subtopic = normalizeSubtopic(value.subtopic, `${path}.subtopic`, issues);
 
   if (options && options.length !== EXPECTED_OPTION_COUNT) {
     issues.push(
@@ -241,6 +282,10 @@ const normalizeQuestion = (
     );
   }
 
+  if (subtopic && !topic) {
+    issues.push(`${path}.subtopic requires topic to be provided`);
+  }
+
   if (!id || !question || !options || !correctAnswer || !optionImageUrls) {
     return null;
   }
@@ -253,6 +298,7 @@ const normalizeQuestion = (
     optionImageUrls,
     correctAnswer,
     topic,
+    subtopic,
   };
 };
 
@@ -349,6 +395,11 @@ export const validateExamImportPayload = (
         .map((question) => question.topic?.slug ?? null)
         .filter((slug): slug is string => slug !== null),
     ).size,
+    detectedSubtopicCount: new Set(
+      normalizedExam.questions
+        .map((question) => question.subtopic?.slug ?? null)
+        .filter((slug): slug is string => slug !== null),
+    ).size,
     questionImageCount: normalizedExam.questions.filter(
       (question) => question.imageUrl !== null,
     ).length,
@@ -373,6 +424,9 @@ export const printImportSummary = (
   console.log(`[${modeLabel}] Title: ${summary.title}`);
   console.log(`[${modeLabel}] Questions: ${summary.questionCount}`);
   console.log(`[${modeLabel}] Topics detected: ${summary.detectedTopicCount}`);
+  console.log(
+    `[${modeLabel}] Subtopics detected: ${summary.detectedSubtopicCount}`,
+  );
   console.log(
     `[${modeLabel}] Questions with imageUrl: ${summary.questionImageCount}`,
   );

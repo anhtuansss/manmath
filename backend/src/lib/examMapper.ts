@@ -24,6 +24,11 @@ type QuestionDbRecord = {
   imageUrl: string | null;
   options: string[];
   optionImageUrls: string[];
+  subtopic: {
+    id: string;
+    name: string;
+    slug: string;
+  } | null;
   correctAnswer: string;
 };
 
@@ -81,6 +86,7 @@ export const mapExamRecordToDetailDto = (
         question.options,
         question.optionImageUrls,
       ),
+      subtopic: question.subtopic,
       correctAnswer: question.correctAnswer,
     })),
   };

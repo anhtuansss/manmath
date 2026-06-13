@@ -1,11 +1,18 @@
 export type ExamDifficulty = 'easy' | 'medium' | 'hard';
 
+export type SubtopicDto = {
+  id: string;
+  name: string;
+  slug: string;
+};
+
 export type QuestionDto = {
   id: number;
   question: string;
   imageUrl: string | null;
   options: string[];
   optionImageUrls: (string | null)[];
+  subtopic: SubtopicDto | null;
   correctAnswer: string;
 };
 
@@ -54,6 +61,7 @@ export type AttemptAnswerDetailDto = {
   imageUrl: string | null;
   options: string[];
   optionImageUrls: (string | null)[];
+  subtopic: SubtopicDto | null;
   selectedOptionIndex: number | null;
   correctOptionIndex: number;
   isCorrect: boolean;

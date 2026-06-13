@@ -23,6 +23,10 @@
       "topic": {
         "name": "Hàm số",
         "slug": "ham-so"
+      },
+      "subtopic": {
+        "name": "Đồ thị hàm số",
+        "slug": "do-thi-ham-so"
       }
     },
     {
@@ -39,6 +43,10 @@
       "topic": {
         "name": "Nguyên hàm - tích phân",
         "slug": "nguyen-ham-tich-phan"
+      },
+      "subtopic": {
+        "name": "Tích phân cơ bản",
+        "slug": "tich-phan-co-ban"
       }
     },
     {
@@ -60,6 +68,10 @@
       "topic": {
         "name": "Ma trận",
         "slug": "ma-tran"
+      },
+      "subtopic": {
+        "name": "Định thức ma trận",
+        "slug": "dinh-thuc-ma-tran"
       }
     }
   ]

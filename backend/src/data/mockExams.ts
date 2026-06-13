@@ -18,8 +18,12 @@ import type {
   QuestionDto,
 } from '../types/exam';
 
-export type MockQuestion = Omit<QuestionDto, 'imageUrl' | 'optionImageUrls'> & {
+export type MockQuestion = Omit<
+  QuestionDto,
+  'imageUrl' | 'optionImageUrls' | 'subtopic'
+> & {
   topicSlug: string;
+  subtopicSlug?: string;
   imageUrl?: string;
   optionImageUrls?: string[];
 };
@@ -55,6 +59,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 1,
         topicSlug: 'ham-so',
+        subtopicSlug: 'phuong-trinh-bac-nhat',
         question: 'Giải phương trình $2x - 4 = 0$. Nghiệm của phương trình là:',
         options: ['A. $x=2$', 'B. $x=4$', 'C. $x=0$', 'D. $x=1$'],
         correctAnswer: 'A. $x=2$',
@@ -62,6 +67,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 2,
         topicSlug: 'ham-so',
+        subtopicSlug: 'dao-ham',
         question: "Cho hàm số $f(x)=x^3-2x$. Tính $f'(x)$.",
         options: [
           "A. $f'(x)=3x^2-2$",
@@ -74,6 +80,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 3,
         topicSlug: 'nguyen-ham-tich-phan',
+        subtopicSlug: 'tich-phan-co-ban',
         question: 'Tính tích phân $$\\int_0^1 x^2\\,dx$$',
         options: ['A. $\\frac{1}{2}$', 'B. $\\frac{1}{3}$', 'C. $1$', 'D. $0$'],
         correctAnswer: 'B. $\\frac{1}{3}$',
@@ -81,6 +88,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 4,
         topicSlug: 'gioi-han',
+        subtopicSlug: 'gioi-han-luong-giac',
         imageUrl: '/images/questions/sample-unit-circle.svg',
         question: 'Tính giới hạn $\\lim_{x\\to 0}\\frac{\\sin x}{x}$.',
         options: ['A. $0$', 'B. $1$', 'C. $+\\infty$', 'D. $-1$'],
@@ -89,6 +97,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 5,
         topicSlug: 'ham-so',
+        subtopicSlug: 'can-thuc-co-ban',
         question: 'Rút gọn biểu thức $\\sqrt{50}$.',
         options: [
           'A. $5\\sqrt{2}$',
@@ -102,6 +111,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 6,
         topicSlug: 'mu-logarit',
+        subtopicSlug: 'logarit-co-ban',
         question: 'Nếu $\\log_2 x=3$ thì $x$ bằng:',
         options: ['A. $6$', 'B. $8$', 'C. $9$', 'D. $12$'],
         correctAnswer: 'B. $8$',
@@ -109,6 +119,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 7,
         topicSlug: 'ham-so',
+        subtopicSlug: 'phuong-trinh-mu',
         question: 'Giải phương trình $2^x=8$.',
         options: ['A. $x=2$', 'B. $x=3$', 'C. $x=4$', 'D. $x=8$'],
         correctAnswer: 'B. $x=3$',
@@ -116,6 +127,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 8,
         topicSlug: 'vector-toa-do',
+        subtopicSlug: 'tich-vo-huong',
         question:
           'Cho $\\vec{u}=(1;2;3)$ và $\\vec{v}=(2;0;1)$. Tính $\\vec{u}\\cdot\\vec{v}$.',
         options: ['A. $3$', 'B. $4$', 'C. $5$', 'D. $6$'],
@@ -124,6 +136,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 9,
         topicSlug: 'xac-suat-to-hop',
+        subtopicSlug: 'xac-suat-co-ban',
         question:
           'Gieo một con xúc xắc cân đối. Xác suất để mặt xuất hiện là số chẵn bằng:',
         options: [
@@ -137,6 +150,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 10,
         topicSlug: 'xac-suat-to-hop',
+        subtopicSlug: 'to-hop-co-ban',
         question: 'Tính số tổ hợp $C_5^2$.',
         options: ['A. $5$', 'B. $10$', 'C. $20$', 'D. $25$'],
         correctAnswer: 'B. $10$',
@@ -157,6 +171,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 101,
         topicSlug: 'ham-so',
+        subtopicSlug: 'dao-ham',
         question: "Cho $f(x)=x^4-2x^2$. Tính $f'(x)$.",
         options: [
           "A. $f'(x)=4x^3-4x$",
@@ -169,6 +184,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 102,
         topicSlug: 'ham-so',
+        subtopicSlug: 'tap-xac-dinh',
         question: 'Tập xác định của hàm số $y=\\frac{2x+1}{x-1}$ là:',
         options: [
           'A. $\\mathbb{R}$',
@@ -181,6 +197,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 103,
         topicSlug: 'gioi-han',
+        subtopicSlug: 'gioi-han-vo-cuc',
         question: 'Tính giới hạn $\\lim_{x\\to +\\infty}\\frac{2x+1}{x-1}$.',
         options: ['A. $1$', 'B. $2$', 'C. $-1$', 'D. $+\\infty$'],
         optionImageUrls: ['', '/images/questions/option-limit-b.svg', '', ''],
@@ -189,6 +206,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 104,
         topicSlug: 'ham-so',
+        subtopicSlug: 'don-dieu',
         question: 'Hàm số $y=x^3-3x$ nghịch biến trên khoảng nào?',
         options: [
           'A. $(-\\infty;-1)$',
@@ -201,6 +219,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 105,
         topicSlug: 'ham-so',
+        subtopicSlug: 'do-thi-ham-so',
         imageUrl: '/images/questions/sample-parabola.svg',
         question: 'Tiếp tuyến của đồ thị $y=x^2$ tại điểm có hoành độ $x=1$ là:',
         options: ['A. $y=x+1$', 'B. $y=2x-1$', 'C. $y=2x+1$', 'D. $y=x-1$'],
@@ -209,6 +228,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 106,
         topicSlug: 'ham-so',
+        subtopicSlug: 'cuc-tri',
         question: "Với $f(x)=x^3-3x$, các điểm tới hạn thỏa $f'(x)=0$ là:",
         options: ['A. $x=0$', 'B. $x=1$', 'C. $x=\\pm 1$', 'D. $x=\\pm 3$'],
         correctAnswer: 'C. $x=\\pm 1$',
@@ -216,6 +236,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 107,
         topicSlug: 'ham-so',
+        subtopicSlug: 'tiem-can',
         question: 'Đường tiệm cận đứng của đồ thị $y=\\frac{x+1}{x-2}$ là:',
         options: ['A. $x=1$', 'B. $x=2$', 'C. $y=1$', 'D. $y=2$'],
         correctAnswer: 'B. $x=2$',
@@ -223,6 +244,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 108,
         topicSlug: 'mu-logarit',
+        subtopicSlug: 'logarit-co-ban',
         question: 'Điều kiện xác định của $\\log_2(x-1)$ là:',
         options: ['A. $x>1$', 'B. $x\\ge 1$', 'C. $x<1$', 'D. $x\\ne 1$'],
         correctAnswer: 'A. $x>1$',
@@ -230,6 +252,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 109,
         topicSlug: 'ham-so',
+        subtopicSlug: 'phuong-trinh-mu',
         question: 'Giải phương trình $2^{x+1}=16$.',
         options: ['A. $x=2$', 'B. $x=3$', 'C. $x=4$', 'D. $x=5$'],
         correctAnswer: 'B. $x=3$',
@@ -237,6 +260,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 110,
         topicSlug: 'nguyen-ham-tich-phan',
+        subtopicSlug: 'tich-phan-co-ban',
         question: 'Tính tích phân $$\\int_0^2 x\\,dx$$',
         options: ['A. $1$', 'B. $2$', 'C. $3$', 'D. $4$'],
         correctAnswer: 'B. $2$',
@@ -257,6 +281,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 201,
         topicSlug: 'gioi-han',
+        subtopicSlug: 'gioi-han-can-thuc',
         question: 'Tính giới hạn $\\lim_{x\\to 0}\\frac{\\sqrt{1+x}-1}{x}$.',
         options: ['A. $0$', 'B. $\\frac{1}{2}$', 'C. $1$', 'D. $2$'],
         correctAnswer: 'B. $\\frac{1}{2}$',
@@ -264,6 +289,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 202,
         topicSlug: 'nguyen-ham-tich-phan',
+        subtopicSlug: 'tich-phan-co-ban',
         question: 'Tính tích phân $$\\int_0^1 3x^2\\,dx$$',
         options: ['A. $\\frac{1}{3}$', 'B. $\\frac{1}{2}$', 'C. $1$', 'D. $3$'],
         correctAnswer: 'C. $1$',
@@ -271,6 +297,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 203,
         topicSlug: 'xac-suat-to-hop',
+        subtopicSlug: 'to-hop-co-ban',
         question: 'Nếu $C_n^2=45$ và $n\\ge 2$, giá trị của $n$ là:',
         options: ['A. $8$', 'B. $9$', 'C. $10$', 'D. $11$'],
         correctAnswer: 'C. $10$',
@@ -278,6 +305,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 204,
         topicSlug: 'xac-suat-to-hop',
+        subtopicSlug: 'xac-suat-co-ban',
         question:
           'Hộp có 3 bi đỏ và 2 bi xanh. Chọn ngẫu nhiên 2 bi. Xác suất chọn được 2 bi cùng màu là:',
         options: [
@@ -291,6 +319,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 205,
         topicSlug: 'vector-toa-do',
+        subtopicSlug: 'tich-vo-huong',
         question: 'Cho $\\vec{u}=(1;2;0)$ và $\\vec{v}=(2;-1;1)$. Mệnh đề nào đúng?',
         options: [
           'A. $\\vec{u}\\cdot\\vec{v}=0$',
@@ -303,6 +332,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 206,
         topicSlug: 'mu-logarit',
+        subtopicSlug: 'phuong-trinh-logarit',
         question: 'Giải phương trình $\\log_2 x+\\log_2(x-2)=3$ với $x>2$.',
         options: ['A. $x=2$', 'B. $x=3$', 'C. $x=4$', 'D. $x=6$'],
         correctAnswer: 'C. $x=4$',
@@ -310,6 +340,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 207,
         topicSlug: 'mu-logarit',
+        subtopicSlug: 'dao-ham-logarit',
         question: "Đạo hàm của hàm số $f(x)=\\ln x$ với $x>0$ là:",
         options: [
           "A. $f'(x)=x$",
@@ -322,6 +353,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 208,
         topicSlug: 'ham-so',
+        subtopicSlug: 'cuc-tri',
         question: 'Giá trị lớn nhất của hàm số $y=-x^2+4x+1$ trên $\\mathbb{R}$ là:',
         options: ['A. $4$', 'B. $5$', 'C. $6$', 'D. $7$'],
         correctAnswer: 'B. $5$',
@@ -329,6 +361,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 209,
         topicSlug: 'ma-tran',
+        subtopicSlug: 'dinh-thuc-ma-tran',
         question: 'Tính định thức $$\\begin{vmatrix}1&2\\\\3&4\\end{vmatrix}$$',
         options: ['A. $-2$', 'B. $2$', 'C. $10$', 'D. $-10$'],
         optionImageUrls: ['/images/questions/option-determinant-a.svg', '', '', ''],
@@ -337,6 +370,7 @@ export const mockExams: ExamMock[] = [
       {
         id: 210,
         topicSlug: 'hinh-hoc-khong-gian',
+        subtopicSlug: 'goc-va-khoang-cach',
         imageUrl: '/images/questions/sample-plane-point.svg',
         question: 'Khoảng cách từ $A(1;2;3)$ đến mặt phẳng $x+2y+2z-9=0$ bằng:',
         options: ['A. $\\frac{1}{3}$', 'B. $\\frac{2}{3}$', 'C. $1$', 'D. $2$'],

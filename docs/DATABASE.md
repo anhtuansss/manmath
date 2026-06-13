@@ -1,17 +1,17 @@
-# Database và Prisma
+# Database va Prisma
 
-## Công nghệ
+## Cong nghe
 
 - PostgreSQL
 - Prisma ORM
 
-## Các model chính
+## Cac model chinh
 
 ### User
 
-Lưu tài khoản người dùng.
+Luu tai khoan nguoi dung.
 
-Các field chính:
+Field chinh:
 
 - `id`
 - `email`
@@ -23,9 +23,9 @@ Các field chính:
 
 ### Exam
 
-Lưu thông tin đề thi.
+Luu thong tin de thi.
 
-Các field chính:
+Field chinh:
 
 - `id`
 - `title`
@@ -35,34 +35,11 @@ Các field chính:
 - `difficulty`
 - `statusLabel`
 
-### Question
-
-Lưu từng câu hỏi trong đề.
-
-Các field chính:
-
-- `id`
-- `examId`
-- `order`
-- `topicId`
-- `question`
-- `imageUrl`
-- `options`
-- `optionImageUrls`
-- `correctAnswer`
-
-Ghi chú:
-
-- `imageUrl` là field optional dùng cho Question Image Support MVP
-- `optionImageUrls` là mảng string map theo index với `options`
-- Ảnh hiện được lưu dưới dạng static public path, ví dụ `/images/questions/sample-parabola.svg`
-- MVP hiện vẫn giữ `options: string[]`, chưa đổi sang object option model
-
 ### Topic
 
-Lưu chuyên đề Toán.
+Luu nhom kien thuc lon.
 
-Các field chính:
+Field chinh:
 
 - `id`
 - `name`
@@ -70,27 +47,60 @@ Các field chính:
 - `description`
 - `order`
 
-Taxonomy MVP hiện tại dùng một bộ slug chính, ví dụ:
+Topic hien la nen cho:
 
-- `ham-so`
-- `nguyen-ham-tich-phan`
-- `gioi-han`
-- `mu-logarit`
-- `xac-suat-to-hop`
-- `vector-toa-do`
-- `ma-tran`
-- `hinh-hoc-khong-gian`
+- topic stats
+- recommendation MVP
+- analytics dashboard
 
-Ghi chú:
+### Subtopic
 
-- Analytics và recommendation đang phụ thuộc trực tiếp vào `Question -> Topic`
-- Vì vậy slug topic cần được giữ nhất quán giữa `mockExams`, seed và JSON import
+Luu nhom kien thuc nho hon, nam trong mot `Topic`.
+
+Field chinh:
+
+- `id`
+- `name`
+- `slug`
+- `topicId`
+
+Ghi chu:
+
+- `Subtopic` thuoc dung mot `Topic`
+- `Question.subtopicId` la optional
+- MVP hien chi dung `Subtopic` de tang do chi tiet cho taxonomy va DTO
+- Analytics hien chua co API rieng theo subtopic
+
+### Question
+
+Luu tung cau hoi trong de.
+
+Field chinh:
+
+- `id`
+- `examId`
+- `order`
+- `topicId`
+- `subtopicId`
+- `question`
+- `imageUrl`
+- `options`
+- `optionImageUrls`
+- `correctAnswer`
+
+Ghi chu:
+
+- `imageUrl` la field optional cho Question Image Support
+- `optionImageUrls` la mang string map theo index voi `options`
+- `subtopicId` la field optional cho Subtopic Mapping MVP
+- Anh hien tai duoc luu dang static public path, vi du `/images/questions/sample-parabola.svg`
+- MVP van giu `options: string[]`, chua doi sang object option model
 
 ### Attempt
 
-Lưu một lần làm bài.
+Luu mot lan lam bai.
 
-Các field chính:
+Field chinh:
 
 - `id`
 - `examId`
@@ -105,9 +115,9 @@ Các field chính:
 
 ### AttemptAnswer
 
-Lưu từng câu trả lời của một lần làm bài.
+Luu tung cau tra loi cua mot lan lam bai.
 
-Các field chính:
+Field chinh:
 
 - `id`
 - `attemptId`
@@ -116,58 +126,71 @@ Các field chính:
 - `correctOptionIndex`
 - `isCorrect`
 
-## Sơ đồ quan hệ
+## So do quan he
 
 ```text
 User 1 --- n Attempt
 Exam 1 --- n Question
 Exam 1 --- n Attempt
-Attempt 1 --- n AttemptAnswer
 Topic 1 --- n Question
+Topic 1 --- n Subtopic
+Subtopic 1 --- n Question
+Attempt 1 --- n AttemptAnswer
 ```
 
-Ghi chú:
+## Ghi chu thiet ke
 
-- `Attempt.userId` là nullable để vẫn hỗ trợ anonymous submit
-- `AttemptAnswer.questionId` hiện là scalar field, chưa khai báo relation trực tiếp tới `Question`
+- `Attempt.userId` la nullable de van ho tro anonymous submit
+- `AttemptAnswer.questionId` hien la scalar field, chua khai bao relation truc tiep toi `Question`
+- Topic va Subtopic duoc giu doc lap voi attempt data; analytics tinh tu `AttemptAnswer` ket hop `Question`
 
-## Vì sao cần Attempt và AttemptAnswer
+## Vi sao can Topic va Subtopic
 
-### Attempt
+### Topic
 
-Dùng để lưu kết quả tổng của một lần làm bài:
+Dung cho:
 
-- điểm số
-- số câu đúng
-- tổng số câu
-- thời gian nộp bài
-- thời gian làm bài
+- thong ke theo nhom lon
+- recommendation MVP
+- dashboard tong quan
 
-### AttemptAnswer
+### Subtopic
 
-Dùng để lưu từng đáp án user đã chọn:
+Dung cho:
 
-- câu nào đúng
-- câu nào sai
-- câu nào bỏ trống
-- dữ liệu đầu vào cho history, review và analytics
+- phan loai cau hoi chi tiet hon
+- cai thien quality cua seed/import
+- mo duong cho recommendation va analytics sau nay
 
-## Topic analytics lấy dữ liệu từ đâu
+MVP hien tai chua chuyen he thong sang subtopic-first. Topic van la lop phan tich chinh.
 
-Topic analytics hiện dựa trên:
+## Topic taxonomy hien tai
 
-- mapping `Question -> Topic`
-- dữ liệu `AttemptAnswer` của từng lần làm bài
+Slug topic chinh dang dung gom:
 
-Các luồng chính:
+- `ham-so`
+- `nguyen-ham-tich-phan`
+- `gioi-han`
+- `mu-logarit`
+- `xac-suat-to-hop`
+- `vector-toa-do`
+- `ma-tran`
+- `hinh-hoc-khong-gian`
 
-1. Submit bài:
-   - backend chấm bài
-   - gom câu theo topic
-   - trả `topicStats`
-2. Attempt detail:
-   - đọc answers của một attempt
-   - gom theo topic
-3. User analytics:
-   - lấy nhiều attempt của một user
-   - tổng hợp theo topic
+Vi du subtopic hien tai:
+
+- `dao-ham`
+- `cuc-tri`
+- `do-thi-ham-so`
+- `logarit-co-ban`
+- `phuong-trinh-logarit`
+- `tich-phan-co-ban`
+- `dinh-thuc-ma-tran`
+- `goc-va-khoang-cach`
+
+Slug topic/subtopic can duoc giu nhat quan giua:
+
+- `mockExams`
+- seed
+- JSON import
+- recommendation / analytics services

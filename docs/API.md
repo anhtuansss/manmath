@@ -1,21 +1,21 @@
 # API ManMath
 
-## Ghi chú chung
+## Ghi chu chung
 
-- Base path backend hiện tại là `http://localhost:5000`
-- Các route exam được mount dưới `/api`
-- Auth dùng JWT Bearer token khi route yêu cầu đăng nhập
+- Base URL backend local: `http://localhost:5000`
+- Cac route exam duoc mount duoi `/api`
+- Route protected dung JWT Bearer token
 
 ## Exam APIs
 
-| Method | Endpoint | Auth | Mục đích |
+| Method | Endpoint | Auth | Muc dich |
 | --- | --- | --- | --- |
-| `GET` | `/api/health` | Public | Kiểm tra backend còn hoạt động |
-| `GET` | `/api/exams` | Public | Lấy danh sách đề |
-| `GET` | `/api/exams/:id` | Public | Lấy chi tiết một đề |
-| `POST` | `/api/exam/submit` | Optional JWT | Nộp bài, chấm điểm, lưu attempt và trả kết quả |
+| `GET` | `/api/health` | Public | Kiem tra backend con hoat dong |
+| `GET` | `/api/exams` | Public | Lay danh sach de |
+| `GET` | `/api/exams/:id` | Public | Lay chi tiet mot de |
+| `POST` | `/api/exam/submit` | Optional JWT | Nop bai, cham diem, luu attempt va tra ket qua |
 
-### Shape ngắn của exam detail response
+### Exam detail response shape
 
 ```ts
 {
@@ -28,12 +28,17 @@
     imageUrl: string | null;
     options: string[];
     optionImageUrls: Array<string | null>;
+    subtopic: {
+      id: string;
+      name: string;
+      slug: string;
+    } | null;
     correctAnswer: string;
   }>;
 }
 ```
 
-### Shape ngắn của submit response
+### Submit response shape
 
 ```ts
 {
@@ -46,12 +51,12 @@
 
 ## Attempt / History APIs
 
-| Method | Endpoint | Auth | Mục đích |
+| Method | Endpoint | Auth | Muc dich |
 | --- | --- | --- | --- |
-| `GET` | `/api/exams/:id/attempts` | Protected | Lấy lịch sử làm bài của user hiện tại theo đề |
-| `GET` | `/api/attempts/:attemptId` | Protected | Lấy chi tiết một lần làm bài nếu user là owner |
+| `GET` | `/api/exams/:id/attempts` | Protected | Lay lich su lam bai cua user hien tai theo de |
+| `GET` | `/api/attempts/:attemptId` | Protected | Lay chi tiet mot lan lam bai neu user la owner |
 
-### Shape ngắn của attempt detail response
+### Attempt detail response shape
 
 ```ts
 {
@@ -72,6 +77,11 @@
     imageUrl: string | null;
     options: string[];
     optionImageUrls: Array<string | null>;
+    subtopic: {
+      id: string;
+      name: string;
+      slug: string;
+    } | null;
     selectedOptionIndex: number | null;
     correctOptionIndex: number;
     isCorrect: boolean;
@@ -80,22 +90,21 @@
 }
 ```
 
-Ghi chú:
+### Ghi chu
 
-- `question.imageUrl` dùng cho ảnh minh họa của câu hỏi
-- `optionImageUrls` dùng cho ảnh minh họa của đáp án và map theo index với `options`
-- Giá trị ảnh hiện là static public path, ví dụ `/images/questions/sample-unit-circle.svg`
-- MVP hiện vẫn giữ `options: string[]`, chưa đổi sang object option model
-- `POST /api/exam/submit` giữ response cũ và bổ sung `topicStats` theo hướng additive
+- `imageUrl` dung cho anh cau hoi
+- `optionImageUrls` map theo index voi `options`
+- `subtopic` la metadata bo sung cho taxonomy MVP
+- `POST /api/exam/submit` giu response cu va bo sung `topicStats` theo huong additive
 
 ## Auth APIs
 
-| Method | Endpoint | Auth | Mục đích |
+| Method | Endpoint | Auth | Muc dich |
 | --- | --- | --- | --- |
-| `POST` | `/api/auth/google` | Public | Đăng nhập bằng Google credential |
-| `GET` | `/api/auth/me` | Protected | Lấy user hiện tại từ JWT |
+| `POST` | `/api/auth/google` | Public | Dang nhap bang Google credential |
+| `GET` | `/api/auth/me` | Protected | Lay user hien tai tu JWT |
 
-### Shape ngắn của auth response
+### Auth response shape
 
 ```ts
 {
@@ -111,13 +120,13 @@ Ghi chú:
 
 ## Me / Analytics APIs
 
-| Method | Endpoint | Auth | Mục đích |
+| Method | Endpoint | Auth | Muc dich |
 | --- | --- | --- | --- |
-| `GET` | `/api/me/topic-stats` | Protected | Lấy thống kê độ chính xác theo chuyên đề của user hiện tại |
-| `GET` | `/api/me/recommendations` | Protected | Lấy chuyên đề yếu và các đề nên làm tiếp cho user hiện tại |
-| `GET` | `/api/me/progress` | Protected | Lấy tổng quan tiến độ học tập và các lần làm gần đây của user hiện tại |
+| `GET` | `/api/me/topic-stats` | Protected | Lay thong ke do chinh xac theo topic cua user hien tai |
+| `GET` | `/api/me/recommendations` | Protected | Lay weak topics va de nen lam tiep |
+| `GET` | `/api/me/progress` | Protected | Lay summary tien do, recent attempts va progress theo thoi gian |
 
-### Shape ngắn của topic stats
+### Topic stats response shape
 
 ```ts
 {
@@ -132,7 +141,7 @@ Ghi chú:
 }
 ```
 
-### Shape ngắn của recommendations
+### Recommendations response shape
 
 ```ts
 {
@@ -156,7 +165,7 @@ Ghi chú:
 }
 ```
 
-### Shape ngắn của progress
+### Progress response shape
 
 ```ts
 {
@@ -185,23 +194,19 @@ Ghi chú:
 }
 ```
 
-Ghi chú:
+### Ghi chu analytics
 
-- `weakTopics` hiện được xếp theo mức độ yếu có cân nhắc cả `accuracy` và số câu đã làm
-- `recommendedExams` ưu tiên:
-  - nhiều câu thuộc các topic yếu
-  - phủ được nhiều topic yếu
-  - giảm ưu tiên đề user vừa làm gần đây
-- `reason` hiện mô tả rõ hơn vì sao đề được gợi ý, ví dụ số câu khớp topic yếu và độ chính xác hiện tại của user
-- `progress` dùng cho analytics dashboard và block hoạt động gần đây trong hồ sơ người dùng
+- Recommendation hien van la rule-based MVP
+- `reason` co the nhac them subtopic neu de goi y co nhieu cau thuoc mot nhom con cu the
+- Analytics hien van giu trong tam o level `Topic`; `Subtopic` moi la metadata bo sung
 
-## Import script nội bộ
+## Import script noi bo
 
-Import đề từ JSON hiện chưa phải HTTP API. MVP đang dùng backend script:
+Import de tu JSON hien chua phai HTTP API. MVP dang dung backend script:
 
 ```bash
 cd backend
 npm run import:exam -- ./src/data/import/sample-exam.json
 ```
 
-Xem format và rule chi tiết tại [docs/IMPORT_JSON.md](./IMPORT_JSON.md).
+Xem format va rule chi tiet tai [docs/IMPORT_JSON.md](./IMPORT_JSON.md).
