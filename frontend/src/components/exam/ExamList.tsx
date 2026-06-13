@@ -3,7 +3,6 @@ import { ExamCard } from './ExamCard';
 import { Logo } from './Logo';
 import { TypewriterText } from './TypewriterText';
 import { RecommendationCard } from './RecommendationCard';
-import { UserTopicStatsCard } from './UserTopicStatsCard';
 import type {
   ExamDifficulty,
   ExamDurationFilter,
@@ -85,14 +84,6 @@ export function ExamList({
         )
       : 0;
   const hardExamCount = exams.filter((exam) => exam.difficulty === 'hard').length;
-  const shortestExam = exams.reduce<ExamListItem | null>((currentShortest, exam) => {
-    if (!currentShortest || exam.durationMinutes < currentShortest.durationMinutes) {
-      return exam;
-    }
-
-    return currentShortest;
-  }, null);
-
   const draftExam = draftExamId ? exams.find((e) => e.id === draftExamId) : null;
   const selectedTopicData = topics.find((topic) => topic.slug === selectedTopic) ?? null;
   const subtopicOptions = selectedTopicData?.subtopics ?? [];
@@ -239,7 +230,7 @@ export function ExamList({
             </div>
           </header>
 
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
             <div className="space-y-8">
               {draftExam && (
                 <section className="animate-fade-in flex flex-col justify-between gap-4 rounded-xl border border-warning-border bg-warning-light p-5 shadow-card sm:flex-row sm:items-center">
@@ -575,98 +566,6 @@ export function ExamList({
                 </div>
               </section>
 
-              <section className="rounded-xl border border-border bg-surface p-5 shadow-card">
-                <div className="flex items-center gap-2">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    className="text-warning"
-                  >
-                    <path
-                      d="M8 1.5a4.5 4.5 0 0 0-1.5 8.74V12a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-1.76A4.5 4.5 0 0 0 8 1.5Z"
-                      stroke="currentColor"
-                      strokeWidth="1.2"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M6.5 14h3"
-                      stroke="currentColor"
-                      strokeWidth="1.2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  <h2 className="font-[family-name:var(--font-outfit)] text-base font-semibold text-text-primary">
-                    Goi y chon de
-                  </h2>
-                </div>
-                <p className="mt-3 text-sm leading-6 text-text-secondary">
-                  Neu muon kiem tra flow nhanh, hay bat dau voi de co thoi luong ngan
-                  nhat trong kho hien tai.
-                </p>
-
-                {shortestExam && (
-                  <div className="mt-4 rounded-lg border border-border bg-background p-3">
-                    <p className="line-clamp-2 text-sm font-semibold leading-5 text-text-primary">
-                      {shortestExam.title}
-                    </p>
-                    <div className="mt-2 flex flex-wrap gap-x-2 gap-y-1 text-xs font-medium text-text-secondary">
-                      <span className="inline-flex items-center gap-1">
-                        <svg
-                          width="12"
-                          height="12"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                          className="text-text-muted"
-                        >
-                          <path
-                            d="M4.5 2h7a1.5 1.5 0 0 1 1.5 1.5v9a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 3 12.5v-9A1.5 1.5 0 0 1 4.5 2Z"
-                            stroke="currentColor"
-                            strokeWidth="1.3"
-                          />
-                          <path
-                            d="M5.5 5.5h5M5.5 8h5M5.5 10.5h3"
-                            stroke="currentColor"
-                            strokeWidth="1.3"
-                            strokeLinecap="round"
-                          />
-                        </svg>
-                        {shortestExam.totalQuestions} cau
-                      </span>
-                      <span aria-hidden="true">·</span>
-                      <span className="inline-flex items-center gap-1">
-                        <svg
-                          width="12"
-                          height="12"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                          className="text-text-muted"
-                        >
-                          <circle
-                            cx="8"
-                            cy="8"
-                            r="5.5"
-                            stroke="currentColor"
-                            strokeWidth="1.3"
-                          />
-                          <path
-                            d="M8 5v3l2 1.5"
-                            stroke="currentColor"
-                            strokeWidth="1.3"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                        {shortestExam.durationMinutes} phut
-                      </span>
-                      <span aria-hidden="true">·</span>
-                      <span>{difficultyLabels[shortestExam.difficulty]}</span>
-                    </div>
-                  </div>
-                )}
-              </section>
-
               {stats && stats.examsCompleted > 0 && (
                 <section className="rounded-xl border border-border bg-surface p-5 shadow-card">
                   <div className="flex items-center gap-2">
@@ -718,7 +617,6 @@ export function ExamList({
               )}
 
               <RecommendationCard />
-              <UserTopicStatsCard />
             </aside>
           </div>
         </div>
