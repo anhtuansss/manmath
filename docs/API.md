@@ -153,3 +153,14 @@ Ghi chú:
   }>;
 }
 ```
+
+## Import script nội bộ
+
+Import đề từ JSON hiện chưa phải HTTP API. MVP đang dùng backend script:
+
+```bash
+cd backend
+npm run import:exam -- ./src/data/import/sample-exam.json
+```
+
+Xem format và rule chi tiết tại [docs/IMPORT_JSON.md](./IMPORT_JSON.md).

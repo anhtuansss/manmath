@@ -150,7 +150,8 @@
 
 ### Import Questions
 
-* [ ] Import đề từ JSON
+* [x] Import đề từ JSON
+* [x] Sample JSON import
 * [ ] Import đề từ Excel
 * [ ] Import đề từ Word
 
@@ -264,6 +265,7 @@
 * [x] Hoàn thiện Option Image Support MVP với `options: string[]` + `optionImageUrls` map theo index
 * [x] Hoàn thiện Recommendation MVP với API `/api/me/recommendations`
 * [x] Tạo analytics dashboard nhỏ tại route `/analytics`
+* [x] Tạo script import đề từ JSON và sample file import
 
 ### Không làm lúc này
 

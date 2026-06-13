@@ -17,6 +17,7 @@ Project hiện hỗ trợ chọn đề, làm bài trắc nghiệm, nộp bài, x
 - [x] Recommendation MVP và analytics dashboard nhỏ
 - [x] KaTeX math rendering
 - [x] Hỗ trợ ảnh câu hỏi và ảnh đáp án bằng static public path
+- [x] Import đề từ JSON qua backend script
 
 ## Tech Stack
 
@@ -126,6 +127,7 @@ Ghi chú:
 - [Auth flow](docs/AUTH.md)
 - [Database và Prisma](docs/DATABASE.md)
 - [Hướng dẫn phát triển](docs/DEVELOPMENT.md)
+- [Import đề từ JSON](docs/IMPORT_JSON.md)
 
 ## Roadmap ngắn
 

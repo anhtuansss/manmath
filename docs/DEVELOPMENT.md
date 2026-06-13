@@ -46,6 +46,23 @@ npx tsc --noEmit
 npm run build
 ```
 
+## Import đề từ JSON
+
+Script import MVP hiện tại dùng để thêm hoặc cập nhật đề thi từ file JSON vào PostgreSQL.
+
+Lệnh mẫu:
+
+```bash
+cd backend
+npm run import:exam -- ./src/data/import/sample-exam.json
+```
+
+Ghi chú:
+
+- import lại cùng `exam.id` sẽ update thay vì tạo duplicate
+- `question.id` phải ổn định và không được trùng với exam khác
+- tài liệu chi tiết nằm ở [docs/IMPORT_JSON.md](./IMPORT_JSON.md)
+
 ## Git workflow gợi ý
 
 - Tạo branch riêng cho từng task
