@@ -12,7 +12,6 @@ import type {
 } from './types';
 import type { UserStats } from '../../lib/userStats';
 import { Footer } from './Footer';
-import { AuthButton } from '../auth/AuthButton';
 
 type ExamListProps = {
   exams: ExamListItem[];
@@ -484,8 +483,6 @@ export function ExamList({
             </div>
 
             <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start">
-              <AuthButton />
-
               {stats && stats.currentStreak > 0 ? (
                 <div className="flex w-full items-center justify-between rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 shadow-sm">
                   <div className="flex items-center gap-3">
