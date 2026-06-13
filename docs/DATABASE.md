@@ -70,6 +70,22 @@ Các field chính:
 - `description`
 - `order`
 
+Taxonomy MVP hiện tại dùng một bộ slug chính, ví dụ:
+
+- `ham-so`
+- `nguyen-ham-tich-phan`
+- `gioi-han`
+- `mu-logarit`
+- `xac-suat-to-hop`
+- `vector-toa-do`
+- `ma-tran`
+- `hinh-hoc-khong-gian`
+
+Ghi chú:
+
+- Analytics và recommendation đang phụ thuộc trực tiếp vào `Question -> Topic`
+- Vì vậy slug topic cần được giữ nhất quán giữa `mockExams`, seed và JSON import
+
 ### Attempt
 
 Lưu một lần làm bài.

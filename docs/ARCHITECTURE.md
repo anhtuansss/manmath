@@ -142,10 +142,23 @@ User đã login
 User vào /analytics
 → Frontend kiểm tra trạng thái đăng nhập
 → Nếu có token, gọi GET /api/me/topic-stats
+→ Gọi thêm GET /api/me/progress để lấy summary + recent attempts + progress theo thời gian
 → Nếu có recommendation API, gọi thêm GET /api/me/recommendations
 → Render các block:
   - tổng quan chuyên đề
+  - tiến độ gần đây
   - chuyên đề yếu
   - chuyên đề mạnh
   - đề nên làm tiếp
+```
+
+## Luồng recent activity trong hồ sơ
+
+```text
+User vào /profile
+→ Frontend kiểm tra token
+→ Nếu đã login, gọi GET /api/auth/me
+→ Gọi thêm GET /api/me/progress
+→ Lấy `recentAttempts` để hiển thị block hoạt động gần đây
+→ Nếu có recommendation API, hiển thị CTA đề nên làm tiếp
 ```

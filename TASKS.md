@@ -93,6 +93,7 @@
 * [x] Link tới hồ sơ người dùng sau khi login
 * [x] CTA từ hồ sơ sang analytics
 * [x] CTA đề nên làm tiếp trong hồ sơ
+* [x] Hoạt động gần đây trong hồ sơ
 * [ ] Thay đổi mật khẩu
 * [ ] Cập nhật thông tin cá nhân
 
@@ -155,6 +156,7 @@
 * [x] Sample JSON import
 * [x] Import JSON dry-run
 * [x] Import JSON validation/report lỗi rõ hơn
+* [x] Seed/import consistency cho demo workflow
 * [ ] Import đề từ Excel
 * [ ] Import đề từ Word
 
@@ -175,6 +177,7 @@
 * [x] Mapping Question -> Topic
 * [x] Attempt Detail có `topicStats`
 * [x] Result Page sau submit hiển thị `topicStats`
+* [x] Topic taxonomy cleanup MVP
 * [ ] Mapping Question -> Subtopic
 
 ### User Analytics
@@ -182,8 +185,8 @@
 * [x] Tính độ chính xác theo chuyên đề
 * [x] API `/api/me/topic-stats` tổng hợp topic analytics theo user
 * [x] Analytics dashboard nhỏ tại `/analytics`
-* [ ] Tính độ chính xác theo thời gian
-* [ ] Theo dõi tiến bộ
+* [x] Tính độ chính xác theo thời gian
+* [x] Theo dõi tiến bộ
 * [ ] Dashboard học tập
 
 ### Recommendation Engine (Không AI)
@@ -191,6 +194,7 @@
 * [x] Xác định chuyên đề yếu
 * [x] Gợi ý chuyên đề cần luyện
 * [x] Gợi ý đề thi phù hợp
+* [x] Recommendation rule improvement MVP
 
 ---
 
@@ -267,6 +271,7 @@
 * [x] Hoàn thiện Question Image Support MVP với `Question.imageUrl` và ảnh static path
 * [x] Hoàn thiện Option Image Support MVP với `options: string[]` + `optionImageUrls` map theo index
 * [x] Hoàn thiện Recommendation MVP với API `/api/me/recommendations`
+* [x] Chuẩn hóa topic taxonomy cho seed/mock/import và cải thiện rule recommendation MVP
 * [x] Tạo analytics dashboard nhỏ tại route `/analytics`
 * [x] Tạo script import đề từ JSON và sample file import
 * [x] Thêm dry-run và validation report rõ hơn cho import JSON

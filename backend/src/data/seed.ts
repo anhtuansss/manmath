@@ -3,13 +3,13 @@ import { disconnectPrisma, prisma } from '../lib/prisma';
 
 const topics = [
   { name: 'Ham so', slug: 'ham-so', order: 1 },
-  { name: 'Tich phan', slug: 'tich-phan', order: 2 },
+  { name: 'Nguyen ham - tich phan', slug: 'nguyen-ham-tich-phan', order: 2 },
   { name: 'Gioi han', slug: 'gioi-han', order: 3 },
-  { name: 'Mu va logarit', slug: 'logarit-mu', order: 4 },
-  { name: 'Hinh hoc', slug: 'hinh-hoc', order: 5 },
-  { name: 'Xac suat - to hop', slug: 'xac-suat-to-hop', order: 6 },
-  { name: 'Vector - toa do', slug: 'vector-toa-do', order: 7 },
-  { name: 'Ma tran', slug: 'ma-tran', order: 8 },
+  { name: 'Mu - logarit', slug: 'mu-logarit', order: 4 },
+  { name: 'Xac suat - to hop', slug: 'xac-suat-to-hop', order: 5 },
+  { name: 'Vector - toa do', slug: 'vector-toa-do', order: 6 },
+  { name: 'Ma tran', slug: 'ma-tran', order: 7 },
+  { name: 'Hinh hoc khong gian', slug: 'hinh-hoc-khong-gian', order: 8 },
 ];
 
 export async function seedMockData(): Promise<void> {

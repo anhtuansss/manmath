@@ -115,6 +115,7 @@ Ghi chú:
 | --- | --- | --- | --- |
 | `GET` | `/api/me/topic-stats` | Protected | Lấy thống kê độ chính xác theo chuyên đề của user hiện tại |
 | `GET` | `/api/me/recommendations` | Protected | Lấy chuyên đề yếu và các đề nên làm tiếp cho user hiện tại |
+| `GET` | `/api/me/progress` | Protected | Lấy tổng quan tiến độ học tập và các lần làm gần đây của user hiện tại |
 
 ### Shape ngắn của topic stats
 
@@ -154,6 +155,45 @@ Ghi chú:
   }>;
 }
 ```
+
+### Shape ngắn của progress
+
+```ts
+{
+  summary: {
+    attemptCount: number;
+    averageScore: number;
+    bestScore: number;
+    latestScore: number | null;
+  };
+  recentAttempts: Array<{
+    attemptId: string;
+    examId: string;
+    examTitle: string;
+    score: number;
+    correctCount: number;
+    totalQuestions: number;
+    submittedAt: string;
+  }>;
+  progressByAttempt: Array<{
+    attemptId: string;
+    examTitle: string;
+    score: number;
+    accuracy: number;
+    submittedAt: string;
+  }>;
+}
+```
+
+Ghi chú:
+
+- `weakTopics` hiện được xếp theo mức độ yếu có cân nhắc cả `accuracy` và số câu đã làm
+- `recommendedExams` ưu tiên:
+  - nhiều câu thuộc các topic yếu
+  - phủ được nhiều topic yếu
+  - giảm ưu tiên đề user vừa làm gần đây
+- `reason` hiện mô tả rõ hơn vì sao đề được gợi ý, ví dụ số câu khớp topic yếu và độ chính xác hiện tại của user
+- `progress` dùng cho analytics dashboard và block hoạt động gần đây trong hồ sơ người dùng
 
 ## Import script nội bộ
 

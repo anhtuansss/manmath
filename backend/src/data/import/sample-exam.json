@@ -37,8 +37,8 @@
       "optionImageUrls": ["", "", "", ""],
       "correctAnswer": "B. $\\frac{1}{3}$",
       "topic": {
-        "name": "Tích phân",
-        "slug": "tich-phan"
+        "name": "Nguyên hàm - tích phân",
+        "slug": "nguyen-ham-tich-phan"
       }
     },
     {

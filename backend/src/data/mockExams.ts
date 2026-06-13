@@ -73,7 +73,7 @@ export const mockExams: ExamMock[] = [
       },
       {
         id: 3,
-        topicSlug: 'tich-phan',
+        topicSlug: 'nguyen-ham-tich-phan',
         question: 'Tính tích phân $$\\int_0^1 x^2\\,dx$$',
         options: ['A. $\\frac{1}{2}$', 'B. $\\frac{1}{3}$', 'C. $1$', 'D. $0$'],
         correctAnswer: 'B. $\\frac{1}{3}$',
@@ -101,7 +101,7 @@ export const mockExams: ExamMock[] = [
       },
       {
         id: 6,
-        topicSlug: 'logarit-mu',
+        topicSlug: 'mu-logarit',
         question: 'Nếu $\\log_2 x=3$ thì $x$ bằng:',
         options: ['A. $6$', 'B. $8$', 'C. $9$', 'D. $12$'],
         correctAnswer: 'B. $8$',
@@ -222,7 +222,7 @@ export const mockExams: ExamMock[] = [
       },
       {
         id: 108,
-        topicSlug: 'logarit-mu',
+        topicSlug: 'mu-logarit',
         question: 'Điều kiện xác định của $\\log_2(x-1)$ là:',
         options: ['A. $x>1$', 'B. $x\\ge 1$', 'C. $x<1$', 'D. $x\\ne 1$'],
         correctAnswer: 'A. $x>1$',
@@ -236,7 +236,7 @@ export const mockExams: ExamMock[] = [
       },
       {
         id: 110,
-        topicSlug: 'tich-phan',
+        topicSlug: 'nguyen-ham-tich-phan',
         question: 'Tính tích phân $$\\int_0^2 x\\,dx$$',
         options: ['A. $1$', 'B. $2$', 'C. $3$', 'D. $4$'],
         correctAnswer: 'B. $2$',
@@ -263,7 +263,7 @@ export const mockExams: ExamMock[] = [
       },
       {
         id: 202,
-        topicSlug: 'tich-phan',
+        topicSlug: 'nguyen-ham-tich-phan',
         question: 'Tính tích phân $$\\int_0^1 3x^2\\,dx$$',
         options: ['A. $\\frac{1}{3}$', 'B. $\\frac{1}{2}$', 'C. $1$', 'D. $3$'],
         correctAnswer: 'C. $1$',
@@ -302,14 +302,14 @@ export const mockExams: ExamMock[] = [
       },
       {
         id: 206,
-        topicSlug: 'logarit-mu',
+        topicSlug: 'mu-logarit',
         question: 'Giải phương trình $\\log_2 x+\\log_2(x-2)=3$ với $x>2$.',
         options: ['A. $x=2$', 'B. $x=3$', 'C. $x=4$', 'D. $x=6$'],
         correctAnswer: 'C. $x=4$',
       },
       {
         id: 207,
-        topicSlug: 'logarit-mu',
+        topicSlug: 'mu-logarit',
         question: "Đạo hàm của hàm số $f(x)=\\ln x$ với $x>0$ là:",
         options: [
           "A. $f'(x)=x$",
@@ -336,7 +336,7 @@ export const mockExams: ExamMock[] = [
       },
       {
         id: 210,
-        topicSlug: 'vector-toa-do',
+        topicSlug: 'hinh-hoc-khong-gian',
         imageUrl: '/images/questions/sample-plane-point.svg',
         question: 'Khoảng cách từ $A(1;2;3)$ đến mặt phẳng $x+2y+2z-9=0$ bằng:',
         options: ['A. $\\frac{1}{3}$', 'B. $\\frac{2}{3}$', 'C. $1$', 'D. $2$'],
