@@ -6,6 +6,13 @@ export type SubtopicDto = {
   slug: string;
 };
 
+export type TopicFilterDto = {
+  id: string;
+  name: string;
+  slug: string;
+  subtopics: SubtopicDto[];
+};
+
 export type QuestionDto = {
   id: number;
   question: string;

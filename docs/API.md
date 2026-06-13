@@ -11,9 +11,28 @@
 | Method | Endpoint | Auth | Muc dich |
 | --- | --- | --- | --- |
 | `GET` | `/api/health` | Public | Kiem tra backend con hoat dong |
-| `GET` | `/api/exams` | Public | Lay danh sach de |
+| `GET` | `/api/exams` | Public | Lay danh sach de, ho tro tim kiem va loc theo topic/subtopic |
 | `GET` | `/api/exams/:id` | Public | Lay chi tiet mot de |
+| `GET` | `/api/topics` | Public | Lay danh sach topic va subtopic de filter exam list |
 | `POST` | `/api/exam/submit` | Optional JWT | Nop bai, cham diem, luu attempt va tra ket qua |
+
+### Exam list query params
+
+`GET /api/exams` ho tro cac query param additive sau:
+
+- `search`: tim theo `title` va `description`
+- `topic`: loc theo `Topic.slug`
+- `subtopic`: loc theo `Subtopic.slug`
+
+Vi du:
+
+```txt
+/api/exams?search=ham
+/api/exams?topic=ham-so
+/api/exams?topic=ham-so&subtopic=cuc-tri
+```
+
+Neu khong truyen query param, response giu shape cu.
 
 ### Exam detail response shape
 
@@ -34,6 +53,23 @@
       slug: string;
     } | null;
     correctAnswer: string;
+  }>;
+}
+```
+
+### Topics response shape
+
+```ts
+{
+  topics: Array<{
+    id: string;
+    name: string;
+    slug: string;
+    subtopics: Array<{
+      id: string;
+      name: string;
+      slug: string;
+    }>;
   }>;
 }
 ```

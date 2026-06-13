@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma';
 import {
   mapExamRecordToDetailDto,
@@ -9,8 +10,15 @@ import type {
   ExamAttemptSummaryDto,
   ExamDetailDto,
   ExamSummaryDto,
+  TopicFilterDto,
   TopicStatDto,
 } from '../types/exam';
+
+export type GetExamSummariesFilters = {
+  search?: string;
+  topic?: string;
+  subtopic?: string;
+};
 
 export type SubmitExamRequestDto = {
   examId?: string;
@@ -48,6 +56,13 @@ type TopicStatAccumulator = {
 
 const isPlainObject = (value: unknown): value is Record<string, unknown> => {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+};
+
+const normalizeSearchText = (value: string): string => {
+  return value
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLowerCase();
 };
 
 // Hàm kiểm tra và chuẩn hóa dữ liệu câu trả lời khi nộp bài thi
@@ -110,8 +125,40 @@ const normalizeSubmitAnswers = (
 };
 
 // Lấy danh sách tóm tắt các đề thi
-export const getExamSummaries = async (): Promise<ExamSummaryDto[]> => {
+export const getExamSummaries = async (
+  filters?: GetExamSummariesFilters,
+): Promise<ExamSummaryDto[]> => {
+  const normalizedSearch = filters?.search?.trim();
+  const normalizedTopic = filters?.topic?.trim();
+  const normalizedSubtopic = filters?.subtopic?.trim();
+  const whereConditions: Prisma.ExamWhereInput[] = [];
+
+  if (normalizedTopic) {
+    whereConditions.push({
+      questions: {
+        some: {
+          topic: {
+            slug: normalizedTopic,
+          },
+        },
+      },
+    });
+  }
+
+  if (normalizedSubtopic) {
+    whereConditions.push({
+      questions: {
+        some: {
+          subtopic: {
+            slug: normalizedSubtopic,
+          },
+        },
+      },
+    });
+  }
+
   const exams = await prisma.exam.findMany({
+    where: whereConditions.length > 0 ? { AND: whereConditions } : undefined,
     orderBy: {
       createdAt: 'desc',
     },
@@ -132,7 +179,48 @@ export const getExamSummaries = async (): Promise<ExamSummaryDto[]> => {
     },
   });
 
-  return exams.map((exam) => mapExamRecordToSummaryDto(exam));
+  const searchKeyword = normalizedSearch ? normalizeSearchText(normalizedSearch) : null;
+  const filteredExams = searchKeyword
+    ? exams.filter((exam) => {
+        const searchableText = normalizeSearchText(
+          `${exam.title} ${exam.description ?? ''}`,
+        );
+
+        return searchableText.includes(searchKeyword);
+      })
+    : exams;
+
+  return filteredExams.map((exam) => mapExamRecordToSummaryDto(exam));
+};
+
+export const getTopicFilters = async (): Promise<TopicFilterDto[]> => {
+  const topics = await prisma.topic.findMany({
+    orderBy: [{ order: 'asc' }, { name: 'asc' }],
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      subtopics: {
+        orderBy: [{ name: 'asc' }],
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+    },
+  });
+
+  return topics.map((topic) => ({
+    id: topic.id,
+    name: topic.name,
+    slug: topic.slug,
+    subtopics: topic.subtopics.map((subtopic) => ({
+      id: subtopic.id,
+      name: subtopic.name,
+      slug: subtopic.slug,
+    })),
+  }));
 };
 
 // Lấy chi tiết đề thi theo ID, bao gồm cả câu hỏi và đáp án

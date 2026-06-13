@@ -73,6 +73,21 @@ export type ExamSummaryDto = {
   statusLabel: string;
 };
 
+export type TopicFilterDto = {
+  id: string;
+  name: string;
+  slug: string;
+  subtopics: Array<{
+    id: string;
+    name: string;
+    slug: string;
+  }>;
+};
+
+export type TopicsResponseDto = {
+  topics: TopicFilterDto[];
+};
+
 export type ExamListItem = {
   id: string;
   title: string;

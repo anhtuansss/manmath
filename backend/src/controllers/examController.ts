@@ -4,6 +4,7 @@ import {
   getExamAttemptsByExamId,
   getExamDetailById,
   getExamSummaries,
+  getTopicFilters,
   submitExam,
 } from '../services/examService';
 
@@ -18,12 +19,32 @@ export const getExamList = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const examSummaries = await getExamSummaries();
+    const search =
+      typeof req.query.search === 'string' ? req.query.search : undefined;
+    const topic =
+      typeof req.query.topic === 'string' ? req.query.topic : undefined;
+    const subtopic =
+      typeof req.query.subtopic === 'string' ? req.query.subtopic : undefined;
+    const examSummaries = await getExamSummaries({ search, topic, subtopic });
 
     res.json(examSummaries);
   } catch (error) {
     console.error('Failed to load exam summaries:', error);
     res.status(500).json({ message: 'Khong the lay danh sach de thi' });
+  }
+};
+
+export const getTopicList = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const topics = await getTopicFilters();
+
+    res.json({ topics });
+  } catch (error) {
+    console.error('Failed to load topics:', error);
+    res.status(500).json({ message: 'Khong the lay danh sach chuyen de' });
   }
 };
 

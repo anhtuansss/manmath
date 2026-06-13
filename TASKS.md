@@ -16,6 +16,7 @@
 * [x] Chuyển sang trang kết quả
 * [x] Review đáp án
 * [x] Result Page hiển thị thống kê theo chuyên đề sau submit
+* [x] Search/filter đề theo keyword và topic
 * [x] Loading / Error / Empty states
 * [x] UI polish theo Concept 2
 
@@ -23,6 +24,8 @@
 
 * [x] API health check
 * [x] API lấy danh sách đề
+* [x] API `GET /api/exams` hỗ trợ query `search/topic/subtopic`
+* [x] API `GET /api/topics`
 * [x] API lấy chi tiết đề
 * [x] API submit bài thi
 * [x] Submit response trả `topicStats`
