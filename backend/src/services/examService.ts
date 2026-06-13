@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma';
 import {
   mapExamRecordToDetailDto,
@@ -5,12 +6,26 @@ import {
   normalizeOptionImageUrls,
 } from '../lib/examMapper';
 import type {
+  ExamDifficulty,
   ExamAttemptDetailDto,
   ExamAttemptSummaryDto,
   ExamDetailDto,
+  PracticeTopicDto,
   ExamSummaryDto,
+  TopicFilterDto,
   TopicStatDto,
 } from '../types/exam';
+
+export type GetExamSummariesFilters = {
+  search?: string;
+  topic?: string;
+  subtopic?: string;
+  durationMin?: number;
+  durationMax?: number;
+  difficulty?: ExamDifficulty;
+  source?: string;
+  year?: number;
+};
 
 export type SubmitExamRequestDto = {
   examId?: string;
@@ -46,8 +61,18 @@ type TopicStatAccumulator = {
   total: number;
 };
 
+const DEFAULT_PRACTICE_LIMIT = 10;
+const MAX_PRACTICE_LIMIT = 20;
+
 const isPlainObject = (value: unknown): value is Record<string, unknown> => {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+};
+
+const normalizeSearchText = (value: string): string => {
+  return value
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLowerCase();
 };
 
 // Hàm kiểm tra và chuẩn hóa dữ liệu câu trả lời khi nộp bài thi
@@ -110,8 +135,75 @@ const normalizeSubmitAnswers = (
 };
 
 // Lấy danh sách tóm tắt các đề thi
-export const getExamSummaries = async (): Promise<ExamSummaryDto[]> => {
+export const getExamSummaries = async (
+  filters?: GetExamSummariesFilters,
+): Promise<ExamSummaryDto[]> => {
+  const normalizedSearch = filters?.search?.trim();
+  const normalizedTopic = filters?.topic?.trim();
+  const normalizedSubtopic = filters?.subtopic?.trim();
+  const durationMin = filters?.durationMin;
+  const durationMax = filters?.durationMax;
+  const difficulty = filters?.difficulty;
+  const source = filters?.source?.trim();
+  const year = filters?.year;
+  const whereConditions: Prisma.ExamWhereInput[] = [];
+
+  if (normalizedTopic) {
+    whereConditions.push({
+      questions: {
+        some: {
+          topic: {
+            slug: normalizedTopic,
+          },
+        },
+      },
+    });
+  }
+
+  if (normalizedSubtopic) {
+    whereConditions.push({
+      questions: {
+        some: {
+          subtopic: {
+            slug: normalizedSubtopic,
+          },
+        },
+      },
+    });
+  }
+
+  if (typeof durationMin === 'number' || typeof durationMax === 'number') {
+    whereConditions.push({
+      durationMinutes: {
+        gte: durationMin,
+        lte: durationMax,
+      },
+    });
+  }
+
+  if (difficulty) {
+    whereConditions.push({
+      difficulty,
+    });
+  }
+
+  if (source) {
+    whereConditions.push({
+      source: {
+        contains: source,
+        mode: 'insensitive',
+      },
+    });
+  }
+
+  if (typeof year === 'number') {
+    whereConditions.push({
+      year,
+    });
+  }
+
   const exams = await prisma.exam.findMany({
+    where: whereConditions.length > 0 ? { AND: whereConditions } : undefined,
     orderBy: {
       createdAt: 'desc',
     },
@@ -122,6 +214,7 @@ export const getExamSummaries = async (): Promise<ExamSummaryDto[]> => {
       durationMinutes: true,
       subject: true,
       difficulty: true,
+      source: true,
       year: true,
       statusLabel: true,
       _count: {
@@ -132,7 +225,121 @@ export const getExamSummaries = async (): Promise<ExamSummaryDto[]> => {
     },
   });
 
-  return exams.map((exam) => mapExamRecordToSummaryDto(exam));
+  const searchKeyword = normalizedSearch ? normalizeSearchText(normalizedSearch) : null;
+  const filteredExams = searchKeyword
+    ? exams.filter((exam) => {
+        const searchableText = normalizeSearchText(
+          `${exam.title} ${exam.description ?? ''}`,
+        );
+
+        return searchableText.includes(searchKeyword);
+      })
+    : exams;
+
+  return filteredExams.map((exam) => mapExamRecordToSummaryDto(exam));
+};
+
+export const getTopicFilters = async (): Promise<TopicFilterDto[]> => {
+  const topics = await prisma.topic.findMany({
+    orderBy: [{ order: 'asc' }, { name: 'asc' }],
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      subtopics: {
+        orderBy: [{ name: 'asc' }],
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+    },
+  });
+
+  return topics.map((topic) => ({
+    id: topic.id,
+    name: topic.name,
+    slug: topic.slug,
+    subtopics: topic.subtopics.map((subtopic) => ({
+      id: subtopic.id,
+      name: subtopic.name,
+      slug: subtopic.slug,
+    })),
+  }));
+};
+
+export const getPracticeByTopicSlug = async (
+  topicSlug: string,
+  limit = DEFAULT_PRACTICE_LIMIT,
+): Promise<PracticeTopicDto | null> => {
+  const normalizedTopicSlug = topicSlug.trim();
+
+  if (normalizedTopicSlug.length === 0) {
+    return null;
+  }
+
+  const safeLimit = Math.min(Math.max(limit, 1), MAX_PRACTICE_LIMIT);
+  const topic = await prisma.topic.findUnique({
+    where: {
+      slug: normalizedTopicSlug,
+    },
+    select: {
+      name: true,
+      slug: true,
+      questions: {
+        take: safeLimit,
+        orderBy: [{ exam: { createdAt: 'desc' } }, { order: 'asc' }],
+        select: {
+          id: true,
+          question: true,
+          imageUrl: true,
+          explanation: true,
+          options: true,
+          optionImageUrls: true,
+          subtopic: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
+          correctAnswer: true,
+        },
+      },
+    },
+  });
+
+  if (!topic) {
+    return null;
+  }
+
+  const questionCount = topic.questions.length;
+  const durationMinutes =
+    questionCount > 0 ? Math.max(10, Math.ceil(questionCount * 1.5)) : 10;
+
+  return {
+    practiceId: `practice-topic-${topic.slug}-${questionCount}`,
+    topic: {
+      name: topic.name,
+      slug: topic.slug,
+    },
+    title: `Luyen chuyen de: ${topic.name}`,
+    durationMinutes,
+    questions: topic.questions.map((question) => ({
+      id: question.id,
+      question: question.question,
+      imageUrl: question.imageUrl,
+      explanation: question.explanation,
+      options: question.options,
+      optionImageUrls: normalizeOptionImageUrls(
+        question.options,
+        question.optionImageUrls,
+      ),
+      subtopic: question.subtopic,
+      correctAnswer: question.correctAnswer,
+    })),
+  };
 };
 
 // Lấy chi tiết đề thi theo ID, bao gồm cả câu hỏi và đáp án
@@ -147,6 +354,11 @@ export const getExamDetailById = async (
       id: true,
       title: true,
       durationMinutes: true,
+      subject: true,
+      difficulty: true,
+      source: true,
+      year: true,
+      statusLabel: true,
       questions: {
         orderBy: {
           order: 'asc',
@@ -155,8 +367,16 @@ export const getExamDetailById = async (
           id: true,
           question: true,
           imageUrl: true,
+          explanation: true,
           options: true,
           optionImageUrls: true,
+          subtopic: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
           correctAnswer: true,
         },
       },
@@ -249,8 +469,16 @@ export const getAttemptDetailById = async (
               id: true,
               question: true,
               imageUrl: true,
+              explanation: true,
               options: true,
               optionImageUrls: true,
+              subtopic: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                },
+              },
               topic: {
                 select: {
                   id: true,
@@ -358,11 +586,13 @@ export const getAttemptDetailById = async (
         questionId: question.id,
         question: question.question,
         imageUrl: question.imageUrl,
+        explanation: question.explanation,
         options: question.options,
         optionImageUrls: normalizeOptionImageUrls(
           question.options,
           question.optionImageUrls,
         ),
+        subtopic: question.subtopic,
         selectedOptionIndex: answer.selectedOptionIndex,
         correctOptionIndex: answer.correctOptionIndex,
         isCorrect: answer.isCorrect,

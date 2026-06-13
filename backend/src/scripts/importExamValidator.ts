@@ -5,14 +5,21 @@ export type NormalizedTopicInput = {
   slug: string;
 };
 
+export type NormalizedSubtopicInput = {
+  name: string;
+  slug: string;
+};
+
 export type NormalizedQuestionInput = {
   id: number;
   question: string;
   imageUrl: string | null;
+  explanation: string | null;
   options: string[];
   optionImageUrls: string[];
   correctAnswer: string;
   topic: NormalizedTopicInput | null;
+  subtopic: NormalizedSubtopicInput | null;
 };
 
 export type NormalizedExamInput = {
@@ -22,6 +29,7 @@ export type NormalizedExamInput = {
   durationMinutes: number;
   subject: string;
   difficulty: ExamDifficulty;
+  source: string | null;
   year: number | null;
   statusLabel: string;
   questions: NormalizedQuestionInput[];
@@ -32,6 +40,7 @@ export type ImportSummary = {
   title: string;
   questionCount: number;
   detectedTopicCount: number;
+  detectedSubtopicCount: number;
   questionImageCount: number;
   optionImageQuestionCount: number;
 };
@@ -52,6 +61,8 @@ const DEFAULT_DIFFICULTY: ExamDifficulty = 'medium';
 const DEFAULT_STATUS_LABEL = 'Imported JSON';
 const EXPECTED_OPTION_COUNT = 4;
 const TOPIC_SLUG_PATTERN = /^[a-z0-9-]+$/;
+const MIN_EXAM_YEAR = 1900;
+const MAX_EXAM_YEAR = 2100;
 
 const isPlainObject = (value: unknown): value is Record<string, unknown> => {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -116,6 +127,27 @@ const readOptionalInteger = (
   }
 
   return value;
+};
+
+const readOptionalExamYear = (
+  value: unknown,
+  path: string,
+  issues: string[],
+): number | null => {
+  const year = readOptionalInteger(value, path, issues);
+
+  if (year === null) {
+    return null;
+  }
+
+  if (year < MIN_EXAM_YEAR || year > MAX_EXAM_YEAR) {
+    issues.push(
+      `${path} must be between ${MIN_EXAM_YEAR} and ${MAX_EXAM_YEAR}`,
+    );
+    return null;
+  }
+
+  return year;
 };
 
 const readDifficulty = (
@@ -194,6 +226,39 @@ const normalizeTopic = (
   };
 };
 
+const normalizeSubtopic = (
+  value: unknown,
+  path: string,
+  issues: string[],
+): NormalizedSubtopicInput | null => {
+  if (value === undefined || value === null) {
+    return null;
+  }
+
+  if (!isPlainObject(value)) {
+    issues.push(`${path} must be an object`);
+    return null;
+  }
+
+  const name = readRequiredString(value.name, `${path}.name`, issues);
+  const slug = readRequiredString(value.slug, `${path}.slug`, issues);
+
+  if (slug && !TOPIC_SLUG_PATTERN.test(slug)) {
+    issues.push(
+      `${path}.slug must contain only lowercase letters, numbers, and hyphens`,
+    );
+  }
+
+  if (!name || !slug) {
+    return null;
+  }
+
+  return {
+    name,
+    slug,
+  };
+};
+
 const normalizeQuestion = (
   value: unknown,
   index: number,
@@ -209,6 +274,11 @@ const normalizeQuestion = (
   const id = readPositiveInteger(value.id, `${path}.id`, issues);
   const question = readRequiredString(value.question, `${path}.question`, issues);
   const imageUrl = readOptionalString(value.imageUrl, `${path}.imageUrl`, issues);
+  const explanation = readOptionalString(
+    value.explanation,
+    `${path}.explanation`,
+    issues,
+  );
   const options = readStringArray(value.options, `${path}.options`, issues);
   const correctAnswer = readRequiredString(
     value.correctAnswer,
@@ -220,6 +290,7 @@ const normalizeQuestion = (
       ? []
       : readStringArray(value.optionImageUrls, `${path}.optionImageUrls`, issues);
   const topic = normalizeTopic(value.topic, `${path}.topic`, issues);
+  const subtopic = normalizeSubtopic(value.subtopic, `${path}.subtopic`, issues);
 
   if (options && options.length !== EXPECTED_OPTION_COUNT) {
     issues.push(
@@ -241,6 +312,10 @@ const normalizeQuestion = (
     );
   }
 
+  if (subtopic && !topic) {
+    issues.push(`${path}.subtopic requires topic to be provided`);
+  }
+
   if (!id || !question || !options || !correctAnswer || !optionImageUrls) {
     return null;
   }
@@ -249,10 +324,12 @@ const normalizeQuestion = (
     id,
     question,
     imageUrl,
+    explanation,
     options,
     optionImageUrls,
     correctAnswer,
     topic,
+    subtopic,
   };
 };
 
@@ -313,13 +390,14 @@ export const validateExamImportPayload = (
     issues.push(`questions contain duplicate id: ${questionId}`);
   }
 
-  const year = readOptionalInteger(rawValue.year, 'year', issues);
+  const year = readOptionalExamYear(rawValue.year, 'year', issues);
   const difficulty = readDifficulty(rawValue.difficulty, 'difficulty', issues);
   const description =
     readOptionalString(rawValue.description, 'description', issues) ??
     DEFAULT_DESCRIPTION;
   const subject =
     readOptionalString(rawValue.subject, 'subject', issues) ?? DEFAULT_SUBJECT;
+  const source = readOptionalString(rawValue.source, 'source', issues);
   const statusLabel =
     readOptionalString(rawValue.statusLabel, 'statusLabel', issues) ??
     DEFAULT_STATUS_LABEL;
@@ -335,6 +413,7 @@ export const validateExamImportPayload = (
     durationMinutes,
     subject,
     difficulty,
+    source,
     year,
     statusLabel,
     questions,
@@ -347,6 +426,11 @@ export const validateExamImportPayload = (
     detectedTopicCount: new Set(
       normalizedExam.questions
         .map((question) => question.topic?.slug ?? null)
+        .filter((slug): slug is string => slug !== null),
+    ).size,
+    detectedSubtopicCount: new Set(
+      normalizedExam.questions
+        .map((question) => question.subtopic?.slug ?? null)
         .filter((slug): slug is string => slug !== null),
     ).size,
     questionImageCount: normalizedExam.questions.filter(
@@ -373,6 +457,9 @@ export const printImportSummary = (
   console.log(`[${modeLabel}] Title: ${summary.title}`);
   console.log(`[${modeLabel}] Questions: ${summary.questionCount}`);
   console.log(`[${modeLabel}] Topics detected: ${summary.detectedTopicCount}`);
+  console.log(
+    `[${modeLabel}] Subtopics detected: ${summary.detectedSubtopicCount}`,
+  );
   console.log(
     `[${modeLabel}] Questions with imageUrl: ${summary.questionImageCount}`,
   );

@@ -4,8 +4,51 @@ import {
   getExamAttemptsByExamId,
   getExamDetailById,
   getExamSummaries,
+  getPracticeByTopicSlug,
+  getTopicFilters,
   submitExam,
 } from '../services/examService';
+import { examDifficulties, type ExamDifficulty } from '../types/exam';
+
+const parseOptionalInteger = (
+  rawValue: unknown,
+): number | null | 'invalid' => {
+  if (rawValue === undefined) {
+    return null;
+  }
+
+  if (typeof rawValue !== 'string' || rawValue.trim().length === 0) {
+    return 'invalid';
+  }
+
+  const parsedValue = Number(rawValue);
+
+  if (!Number.isInteger(parsedValue) || parsedValue < 0) {
+    return 'invalid';
+  }
+
+  return parsedValue;
+};
+
+const parseOptionalDifficulty = (
+  rawValue: unknown,
+): ExamDifficulty | null | 'invalid' => {
+  if (rawValue === undefined) {
+    return null;
+  }
+
+  if (typeof rawValue !== 'string') {
+    return 'invalid';
+  }
+
+  const normalizedValue = rawValue.trim() as ExamDifficulty;
+
+  if (!examDifficulties.includes(normalizedValue)) {
+    return 'invalid';
+  }
+
+  return normalizedValue;
+};
 
 // Endpoint kiểm tra sức khỏe của API
 export const getHealth = (req: Request, res: Response): void => {
@@ -18,7 +61,52 @@ export const getExamList = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const examSummaries = await getExamSummaries();
+    const search =
+      typeof req.query.search === 'string' ? req.query.search : undefined;
+    const topic =
+      typeof req.query.topic === 'string' ? req.query.topic : undefined;
+    const subtopic =
+      typeof req.query.subtopic === 'string' ? req.query.subtopic : undefined;
+    const source =
+      typeof req.query.source === 'string' ? req.query.source : undefined;
+    const durationMin = parseOptionalInteger(req.query.durationMin);
+    const durationMax = parseOptionalInteger(req.query.durationMax);
+    const year = parseOptionalInteger(req.query.year);
+    const difficulty = parseOptionalDifficulty(req.query.difficulty);
+
+    if (
+      durationMin === 'invalid' ||
+      durationMax === 'invalid' ||
+      year === 'invalid'
+    ) {
+      res.status(400).json({ message: 'Bo loc duration/year khong hop le' });
+      return;
+    }
+
+    if (
+      typeof durationMin === 'number' &&
+      typeof durationMax === 'number' &&
+      durationMin > durationMax
+    ) {
+      res.status(400).json({ message: 'durationMin khong duoc lon hon durationMax' });
+      return;
+    }
+
+    if (difficulty === 'invalid') {
+      res.status(400).json({ message: 'Bo loc do kho khong hop le' });
+      return;
+    }
+
+    const examSummaries = await getExamSummaries({
+      search,
+      topic,
+      subtopic,
+      source,
+      durationMin: durationMin === null ? undefined : durationMin,
+      durationMax: durationMax === null ? undefined : durationMax,
+      difficulty: difficulty === null ? undefined : difficulty,
+      year: year === null ? undefined : year,
+    });
 
     res.json(examSummaries);
   } catch (error) {
@@ -27,7 +115,50 @@ export const getExamList = async (
   }
 };
 
+export const getTopicList = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const topics = await getTopicFilters();
+
+    res.json({ topics });
+  } catch (error) {
+    console.error('Failed to load topics:', error);
+    res.status(500).json({ message: 'Khong the lay danh sach chuyen de' });
+  }
+};
+
 // Xử lý nộp bài thi, tính điểm và trả về kết quả
+export const getTopicPractice = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const limit = parseOptionalInteger(req.query.limit);
+
+    if (limit === 'invalid' || (typeof limit === 'number' && limit <= 0)) {
+      res.status(400).json({ message: 'limit khong hop le' });
+      return;
+    }
+
+    const practice = await getPracticeByTopicSlug(
+      req.params.topicSlug,
+      limit === null ? undefined : limit,
+    );
+
+    if (!practice) {
+      res.status(404).json({ message: 'Khong tim thay chuyen de de luyen tap' });
+      return;
+    }
+
+    res.json(practice);
+  } catch (error) {
+    console.error('Failed to load topic practice:', error);
+    res.status(500).json({ message: 'Khong the tao bo luyen tap theo chuyen de' });
+  }
+};
+
 export const getExamDetail = async (
   req: Request,
   res: Response,

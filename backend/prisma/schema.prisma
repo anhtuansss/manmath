@@ -37,8 +37,23 @@ model Topic {
   description String?
   order       Int        @default(0)
   questions   Question[]
+  subtopics   Subtopic[]
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+}
+
+model Subtopic {
+  id        String     @id @default(cuid())
+  name      String
+  slug      String     @unique
+  topicId   String
+  topic     Topic      @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  questions Question[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([topicId])
+  @@unique([topicId, name])
 }
 
 model Exam {
@@ -48,6 +63,7 @@ model Exam {
   durationMinutes  Int
   subject          String
   difficulty       ExamDifficulty
+  source           String?
   year             Int?
   statusLabel      String
   questions        Question[]
@@ -63,8 +79,11 @@ model Question {
   order         Int
   topicId       String?
   topic         Topic? @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  subtopicId    String?
+  subtopic      Subtopic? @relation(fields: [subtopicId], references: [id], onDelete: SetNull)
   question      String
   imageUrl      String?
+  explanation   String?
   options       String[]
   optionImageUrls String[] @default([])
   correctAnswer String
@@ -74,6 +93,7 @@ model Question {
   @@unique([examId, order])
   @@index([examId])
   @@index([topicId])
+  @@index([subtopicId])
 }
 
 model Attempt {

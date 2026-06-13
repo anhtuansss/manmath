@@ -1,21 +1,15 @@
 'use client';
 
-/**
- * Mục đích:
- * Component chạy phía trình duyệt cho trang danh sách đề. Chịu trách nhiệm
- * tải danh sách, xử lý trạng thái tải/lỗi/rỗng và đưa dữ liệu cho ExamList hiển thị.
- *
- * Luồng dữ liệu:
- * GET /api/exams -> ExamSummaryDto[] -> thêm href cho UI -> ExamListItem[].
- *
- * File liên quan:
- * frontend/src/components/exam/ExamList.tsx
- * frontend/src/components/exam/types.ts
- * backend/server.ts
- */
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ExamList } from './ExamList';
-import type { ExamListApiItem, ExamListItem } from './types';
+import type {
+  ExamDifficulty,
+  ExamDurationFilter,
+  ExamListApiItem,
+  ExamListItem,
+  TopicFilterDto,
+  TopicsResponseDto,
+} from './types';
 import { API_BASE_URL } from '../../config/api';
 import { getUserStats, type UserStats } from '../../lib/userStats';
 
@@ -28,11 +22,9 @@ function ExamListSkeleton() {
   return (
     <main className="min-h-screen bg-background text-text-primary">
       <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        {/* ── Hero Skeleton ── */}
         <header className="pb-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              {/* Logo */}
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 animate-pulse rounded-xl bg-primary-light" />
                 <div>
@@ -40,13 +32,11 @@ function ExamListSkeleton() {
                   <div className="mt-2 h-3 w-32 animate-pulse rounded-md bg-slate-100" />
                 </div>
               </div>
-              {/* Breadcrumb + Heading */}
               <div className="mt-7 h-4 w-36 animate-pulse rounded-md bg-primary-light" />
               <div className="mt-3 h-10 w-80 max-w-full animate-pulse rounded-md bg-slate-200" />
               <div className="mt-3 h-4 w-full max-w-xl animate-pulse rounded-md bg-slate-100" />
             </div>
 
-            {/* Stat Cards Skeleton */}
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:w-[380px]">
               {[0, 1, 2].map((item) => (
                 <div
@@ -64,10 +54,8 @@ function ExamListSkeleton() {
           </div>
         </header>
 
-        {/* ── Main Content Skeleton ── */}
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
           <div className="space-y-8">
-            {/* Featured Section Skeleton */}
             <section>
               <div className="mb-5">
                 <div className="h-6 w-48 animate-pulse rounded-md bg-slate-200" />
@@ -97,7 +85,6 @@ function ExamListSkeleton() {
               </div>
             </section>
 
-            {/* List Section Skeleton */}
             <section className="overflow-hidden rounded-xl border border-border bg-surface shadow-card">
               <div className="border-b border-border px-5 py-4">
                 <div className="h-6 w-40 animate-pulse rounded-md bg-slate-200" />
@@ -119,7 +106,6 @@ function ExamListSkeleton() {
             </section>
           </div>
 
-          {/* Sidebar Skeleton */}
           <aside className="space-y-4">
             {[0, 1].map((item) => (
               <div
@@ -153,21 +139,25 @@ function ExamListError({ message, onRetry }: ExamListErrorProps) {
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4 py-10 text-text-primary">
       <section className="w-full max-w-xl animate-fade-in rounded-xl border border-error-border bg-surface p-8 shadow-card">
-        {/* Error Icon */}
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-error-light">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" className="text-error">
-            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5"/>
-            <path d="M12 8v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            <circle cx="12" cy="16" r="0.75" fill="currentColor"/>
+            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
+            <path
+              d="M12 8v4"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+            <circle cx="12" cy="16" r="0.75" fill="currentColor" />
           </svg>
         </div>
 
         <h1 className="mt-5 text-center font-[family-name:var(--font-outfit)] text-2xl font-bold tracking-tight text-text-primary">
-          Kiểm tra backend rồi thử lại
+          Kiem tra backend roi thu lai
         </h1>
         <p className="mt-3 text-center text-sm leading-6 text-text-secondary">
-          {message}. Hãy đảm bảo backend đang chạy và cấu hình API base URL của
-          frontend đang trỏ đúng môi trường hiện tại.
+          {message}. Hay dam bao backend dang chay va cau hinh API base URL cua
+          frontend dang tro dung moi truong hien tai.
         </p>
 
         <div className="mt-6 flex justify-center">
@@ -176,11 +166,16 @@ function ExamListError({ message, onRetry }: ExamListErrorProps) {
             onClick={onRetry}
             className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
-            {/* Retry icon */}
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-white">
-              <path d="M2.5 8a5.5 5.5 0 0 1 9.37-3.9L13.5 2.5v4h-4l1.6-1.6A3.5 3.5 0 1 0 11.5 8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+              <path
+                d="M2.5 8a5.5 5.5 0 0 1 9.37-3.9L13.5 2.5v4h-4l1.6-1.6A3.5 3.5 0 1 0 11.5 8"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
-            Thử lại
+            Thu lai
           </button>
         </div>
       </section>
@@ -196,24 +191,31 @@ function ExamListEmpty({ onRetry }: ExamListEmptyProps) {
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4 py-10 text-text-primary">
       <section className="w-full max-w-xl animate-fade-in rounded-xl border border-border bg-surface p-8 shadow-card">
-        {/* Logo Icon */}
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-primary shadow-card">
           <span className="text-2xl font-bold text-white">M</span>
         </div>
 
         <h1 className="mt-5 text-center font-[family-name:var(--font-outfit)] text-2xl font-bold tracking-tight text-text-primary">
-          Chưa có đề luyện nào
+          Chua co de luyen nao
         </h1>
         <p className="mt-3 text-center text-sm leading-6 text-text-secondary">
-          API đã trả về danh sách rỗng. Khi backend có dữ liệu đề, màn này sẽ
-          hiển thị khu đề đề xuất, danh sách đề và tổng quan kho đề.
+          API da tra ve danh sach rong. Khi backend co du lieu de, man nay se hien
+          thi khu de de xuat, danh sach de va tong quan kho de.
         </p>
 
-        {/* Illustration area */}
         <div className="mx-auto mt-6 flex h-20 w-20 items-center justify-center rounded-full bg-background-alt">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" className="text-text-muted">
-            <path d="M9 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" stroke="currentColor" strokeWidth="1.5"/>
-            <path d="M9 7h6M9 11h6M9 15h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            <path
+              d="M9 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            />
+            <path
+              d="M9 7h6M9 11h6M9 15h3"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
           </svg>
         </div>
 
@@ -223,11 +225,16 @@ function ExamListEmpty({ onRetry }: ExamListEmptyProps) {
             onClick={onRetry}
             className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
-            {/* Refresh icon */}
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-white">
-              <path d="M2.5 8a5.5 5.5 0 0 1 9.37-3.9L13.5 2.5v4h-4l1.6-1.6A3.5 3.5 0 1 0 11.5 8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+              <path
+                d="M2.5 8a5.5 5.5 0 0 1 9.37-3.9L13.5 2.5v4h-4l1.6-1.6A3.5 3.5 0 1 0 11.5 8"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
-            Tải lại danh sách
+            Tai lai danh sach
           </button>
         </div>
       </section>
@@ -237,42 +244,137 @@ function ExamListEmpty({ onRetry }: ExamListEmptyProps) {
 
 export function ExamListClient() {
   const [exams, setExams] = useState<ExamListItem[]>([]);
+  const [topics, setTopics] = useState<TopicFilterDto[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isFiltering, setIsFiltering] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [topicsError, setTopicsError] = useState<string | null>(null);
   const [stats, setStats] = useState<UserStats | null>(null);
   const [draftExamId, setDraftExamId] = useState<string | null>(null);
+  const [searchInput, setSearchInput] = useState('');
+  const [selectedTopic, setSelectedTopic] = useState('');
+  const [selectedSubtopic, setSelectedSubtopic] = useState('');
+  const [selectedDuration, setSelectedDuration] =
+    useState<ExamDurationFilter>('all');
+  const [selectedDifficulty, setSelectedDifficulty] =
+    useState<'' | ExamDifficulty>('');
+  const [selectedYear, setSelectedYear] = useState('');
+  const [selectedSource, setSelectedSource] = useState('');
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
-  /**
-   * Tải danh sách đề từ backend và chuyển sang dữ liệu UI có href.
-   * Hàm này được gọi khi component mount và khi người dùng bấm thử lại.
-   */
-  const fetchExams = async () => {
+  const selectedTopicData = useMemo(
+    () => topics.find((topic) => topic.slug === selectedTopic) ?? null,
+    [selectedTopic, topics],
+  );
+
+  const fetchTopics = async () => {
     try {
-      setLoading(true);
-      setError(null);
+      setTopicsError(null);
 
-      const response = await fetch(`${API_BASE_URL}/api/exams`);
+      const response = await fetch(`${API_BASE_URL}/api/topics`);
 
       if (!response.ok) {
-        throw new Error('Không tải được danh sách đề thi');
+        throw new Error('Khong tai duoc danh sach chuyen de');
+      }
+
+      const data: TopicsResponseDto = await response.json();
+      setTopics(data.topics);
+    } catch (fetchError) {
+      setTopics([]);
+      setTopicsError(
+        fetchError instanceof Error
+          ? fetchError.message
+          : 'Khong tai duoc danh sach chuyen de',
+      );
+    }
+  };
+
+  const fetchExams = async (params?: {
+    search?: string;
+    topic?: string;
+    subtopic?: string;
+    durationMin?: number;
+    durationMax?: number;
+    difficulty?: '' | ExamDifficulty;
+    year?: string;
+    source?: string;
+    initialLoad?: boolean;
+  }) => {
+    const isInitialLoad = params?.initialLoad ?? false;
+
+    try {
+      if (isInitialLoad) {
+        setLoading(true);
+      } else {
+        setIsFiltering(true);
+      }
+
+      setError(null);
+
+      const searchParams = new URLSearchParams();
+
+      if (params?.search?.trim()) {
+        searchParams.set('search', params.search.trim());
+      }
+
+      if (params?.topic?.trim()) {
+        searchParams.set('topic', params.topic.trim());
+      }
+
+      if (params?.subtopic?.trim()) {
+        searchParams.set('subtopic', params.subtopic.trim());
+      }
+
+      if (typeof params?.durationMin === 'number') {
+        searchParams.set('durationMin', params.durationMin.toString());
+      }
+
+      if (typeof params?.durationMax === 'number') {
+        searchParams.set('durationMax', params.durationMax.toString());
+      }
+
+      if (params?.difficulty) {
+        searchParams.set('difficulty', params.difficulty);
+      }
+
+      if (params?.year?.trim()) {
+        searchParams.set('year', params.year.trim());
+      }
+
+      if (params?.source?.trim()) {
+        searchParams.set('source', params.source.trim());
+      }
+
+      const queryString = searchParams.toString();
+      const url = queryString
+        ? `${API_BASE_URL}/api/exams?${queryString}`
+        : `${API_BASE_URL}/api/exams`;
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error('Khong tai duoc danh sach de thi');
       }
 
       const data: ExamListApiItem[] = await response.json();
       setExams(data.map(toExamListItem));
+      setHasLoadedOnce(true);
     } catch (fetchError) {
       setError(
         fetchError instanceof Error
           ? fetchError.message
-          : 'Lỗi không xác định khi tải danh sách đề thi',
+          : 'Loi khong xac dinh khi tai danh sach de thi',
       );
     } finally {
       setLoading(false);
+      setIsFiltering(false);
     }
   };
 
   useEffect(() => {
-    void fetchExams();
+    void fetchExams({ initialLoad: true });
+    void fetchTopics();
     setStats(getUserStats());
+
     try {
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
@@ -281,22 +383,155 @@ export function ExamListClient() {
           break;
         }
       }
-    } catch (e) {
-      // safe localstorage access
+    } catch {
+      // safe localStorage access
     }
   }, []);
+
+  useEffect(() => {
+    if (!selectedTopicData && selectedSubtopic) {
+      setSelectedSubtopic('');
+      return;
+    }
+
+    if (
+      selectedSubtopic &&
+      !selectedTopicData?.subtopics.some((subtopic) => subtopic.slug === selectedSubtopic)
+    ) {
+      setSelectedSubtopic('');
+    }
+  }, [selectedSubtopic, selectedTopicData]);
+
+  useEffect(() => {
+    if (!hasLoadedOnce) {
+      return;
+    }
+
+    const getDurationRange = (): { durationMin?: number; durationMax?: number } => {
+      if (selectedDuration === 'short') {
+        return { durationMax: 45 };
+      }
+
+      if (selectedDuration === 'standard') {
+        return { durationMin: 46, durationMax: 90 };
+      }
+
+      if (selectedDuration === 'long') {
+        return { durationMin: 91 };
+      }
+
+      return {};
+    };
+
+    const timeoutId = window.setTimeout(() => {
+      const durationRange = getDurationRange();
+
+      void fetchExams({
+        search: searchInput,
+        topic: selectedTopic,
+        subtopic: selectedSubtopic,
+        durationMin: durationRange.durationMin,
+        durationMax: durationRange.durationMax,
+        difficulty: selectedDifficulty,
+        year: selectedYear,
+        source: selectedSource,
+      });
+    }, 250);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [
+    hasLoadedOnce,
+    searchInput,
+    selectedTopic,
+    selectedSubtopic,
+    selectedDuration,
+    selectedDifficulty,
+    selectedYear,
+    selectedSource,
+  ]);
+
+  const handleRetry = () => {
+    void fetchExams({
+      search: searchInput,
+      topic: selectedTopic,
+      subtopic: selectedSubtopic,
+      durationMin:
+        selectedDuration === 'standard'
+          ? 46
+          : selectedDuration === 'long'
+            ? 91
+            : undefined,
+      durationMax:
+        selectedDuration === 'short'
+          ? 45
+          : selectedDuration === 'standard'
+            ? 90
+            : undefined,
+      difficulty: selectedDifficulty,
+      year: selectedYear,
+      source: selectedSource,
+      initialLoad: !hasLoadedOnce,
+    });
+  };
+
+  const handleClearFilters = () => {
+    setSearchInput('');
+    setSelectedTopic('');
+    setSelectedSubtopic('');
+    setSelectedDuration('all');
+    setSelectedDifficulty('');
+    setSelectedYear('');
+    setSelectedSource('');
+  };
 
   if (loading) {
     return <ExamListSkeleton />;
   }
 
-  if (error) {
-    return <ExamListError message={error} onRetry={fetchExams} />;
+  if (error && !hasLoadedOnce) {
+    return <ExamListError message={error} onRetry={handleRetry} />;
   }
 
-  if (exams.length === 0) {
-    return <ExamListEmpty onRetry={fetchExams} />;
+  if (
+    exams.length === 0 &&
+    !searchInput &&
+    !selectedTopic &&
+    !selectedSubtopic &&
+    selectedDuration === 'all' &&
+    !selectedDifficulty &&
+    !selectedYear &&
+    !selectedSource
+  ) {
+    return <ExamListEmpty onRetry={handleRetry} />;
   }
 
-  return <ExamList exams={exams} stats={stats} draftExamId={draftExamId} />;
+  return (
+    <ExamList
+      exams={exams}
+      stats={stats}
+      draftExamId={draftExamId}
+      searchInput={searchInput}
+      selectedTopic={selectedTopic}
+      selectedSubtopic={selectedSubtopic}
+      selectedDuration={selectedDuration}
+      selectedDifficulty={selectedDifficulty}
+      selectedYear={selectedYear}
+      selectedSource={selectedSource}
+      topics={topics}
+      listError={error}
+      topicsError={topicsError}
+      isFiltering={isFiltering}
+      onSearchChange={setSearchInput}
+      onTopicChange={(value) => {
+        setSelectedTopic(value);
+        setSelectedSubtopic('');
+      }}
+      onSubtopicChange={setSelectedSubtopic}
+      onDurationChange={setSelectedDuration}
+      onDifficultyChange={setSelectedDifficulty}
+      onYearChange={setSelectedYear}
+      onSourceChange={setSelectedSource}
+      onClearFilters={handleClearFilters}
+    />
+  );
 }

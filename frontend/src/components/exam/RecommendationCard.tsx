@@ -2,10 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import {
-  fetchProtectedJson,
-  isUnauthorizedError,
-} from '../../lib/authApi';
+import { fetchProtectedJson, isUnauthorizedError } from '../../lib/authApi';
 import { subscribeAuthTokenChange } from '../../lib/authStorage';
 
 type WeakTopicRecommendation = {
@@ -39,8 +36,8 @@ type RecommendationStatus =
   | 'ready'
   | 'error';
 
-const MAX_VISIBLE_TOPICS = 3;
-const MAX_VISIBLE_EXAMS = 3;
+const MAX_VISIBLE_TOPICS = 2;
+const MAX_VISIBLE_EXAMS = 2;
 
 const clampAccuracy = (accuracy: number): number => {
   return Math.min(Math.max(accuracy, 0), 100);
@@ -132,58 +129,62 @@ export function RecommendationCard() {
           />
         </svg>
         <h2 className="font-[family-name:var(--font-outfit)] text-base font-semibold text-text-primary">
-          Gợi ý luyện tập tiếp theo
+          Goi y luyen tap
         </h2>
       </div>
 
       {status === 'loading' && (
-        <div className="mt-4 space-y-4">
-          <div className="space-y-3">
-            <div className="h-4 w-40 animate-pulse rounded bg-slate-200" />
-            {[0, 1].map((item) => (
-              <div key={item} className="animate-pulse rounded-lg bg-background p-3">
-                <div className="h-3 w-28 rounded bg-slate-200" />
-                <div className="mt-2 h-2 rounded-full bg-slate-100" />
-                <div className="mt-2 h-3 w-full rounded bg-slate-100" />
-              </div>
-            ))}
-          </div>
-          <div className="space-y-3">
-            <div className="h-4 w-36 animate-pulse rounded bg-slate-200" />
-            {[0, 1].map((item) => (
-              <div key={item} className="animate-pulse rounded-lg bg-background p-3">
-                <div className="h-3 w-2/3 rounded bg-slate-200" />
-                <div className="mt-2 h-3 w-full rounded bg-slate-100" />
-              </div>
-            ))}
-          </div>
+        <div className="mt-4 space-y-3">
+          {[0, 1].map((item) => (
+            <div key={item} className="animate-pulse rounded-lg bg-background p-3">
+              <div className="h-3 w-28 rounded bg-slate-200" />
+              <div className="mt-2 h-2 rounded-full bg-slate-100" />
+              <div className="mt-3 h-3 w-full rounded bg-slate-100" />
+            </div>
+          ))}
         </div>
       )}
 
       {status === 'unauthenticated' && (
-        <p className="mt-3 text-sm leading-6 text-text-secondary">
-          Đăng nhập để nhận gợi ý cá nhân hóa theo các chuyên đề bạn đang yếu.
-        </p>
+        <div className="mt-3 space-y-3">
+          <p className="text-sm leading-6 text-text-secondary">
+            Dang nhap de nhan goi y ca nhan hoa theo ket qua luyen tap cua ban.
+          </p>
+          <Link
+            href="/analytics"
+            className="inline-flex h-9 items-center justify-center rounded-lg border border-border bg-background px-4 text-xs font-semibold text-text-primary transition hover:border-primary hover:text-primary"
+          >
+            Xem phan tich day du
+          </Link>
+        </div>
       )}
 
       {status === 'empty' && (
-        <p className="mt-3 text-sm leading-6 text-text-secondary">
-          Chưa có dữ liệu gợi ý. Hãy làm một đề để hệ thống bắt đầu phân tích.
-        </p>
+        <div className="mt-3 space-y-3">
+          <p className="text-sm leading-6 text-text-secondary">
+            Chua co du lieu goi y. Hay lam mot de de he thong bat dau phan tich.
+          </p>
+          <Link
+            href="/analytics"
+            className="inline-flex h-9 items-center justify-center rounded-lg border border-border bg-background px-4 text-xs font-semibold text-text-primary transition hover:border-primary hover:text-primary"
+          >
+            Xem phan tich day du
+          </Link>
+        </div>
       )}
 
       {status === 'error' && (
         <p className="mt-3 text-sm leading-6 text-text-secondary">
-          Chưa tải được gợi ý luyện tập. Hãy thử lại sau.
+          Chua tai duoc goi y luyen tap. Hay thu lai sau.
         </p>
       )}
 
       {status === 'ready' && (
-        <div className="mt-4 space-y-5">
+        <div className="mt-4 space-y-4">
           {visibleWeakTopics.length > 0 && (
             <div>
               <h3 className="text-sm font-semibold text-text-primary">
-                Chuyên đề cần ôn
+                Chuyen de can on
               </h3>
               <div className="mt-3 space-y-3">
                 {visibleWeakTopics.map((topic) => {
@@ -200,7 +201,7 @@ export function RecommendationCard() {
                             {topic.topicName}
                           </p>
                           <p className="mt-1 text-xs text-text-secondary">
-                            {topic.correct}/{topic.total} câu đúng
+                            {topic.correct}/{topic.total} cau dung
                           </p>
                         </div>
 
@@ -216,7 +217,7 @@ export function RecommendationCard() {
                         />
                       </div>
 
-                      <p className="mt-3 text-xs leading-5 text-text-secondary">
+                      <p className="mt-3 line-clamp-2 text-xs leading-5 text-text-secondary">
                         {topic.reason}
                       </p>
                     </div>
@@ -229,7 +230,7 @@ export function RecommendationCard() {
           {visibleRecommendedExams.length > 0 && (
             <div>
               <h3 className="text-sm font-semibold text-text-primary">
-                Đề nên làm tiếp
+                De nen lam tiep
               </h3>
               <div className="mt-3 space-y-3">
                 {visibleRecommendedExams.map((exam) => (
@@ -244,19 +245,19 @@ export function RecommendationCard() {
                           {exam.title}
                         </p>
                         <p className="mt-2 text-xs text-text-secondary">
-                          {exam.durationMinutes} phút
+                          {exam.durationMinutes} phut
                           {exam.matchedWeakQuestionCount > 0
-                            ? ` · ${exam.matchedWeakQuestionCount} câu bám topic yếu`
+                            ? ` · ${exam.matchedWeakQuestionCount} cau bam topic yeu`
                             : ''}
                         </p>
                       </div>
 
                       <span className="shrink-0 rounded-full border border-border bg-surface px-2.5 py-1 text-xs font-semibold text-text-secondary">
-                        Xem đề
+                        Xem de
                       </span>
                     </div>
 
-                    <p className="mt-3 text-xs leading-5 text-text-secondary">
+                    <p className="mt-3 line-clamp-2 text-xs leading-5 text-text-secondary">
                       {exam.reason}
                     </p>
                   </Link>
@@ -264,6 +265,21 @@ export function RecommendationCard() {
               </div>
             </div>
           )}
+
+          <div className="flex flex-wrap gap-2 pt-1">
+            <Link
+              href="/analytics"
+              className="inline-flex h-9 items-center justify-center rounded-lg border border-border bg-background px-4 text-xs font-semibold text-text-primary transition hover:border-primary hover:text-primary"
+            >
+              Xem phan tich day du
+            </Link>
+            <Link
+              href="/profile"
+              className="inline-flex h-9 items-center justify-center rounded-lg border border-border bg-background px-4 text-xs font-semibold text-text-primary transition hover:border-primary hover:text-primary"
+            >
+              Xem ho so
+            </Link>
+          </div>
         </div>
       )}
     </section>

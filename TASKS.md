@@ -16,6 +16,10 @@
 * [x] Chuyển sang trang kết quả
 * [x] Review đáp án
 * [x] Result Page hiển thị thống kê theo chuyên đề sau submit
+* [x] Search/filter đề theo keyword và topic
+* [x] Filter đề theo thời lượng
+* [x] Filter đề theo độ khó
+* [x] Filter đề theo năm và nguồn
 * [x] Loading / Error / Empty states
 * [x] UI polish theo Concept 2
 
@@ -23,6 +27,10 @@
 
 * [x] API health check
 * [x] API lấy danh sách đề
+* [x] API `GET /api/exams` hỗ trợ query `search/topic/subtopic`
+* [x] API `GET /api/exams` hỗ trợ query `durationMin/durationMax/difficulty`
+* [x] API `GET /api/exams` hỗ trợ query `year/source`
+* [x] API `GET /api/topics`
 * [x] API lấy chi tiết đề
 * [x] API submit bài thi
 * [x] Submit response trả `topicStats`
@@ -113,7 +121,9 @@
 * [x] API summary lịch sử làm bài theo đề
 * [x] API chi tiết một lần làm bài
 * [x] API chi tiết một lần làm bài trả `topicStats`
+* [x] API lịch sử làm bài toàn cục `/api/me/attempts`
 * [x] Xem lịch sử làm bài
+* [x] Xem lịch sử làm bài toàn cục `/history`
 * [x] Xem chi tiết một lần làm bài
 * [x] Attempt Detail hiển thị `topicStats`
 * [x] Xem lần làm gần nhất
@@ -145,6 +155,8 @@
 * [x] Render ảnh câu hỏi ở màn làm bài, result review và attempt detail
 * [x] Hỗ trợ hình ảnh trong đáp án
 * [x] Render ảnh đáp án ở màn làm bài, result review và attempt detail
+* [x] Explanation MVP cho review kết quả
+* [x] AI-ready explanation storage cho câu hỏi
 
 ---
 
@@ -154,8 +166,10 @@
 
 * [x] Import đề từ JSON
 * [x] Sample JSON import
+* [x] Exam metadata MVP (`difficulty/source/year`)
 * [x] Import JSON dry-run
 * [x] Import JSON validation/report lỗi rõ hơn
+* [x] Import JSON batch/manifest MVP
 * [x] Seed/import consistency cho demo workflow
 * [ ] Import đề từ Excel
 * [ ] Import đề từ Word
@@ -175,10 +189,11 @@
 
 * [x] Bảng Topics
 * [x] Mapping Question -> Topic
+* [x] Mapping Question -> Subtopic MVP
 * [x] Attempt Detail có `topicStats`
 * [x] Result Page sau submit hiển thị `topicStats`
 * [x] Topic taxonomy cleanup MVP
-* [ ] Mapping Question -> Subtopic
+* [ ] Mapping Question -> Subtopic analytics nâng cao
 
 ### User Analytics
 
@@ -195,6 +210,7 @@
 * [x] Gợi ý chuyên đề cần luyện
 * [x] Gợi ý đề thi phù hợp
 * [x] Recommendation rule improvement MVP
+* [x] Practice by weak topic MVP
 
 ---
 
@@ -258,6 +274,8 @@
 * [x] Smoke test auth flow cơ bản
 * [x] Protect `GET /api/exams/:id/attempts` theo user
 * [x] Protect `GET /api/attempts/:attemptId` theo owner
+* [x] Tạo API `GET /api/me/attempts` cho lịch sử làm bài toàn cục
+* [x] Tạo route `/history` hiển thị lịch sử làm bài toàn cục
 * [x] Frontend xử lý 401 Unauthorized cho history/attempt detail
 * [x] Tạo schema Topic
 * [x] Mapping `Question -> Topic`

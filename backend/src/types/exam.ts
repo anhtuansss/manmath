@@ -1,11 +1,39 @@
 export type ExamDifficulty = 'easy' | 'medium' | 'hard';
 
+export const examDifficulties: ExamDifficulty[] = ['easy', 'medium', 'hard'];
+
+export type SubtopicDto = {
+  id: string;
+  name: string;
+  slug: string;
+};
+
+export type TopicFilterDto = {
+  id: string;
+  name: string;
+  slug: string;
+  subtopics: SubtopicDto[];
+};
+
+export type PracticeTopicDto = {
+  practiceId: string;
+  topic: {
+    name: string;
+    slug: string;
+  };
+  title: string;
+  durationMinutes: number;
+  questions: QuestionDto[];
+};
+
 export type QuestionDto = {
   id: number;
   question: string;
   imageUrl: string | null;
+  explanation: string | null;
   options: string[];
   optionImageUrls: (string | null)[];
+  subtopic: SubtopicDto | null;
   correctAnswer: string;
 };
 
@@ -26,6 +54,7 @@ export type ExamSummaryDto = {
   totalQuestions: number;
   subject: string;
   difficulty: ExamDifficulty;
+  source: string | null;
   year?: number;
   statusLabel: string;
 };
@@ -34,6 +63,11 @@ export type ExamDetailDto = {
   id: string;
   examTitle: string;
   durationMinutes: number;
+  subject: string;
+  difficulty: ExamDifficulty;
+  source: string | null;
+  year: number | null;
+  statusLabel: string;
   questions: QuestionDto[];
 };
 
@@ -52,8 +86,10 @@ export type AttemptAnswerDetailDto = {
   questionId: number;
   question: string;
   imageUrl: string | null;
+  explanation: string | null;
   options: string[];
   optionImageUrls: (string | null)[];
+  subtopic: SubtopicDto | null;
   selectedOptionIndex: number | null;
   correctOptionIndex: number;
   isCorrect: boolean;

@@ -640,6 +640,17 @@ export function AnalyticsClient() {
                           <p className="mt-3 text-xs leading-5 text-text-secondary">
                             {topic.reason}
                           </p>
+
+                          {topic.topicSlug ? (
+                            <div className="mt-3">
+                              <Link
+                                href={`/practice/topic/${topic.topicSlug}`}
+                                className="inline-flex h-9 items-center justify-center rounded-lg bg-primary px-3 text-xs font-semibold text-white transition-colors duration-200 hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                              >
+                                Luyen chuyen de nay
+                              </Link>
+                            </div>
+                          ) : null}
                         </div>
                       );
                     })}

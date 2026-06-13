@@ -17,8 +17,14 @@ export type QuestionDto = {
   id: number;
   question: string;
   imageUrl?: string | null;
+  explanation?: string | null;
   options: string[];
   optionImageUrls?: (string | null)[];
+  subtopic?: {
+    id: string;
+    name: string;
+    slug: string;
+  } | null;
   correctAnswer: string;
 };
 
@@ -28,6 +34,11 @@ export type ExamDetailDto = {
   id: string;
   examTitle: string;
   durationMinutes: number;
+  subject: string;
+  difficulty: ExamDifficulty;
+  source: string | null;
+  year: number | null;
+  statusLabel: string;
   questions: QuestionDto[];
 };
 
@@ -54,6 +65,12 @@ export type SubmitResult = SubmitExamResultDto;
 
 export type ExamDifficulty = 'easy' | 'medium' | 'hard';
 
+export type ExamDurationFilter =
+  | 'all'
+  | 'short'
+  | 'standard'
+  | 'long';
+
 export type ExamSummaryDto = {
   id: string;
   title: string;
@@ -63,9 +80,35 @@ export type ExamSummaryDto = {
   subject: string;
   difficulty: ExamDifficulty;
   year?: number;
-  source?: string;
+  source: string | null;
   type?: string;
   statusLabel: string;
+};
+
+export type TopicFilterDto = {
+  id: string;
+  name: string;
+  slug: string;
+  subtopics: Array<{
+    id: string;
+    name: string;
+    slug: string;
+  }>;
+};
+
+export type TopicsResponseDto = {
+  topics: TopicFilterDto[];
+};
+
+export type PracticeTopicDto = {
+  practiceId: string;
+  topic: {
+    name: string;
+    slug: string;
+  };
+  title: string;
+  durationMinutes: number;
+  questions: QuestionDto[];
 };
 
 export type ExamListItem = {
@@ -77,7 +120,7 @@ export type ExamListItem = {
   subject: string;
   difficulty: ExamDifficulty;
   year?: number;
-  source?: string;
+  source: string | null;
   type?: string;
   statusLabel: string;
   href: string;
@@ -113,8 +156,14 @@ export type AttemptAnswerDetailDto = {
   questionId: number;
   question: string;
   imageUrl?: string | null;
+  explanation?: string | null;
   options: string[];
   optionImageUrls?: (string | null)[];
+  subtopic?: {
+    id: string;
+    name: string;
+    slug: string;
+  } | null;
   selectedOptionIndex: number | null;
   correctOptionIndex: number;
   isCorrect: boolean;

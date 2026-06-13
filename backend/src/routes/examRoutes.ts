@@ -5,6 +5,8 @@ import {
   getExamDetail,
   getExamList,
   getHealth,
+  getTopicPractice,
+  getTopicList,
   submitExamController,
 } from '../controllers/examController';
 import { 
@@ -19,6 +21,8 @@ examRouter.get('/health', getHealth);
 
 // Lấy danh sách đề thi (không bao gồm câu hỏi và đáp án)
 examRouter.get('/exams', getExamList);
+examRouter.get('/topics', getTopicList);
+examRouter.get('/practice/topic/:topicSlug', getTopicPractice);
 
 // Lấy danh sách các lần thi đã nộp cho một đề thi cụ thể
 examRouter.get('/exams/:id/attempts', authMiddleware, getExamAttempts);

@@ -67,12 +67,41 @@ export type UserProgressDto = {
   progressByAttempt: ProgressByAttemptDto[];
 };
 
+export type UserAttemptHistoryItemDto = {
+  attemptId: string;
+  examId: string;
+  examTitle: string;
+  score: number;
+  correctCount: number;
+  totalQuestions: number;
+  unansweredCount: number;
+  durationSeconds: number | null;
+  submittedAt: string;
+};
+
+export type UserAttemptHistorySummaryDto = {
+  totalAttempts: number;
+  averageScore: number;
+  bestScore: number;
+};
+
+export type UserAttemptHistoryDto = {
+  attempts: UserAttemptHistoryItemDto[];
+  summary: UserAttemptHistorySummaryDto;
+};
+
+export type GetUserAttemptsFilters = {
+  limit?: number;
+  examId?: string;
+};
+
 const MAX_WEAK_TOPICS = 3;
 const MAX_RECOMMENDED_EXAMS = 3;
 const MAX_RECENT_ATTEMPTS = 5;
 const MAX_PROGRESS_ATTEMPTS = 10;
 const MAX_RECENT_RECOMMENDATION_ATTEMPTS = 3;
 const WEAK_TOPIC_ACCURACY_THRESHOLD = 85;
+const DEFAULT_ATTEMPT_HISTORY_LIMIT = 20;
 
 const buildWeakTopicReason = (topicStat: TopicStatDto): string => {
   if (topicStat.accuracy < 40) {
@@ -121,12 +150,14 @@ const rankWeakTopics = (topicStats: TopicStatDto[]): RankedWeakTopic[] => {
 
 const buildRecommendationReason = (params: {
   primaryWeakTopic: RankedWeakTopic | null;
+  primaryMatchedSubtopicName: string | null;
   matchedWeakQuestionCount: number;
   matchedWeakTopicCount: number;
   wasAttemptedRecently: boolean;
 }): string => {
   const {
     primaryWeakTopic,
+    primaryMatchedSubtopicName,
     matchedWeakQuestionCount,
     matchedWeakTopicCount,
     wasAttemptedRecently,
@@ -136,15 +167,19 @@ const buildRecommendationReason = (params: {
     ? `De nay co ${matchedWeakQuestionCount} cau thuoc chuyen de ${primaryWeakTopic.topicName}, do chinh xac hien tai cua ban la ${primaryWeakTopic.accuracy}%.`
     : `De nay co ${matchedWeakQuestionCount} cau thuoc ${matchedWeakTopicCount} chuyen de ban dang yeu.`;
 
+  const subtopicNote = primaryMatchedSubtopicName
+    ? ` Trong do tap trung vao mang ${primaryMatchedSubtopicName}.`
+    : '';
+
   if (wasAttemptedRecently) {
-    return `${baseReason} Ban da lam de nay gan day, nen de moi hon se duoc uu tien neu muc do phu hop tuong duong.`;
+    return `${baseReason}${subtopicNote} Ban da lam de nay gan day, nen de moi hon se duoc uu tien neu muc do phu hop tuong duong.`;
   }
 
   if (matchedWeakTopicCount >= 2) {
-    return `${baseReason} De nay dong thoi phu duoc ${matchedWeakTopicCount} chuyen de ban can on lai.`;
+    return `${baseReason}${subtopicNote} De nay dong thoi phu duoc ${matchedWeakTopicCount} chuyen de ban can on lai.`;
   }
 
-  return baseReason;
+  return `${baseReason}${subtopicNote}`;
 };
 
 export const getUserTopicStats = async (
@@ -264,6 +299,11 @@ export const getUserRecommendations = async (
       questions: {
         select: {
           topicId: true,
+          subtopic: {
+            select: {
+              name: true,
+            },
+          },
         },
       },
     },
@@ -309,6 +349,7 @@ export const getUserRecommendations = async (
   const rankedExams = exams
     .map((exam) => {
       const matchedTopicIds = new Set<string>();
+      const matchedSubtopicCount = new Map<string, number>();
       let matchedWeakQuestionCount = 0;
       let primaryWeakTopic: RankedWeakTopic | null = null;
 
@@ -326,6 +367,13 @@ export const getUserRecommendations = async (
         matchedWeakQuestionCount += 1;
         matchedTopicIds.add(question.topicId);
 
+        if (question.subtopic?.name) {
+          matchedSubtopicCount.set(
+            question.subtopic.name,
+            (matchedSubtopicCount.get(question.subtopic.name) ?? 0) + 1,
+          );
+        }
+
         if (
           !primaryWeakTopic ||
           matchedWeakTopic.weaknessScore > primaryWeakTopic.weaknessScore
@@ -335,6 +383,14 @@ export const getUserRecommendations = async (
       }
 
       const wasAttemptedRecently = recentlyAttemptedExamIds.has(exam.id);
+      const primaryMatchedSubtopicName = Array.from(matchedSubtopicCount.entries())
+        .sort((a, b) => {
+          if (a[1] !== b[1]) {
+            return b[1] - a[1];
+          }
+
+          return a[0].localeCompare(b[0], 'vi');
+        })[0]?.[0] ?? null;
       const recommendationScore =
         matchedWeakQuestionCount * 10 +
         matchedTopicIds.size * 4 -
@@ -349,6 +405,7 @@ export const getUserRecommendations = async (
         recommendationScore,
         wasAttemptedRecently,
         primaryWeakTopic,
+        primaryMatchedSubtopicName,
       };
     })
     .filter((exam) => exam.matchedWeakQuestionCount > 0)
@@ -384,6 +441,7 @@ export const getUserRecommendations = async (
       matchedWeakQuestionCount: exam.matchedWeakQuestionCount,
       reason: buildRecommendationReason({
         primaryWeakTopic: exam.primaryWeakTopic,
+        primaryMatchedSubtopicName: exam.primaryMatchedSubtopicName,
         matchedWeakQuestionCount: exam.matchedWeakQuestionCount,
         matchedWeakTopicCount: exam.matchedWeakTopicCount,
         wasAttemptedRecently: exam.wasAttemptedRecently,
@@ -493,5 +551,80 @@ export const getUserProgress = async (
     },
     recentAttempts,
     progressByAttempt,
+  };
+};
+
+export const getUserAttemptHistory = async (
+  userId: string,
+  filters?: GetUserAttemptsFilters,
+): Promise<UserAttemptHistoryDto> => {
+  const take = filters?.limit ?? DEFAULT_ATTEMPT_HISTORY_LIMIT;
+  const where = {
+    userId,
+    ...(filters?.examId ? { examId: filters.examId } : {}),
+  };
+
+  const [summaryAggregate, attempts] = await prisma.$transaction([
+    prisma.attempt.aggregate({
+      where,
+      _avg: {
+        score: true,
+      },
+      _max: {
+        score: true,
+      },
+      _count: {
+        _all: true,
+      },
+    }),
+    prisma.attempt.findMany({
+      where,
+      orderBy: {
+        submittedAt: 'desc',
+      },
+      take,
+      select: {
+        id: true,
+        examId: true,
+        score: true,
+        correctCount: true,
+        totalQuestions: true,
+        unansweredCount: true,
+        durationSeconds: true,
+        submittedAt: true,
+        exam: {
+          select: {
+            title: true,
+          },
+        },
+      },
+    }),
+  ]);
+
+  const totalAttempts = summaryAggregate._count._all;
+
+  return {
+    attempts: attempts.map((attempt) => ({
+      attemptId: attempt.id,
+      examId: attempt.examId,
+      examTitle: attempt.exam.title,
+      score: attempt.score,
+      correctCount: attempt.correctCount,
+      totalQuestions: attempt.totalQuestions,
+      unansweredCount: attempt.unansweredCount,
+      durationSeconds: attempt.durationSeconds,
+      submittedAt: attempt.submittedAt.toISOString(),
+    })),
+    summary: {
+      totalAttempts,
+      averageScore:
+        totalAttempts > 0 && typeof summaryAggregate._avg.score === 'number'
+          ? Math.round(summaryAggregate._avg.score * 10) / 10
+          : 0,
+      bestScore:
+        totalAttempts > 0 && typeof summaryAggregate._max.score === 'number'
+          ? summaryAggregate._max.score
+          : 0,
+    },
   };
 };

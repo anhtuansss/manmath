@@ -422,6 +422,19 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
                       />
                     </div>
                   </div>
+
+                  {answer.explanation ? (
+                    <div className="mt-4 rounded-lg border border-border bg-background p-4">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                        Lời giải
+                      </p>
+                      <MathText
+                        as="div"
+                        text={answer.explanation}
+                        className="mt-2 text-sm leading-6 text-text-primary"
+                      />
+                    </div>
+                  ) : null}
                 </article>
               );
             })}
