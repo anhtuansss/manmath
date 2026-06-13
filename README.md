@@ -14,7 +14,11 @@ Project hiện hỗ trợ chọn đề, làm bài trắc nghiệm, nộp bài, x
 - [x] Lịch sử làm bài và chi tiết attempt
 - [x] Google Login + JWT
 - [x] Topic analytics
+- [x] Recommendation MVP và analytics dashboard nhỏ
+- [x] Theo dõi tiến độ và hoạt động gần đây của người dùng
 - [x] KaTeX math rendering
+- [x] Hỗ trợ ảnh câu hỏi và ảnh đáp án bằng static public path
+- [x] Import đề từ JSON qua backend script
 
 ## Tech Stack
 
@@ -124,13 +128,14 @@ Ghi chú:
 - [Auth flow](docs/AUTH.md)
 - [Database và Prisma](docs/DATABASE.md)
 - [Hướng dẫn phát triển](docs/DEVELOPMENT.md)
+- [Import đề từ JSON](docs/IMPORT_JSON.md)
 
 ## Roadmap ngắn
 
 - Refresh Token
 - Email/password login
 - Cập nhật thông tin cá nhân
-- Hỗ trợ hình ảnh trong câu hỏi/đáp án
-- Dashboard analytics sâu hơn
-- Import đề từ file
+- Upload và quản lý ảnh câu hỏi/đáp án
+- Dashboard analytics sâu hơn và theo dõi tiến bộ dài hạn
+- Mở rộng import đề ngoài JSON
 - AI feedback

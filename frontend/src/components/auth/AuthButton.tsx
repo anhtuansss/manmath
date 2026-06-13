@@ -113,6 +113,13 @@ export function AuthButton() {
             Hồ sơ
           </Link>
 
+          <Link
+            href="/analytics"
+            className="shrink-0 cursor-pointer rounded-md border border-border bg-background px-2.5 py-1.5 text-xs font-semibold text-text-secondary transition-colors hover:bg-background-alt hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          >
+            Analytics
+          </Link>
+
           <button
             type="button"
             onClick={handleLogout}

@@ -27,6 +27,7 @@
     question: string;
     imageUrl: string | null;
     options: string[];
+    optionImageUrls: Array<string | null>;
     correctAnswer: string;
   }>;
 }
@@ -70,6 +71,7 @@
     question: string;
     imageUrl: string | null;
     options: string[];
+    optionImageUrls: Array<string | null>;
     selectedOptionIndex: number | null;
     correctOptionIndex: number;
     isCorrect: boolean;
@@ -80,9 +82,11 @@
 
 Ghi chú:
 
-- Question Image Support MVP hiện chỉ dùng `question.imageUrl`
-- Giá trị `imageUrl` hiện là static public path, ví dụ `/images/questions/sample-unit-circle.svg`
-- Ảnh trong đáp án chưa được hỗ trợ ở giai đoạn này
+- `question.imageUrl` dùng cho ảnh minh họa của câu hỏi
+- `optionImageUrls` dùng cho ảnh minh họa của đáp án và map theo index với `options`
+- Giá trị ảnh hiện là static public path, ví dụ `/images/questions/sample-unit-circle.svg`
+- MVP hiện vẫn giữ `options: string[]`, chưa đổi sang object option model
+- `POST /api/exam/submit` giữ response cũ và bổ sung `topicStats` theo hướng additive
 
 ## Auth APIs
 
@@ -110,6 +114,8 @@ Ghi chú:
 | Method | Endpoint | Auth | Mục đích |
 | --- | --- | --- | --- |
 | `GET` | `/api/me/topic-stats` | Protected | Lấy thống kê độ chính xác theo chuyên đề của user hiện tại |
+| `GET` | `/api/me/recommendations` | Protected | Lấy chuyên đề yếu và các đề nên làm tiếp cho user hiện tại |
+| `GET` | `/api/me/progress` | Protected | Lấy tổng quan tiến độ học tập và các lần làm gần đây của user hiện tại |
 
 ### Shape ngắn của topic stats
 
@@ -125,3 +131,77 @@ Ghi chú:
   }>;
 }
 ```
+
+### Shape ngắn của recommendations
+
+```ts
+{
+  weakTopics: Array<{
+    topicId: string | null;
+    topicName: string;
+    topicSlug: string | null;
+    correct: number;
+    total: number;
+    accuracy: number;
+    reason: string;
+  }>;
+  recommendedExams: Array<{
+    examId: string;
+    title: string;
+    durationMinutes: number;
+    matchedWeakTopicCount: number;
+    matchedWeakQuestionCount: number;
+    reason: string;
+  }>;
+}
+```
+
+### Shape ngắn của progress
+
+```ts
+{
+  summary: {
+    attemptCount: number;
+    averageScore: number;
+    bestScore: number;
+    latestScore: number | null;
+  };
+  recentAttempts: Array<{
+    attemptId: string;
+    examId: string;
+    examTitle: string;
+    score: number;
+    correctCount: number;
+    totalQuestions: number;
+    submittedAt: string;
+  }>;
+  progressByAttempt: Array<{
+    attemptId: string;
+    examTitle: string;
+    score: number;
+    accuracy: number;
+    submittedAt: string;
+  }>;
+}
+```
+
+Ghi chú:
+
+- `weakTopics` hiện được xếp theo mức độ yếu có cân nhắc cả `accuracy` và số câu đã làm
+- `recommendedExams` ưu tiên:
+  - nhiều câu thuộc các topic yếu
+  - phủ được nhiều topic yếu
+  - giảm ưu tiên đề user vừa làm gần đây
+- `reason` hiện mô tả rõ hơn vì sao đề được gợi ý, ví dụ số câu khớp topic yếu và độ chính xác hiện tại của user
+- `progress` dùng cho analytics dashboard và block hoạt động gần đây trong hồ sơ người dùng
+
+## Import script nội bộ
+
+Import đề từ JSON hiện chưa phải HTTP API. MVP đang dùng backend script:
+
+```bash
+cd backend
+npm run import:exam -- ./src/data/import/sample-exam.json
+```
+
+Xem format và rule chi tiết tại [docs/IMPORT_JSON.md](./IMPORT_JSON.md).

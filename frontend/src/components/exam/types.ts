@@ -18,6 +18,7 @@ export type QuestionDto = {
   question: string;
   imageUrl?: string | null;
   options: string[];
+  optionImageUrls?: (string | null)[];
   correctAnswer: string;
 };
 
@@ -113,6 +114,7 @@ export type AttemptAnswerDetailDto = {
   question: string;
   imageUrl?: string | null;
   options: string[];
+  optionImageUrls?: (string | null)[];
   selectedOptionIndex: number | null;
   correctOptionIndex: number;
   isCorrect: boolean;

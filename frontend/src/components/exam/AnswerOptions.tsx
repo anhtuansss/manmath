@@ -1,4 +1,5 @@
 import { MathText } from './MathText';
+import { OptionImage } from './OptionImage';
 import type { Answers, Question } from './types';
 
 type AnswerOptionsProps = {
@@ -19,6 +20,7 @@ export function AnswerOptions({
       {question.options.map((choice, choiceIndex) => {
         const isSelected = answers[question.id] === choiceIndex;
         const optionLabel = String.fromCharCode(65 + choiceIndex);
+        const optionImageUrl = question.optionImageUrls?.[choiceIndex] ?? null;
 
         return (
           <button
@@ -52,10 +54,18 @@ export function AnswerOptions({
               {optionLabel}
             </span>
 
-            <MathText
-              text={choice}
-              className="min-w-0 flex-1 pt-1 text-base leading-7"
-            />
+            <div className="min-w-0 flex-1">
+              <MathText
+                text={choice}
+                className="pt-1 text-base leading-7"
+              />
+
+              <OptionImage
+                imageUrl={optionImageUrl}
+                alt={`Hình minh họa đáp án ${optionLabel}`}
+                className="mt-2"
+              />
+            </div>
           </button>
         );
       })}

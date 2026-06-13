@@ -1,26 +1,15 @@
 import 'katex/dist/katex.min.css';
 import './globals.css';
-import { Inter, Outfit } from 'next/font/google';
 import { AuthProvider } from '../components/auth/AuthProvider';
 
-const inter = Inter({
-  subsets: ['latin', 'vietnamese'],
-  variable: '--font-inter',
-  display: 'swap',
-});
-
-const outfit = Outfit({
-  subsets: ['latin', 'latin-ext'],
-  variable: '--font-outfit',
-  weight: ['500', '600', '700'],
-  display: 'swap',
-});
-
 export const metadata = {
-  title: 'ManMath — Luyện đề Toán THPT Quốc gia',
+  title: 'ManMath - Luyen de Toan THPT Quoc gia',
   description:
-    'Nền tảng luyện đề Toán THPT trực tuyến. Thi thử với giao diện tập trung, đồng hồ bấm giờ và xem lại kết quả chi tiết.',
+    'Nen tang luyen de Toan THPT truc tuyen voi giao dien tap trung, dong ho bam gio va xem lai ket qua chi tiet.',
 };
+
+const APP_FONT_STACK =
+  'Inter, Outfit, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
 export default function RootLayout({
   children,
@@ -28,8 +17,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="vi" className={`${inter.variable} ${outfit.variable}`}>
-      <body className={`${inter.className} bg-background text-text-primary antialiased`}>
+    <html lang="vi">
+      <body
+        className="bg-background text-text-primary antialiased"
+        style={{ fontFamily: APP_FONT_STACK }}
+      >
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

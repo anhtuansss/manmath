@@ -23,6 +23,7 @@ type QuestionDbRecord = {
   question: string;
   imageUrl: string | null;
   options: string[];
+  optionImageUrls: string[];
   correctAnswer: string;
 };
 
@@ -31,6 +32,21 @@ type ExamDetailDbRecord = {
   title: string;
   durationMinutes: number;
   questions: QuestionDbRecord[];
+};
+
+export const normalizeOptionImageUrls = (
+  options: string[],
+  optionImageUrls: string[],
+): (string | null)[] => {
+  return options.map((_, index) => {
+    const imageUrl = optionImageUrls[index];
+
+    if (typeof imageUrl !== 'string' || imageUrl.trim().length === 0) {
+      return null;
+    }
+
+    return imageUrl;
+  });
 };
 
 export const mapExamRecordToSummaryDto = (
@@ -61,6 +77,10 @@ export const mapExamRecordToDetailDto = (
       question: question.question,
       imageUrl: question.imageUrl,
       options: question.options,
+      optionImageUrls: normalizeOptionImageUrls(
+        question.options,
+        question.optionImageUrls,
+      ),
       correctAnswer: question.correctAnswer,
     })),
   };

@@ -20,6 +20,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { MathText } from './MathText';
 import { Logo } from './Logo';
+import { OptionImage } from './OptionImage';
 import { QuestionImage } from './QuestionImage';
 import type { ExamDetailDto, ExamResultSession, QuestionDto } from './types';
 import { API_BASE_URL } from '../../config/api';
@@ -578,6 +579,15 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
                 selectedOptionIndex !== undefined
                   ? question.options[selectedOptionIndex] ?? 'Đáp án không hợp lệ'
                   : 'Chưa chọn đáp án';
+              const selectedOptionImageUrl =
+                selectedOptionIndex !== undefined
+                  ? question.optionImageUrls?.[selectedOptionIndex] ?? null
+                  : null;
+              const correctOptionIndex = question.options.indexOf(question.correctAnswer);
+              const correctOptionImageUrl =
+                correctOptionIndex >= 0
+                  ? question.optionImageUrls?.[correctOptionIndex] ?? null
+                  : null;
               const status = getReviewStatus(question, selectedOptionIndex);
 
               return (
@@ -632,6 +642,11 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
                           text={selectedAnswer}
                           className="mt-2 text-sm font-medium leading-6 text-text-primary"
                         />
+                        <OptionImage
+                          imageUrl={selectedOptionImageUrl}
+                          alt={`Hình minh họa đáp án bạn chọn ở câu ${index + 1}`}
+                          className="mt-3"
+                        />
                       </div>
 
                       <div className="rounded-lg border border-border bg-background p-4">
@@ -642,6 +657,11 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
                           as="p"
                           text={question.correctAnswer}
                           className="mt-2 text-sm font-medium leading-6 text-text-primary"
+                        />
+                        <OptionImage
+                          imageUrl={correctOptionImageUrl}
+                          alt={`Hình minh họa đáp án đúng ở câu ${index + 1}`}
+                          className="mt-3"
                         />
                       </div>
                     </div>

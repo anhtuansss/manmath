@@ -14,6 +14,139 @@ type TopicStatAccumulator = {
   total: number;
 };
 
+type RankedWeakTopic = WeakTopicRecommendationDto & {
+  weaknessScore: number;
+};
+
+export type WeakTopicRecommendationDto = TopicStatDto & {
+  reason: string;
+};
+
+export type RecommendedExamDto = {
+  examId: string;
+  title: string;
+  durationMinutes: number;
+  matchedWeakTopicCount: number;
+  matchedWeakQuestionCount: number;
+  reason: string;
+};
+
+export type UserRecommendationsDto = {
+  weakTopics: WeakTopicRecommendationDto[];
+  recommendedExams: RecommendedExamDto[];
+};
+
+export type ProgressSummaryDto = {
+  attemptCount: number;
+  averageScore: number;
+  bestScore: number;
+  latestScore: number | null;
+};
+
+export type RecentAttemptDto = {
+  attemptId: string;
+  examId: string;
+  examTitle: string;
+  score: number;
+  correctCount: number;
+  totalQuestions: number;
+  submittedAt: string;
+};
+
+export type ProgressByAttemptDto = {
+  attemptId: string;
+  examTitle: string;
+  score: number;
+  accuracy: number;
+  submittedAt: string;
+};
+
+export type UserProgressDto = {
+  summary: ProgressSummaryDto;
+  recentAttempts: RecentAttemptDto[];
+  progressByAttempt: ProgressByAttemptDto[];
+};
+
+const MAX_WEAK_TOPICS = 3;
+const MAX_RECOMMENDED_EXAMS = 3;
+const MAX_RECENT_ATTEMPTS = 5;
+const MAX_PROGRESS_ATTEMPTS = 10;
+const MAX_RECENT_RECOMMENDATION_ATTEMPTS = 3;
+const WEAK_TOPIC_ACCURACY_THRESHOLD = 85;
+
+const buildWeakTopicReason = (topicStat: TopicStatDto): string => {
+  if (topicStat.accuracy < 40) {
+    return `Do chinh xac hien tai la ${topicStat.accuracy}% sau ${topicStat.total} cau, nen uu tien on lai chuyen de nay.`;
+  }
+
+  if (topicStat.accuracy < 70) {
+    return `Chuyen de nay chua on dinh, do chinh xac hien tai la ${topicStat.accuracy}% sau ${topicStat.total} cau da lam.`;
+  }
+
+  return `Do chinh xac hien tai la ${topicStat.accuracy}%, nen tiep tuc giu nhip luyen tap de giu do on dinh.`;
+};
+
+const buildWeaknessScore = (topicStat: TopicStatDto): number => {
+  const errorRate = 100 - topicStat.accuracy;
+  const reliabilityWeight = Math.min(topicStat.total, 5);
+
+  return errorRate * reliabilityWeight;
+};
+
+const rankWeakTopics = (topicStats: TopicStatDto[]): RankedWeakTopic[] => {
+  return topicStats
+    .filter((topicStat) => topicStat.total > 0)
+    .map((topicStat) => ({
+      ...topicStat,
+      reason: buildWeakTopicReason(topicStat),
+      weaknessScore: buildWeaknessScore(topicStat),
+    }))
+    .sort((a, b) => {
+      if (a.weaknessScore !== b.weaknessScore) {
+        return b.weaknessScore - a.weaknessScore;
+      }
+
+      if (a.accuracy !== b.accuracy) {
+        return a.accuracy - b.accuracy;
+      }
+
+      if (a.total !== b.total) {
+        return b.total - a.total;
+      }
+
+      return a.topicName.localeCompare(b.topicName, 'vi');
+    })
+    .slice(0, MAX_WEAK_TOPICS);
+};
+
+const buildRecommendationReason = (params: {
+  primaryWeakTopic: RankedWeakTopic | null;
+  matchedWeakQuestionCount: number;
+  matchedWeakTopicCount: number;
+  wasAttemptedRecently: boolean;
+}): string => {
+  const {
+    primaryWeakTopic,
+    matchedWeakQuestionCount,
+    matchedWeakTopicCount,
+    wasAttemptedRecently,
+  } = params;
+
+  const baseReason = primaryWeakTopic
+    ? `De nay co ${matchedWeakQuestionCount} cau thuoc chuyen de ${primaryWeakTopic.topicName}, do chinh xac hien tai cua ban la ${primaryWeakTopic.accuracy}%.`
+    : `De nay co ${matchedWeakQuestionCount} cau thuoc ${matchedWeakTopicCount} chuyen de ban dang yeu.`;
+
+  if (wasAttemptedRecently) {
+    return `${baseReason} Ban da lam de nay gan day, nen de moi hon se duoc uu tien neu muc do phu hop tuong duong.`;
+  }
+
+  if (matchedWeakTopicCount >= 2) {
+    return `${baseReason} De nay dong thoi phu duoc ${matchedWeakTopicCount} chuyen de ban can on lai.`;
+  }
+
+  return baseReason;
+};
+
 export const getUserTopicStats = async (
   userId: string,
 ): Promise<TopicStatDto[]> => {
@@ -84,7 +217,7 @@ export const getUserTopicStats = async (
 
     topicStatMap.set(topicKey, {
       topicId: topic?.id ?? null,
-      topicName: topic?.name ?? 'Chưa phân loại',
+      topicName: topic?.name ?? 'Chua phan loai',
       topicSlug: topic?.slug ?? null,
       correct: answer.isCorrect ? 1 : 0,
       total: 1,
@@ -110,4 +243,255 @@ export const getUserTopicStats = async (
 
       return a.topicName.localeCompare(b.topicName, 'vi');
     });
+};
+
+export const getUserRecommendations = async (
+  userId: string,
+): Promise<UserRecommendationsDto> => {
+  const topicStats = await getUserTopicStats(userId);
+  const weakTopics = rankWeakTopics(topicStats).filter(
+    (topic) => topic.accuracy < WEAK_TOPIC_ACCURACY_THRESHOLD,
+  );
+
+  const exams = await prisma.exam.findMany({
+    orderBy: {
+      createdAt: 'desc',
+    },
+    select: {
+      id: true,
+      title: true,
+      durationMinutes: true,
+      questions: {
+        select: {
+          topicId: true,
+        },
+      },
+    },
+  });
+
+  if (weakTopics.length === 0) {
+    return {
+      weakTopics: [],
+      recommendedExams: exams.slice(0, MAX_RECOMMENDED_EXAMS).map((exam) => ({
+        examId: exam.id,
+        title: exam.title,
+        durationMinutes: exam.durationMinutes,
+        matchedWeakTopicCount: 0,
+        matchedWeakQuestionCount: 0,
+        reason: 'Ban chua co du lieu luyen tap, hay bat dau voi de nay.',
+      })),
+    };
+  }
+
+  const recentAttempts = await prisma.attempt.findMany({
+    where: {
+      userId,
+    },
+    orderBy: {
+      submittedAt: 'desc',
+    },
+    take: MAX_RECENT_RECOMMENDATION_ATTEMPTS,
+    select: {
+      examId: true,
+    },
+  });
+
+  const recentlyAttemptedExamIds = new Set(
+    recentAttempts.map((attempt) => attempt.examId),
+  );
+
+  const weakTopicById = new Map(
+    weakTopics
+      .filter((topic): topic is RankedWeakTopic & { topicId: string } => topic.topicId !== null)
+      .map((topic) => [topic.topicId, topic]),
+  );
+
+  const rankedExams = exams
+    .map((exam) => {
+      const matchedTopicIds = new Set<string>();
+      let matchedWeakQuestionCount = 0;
+      let primaryWeakTopic: RankedWeakTopic | null = null;
+
+      for (const question of exam.questions) {
+        if (!question.topicId) {
+          continue;
+        }
+
+        const matchedWeakTopic = weakTopicById.get(question.topicId);
+
+        if (!matchedWeakTopic) {
+          continue;
+        }
+
+        matchedWeakQuestionCount += 1;
+        matchedTopicIds.add(question.topicId);
+
+        if (
+          !primaryWeakTopic ||
+          matchedWeakTopic.weaknessScore > primaryWeakTopic.weaknessScore
+        ) {
+          primaryWeakTopic = matchedWeakTopic;
+        }
+      }
+
+      const wasAttemptedRecently = recentlyAttemptedExamIds.has(exam.id);
+      const recommendationScore =
+        matchedWeakQuestionCount * 10 +
+        matchedTopicIds.size * 4 -
+        (wasAttemptedRecently ? 3 : 0);
+
+      return {
+        examId: exam.id,
+        title: exam.title,
+        durationMinutes: exam.durationMinutes,
+        matchedWeakTopicCount: matchedTopicIds.size,
+        matchedWeakQuestionCount,
+        recommendationScore,
+        wasAttemptedRecently,
+        primaryWeakTopic,
+      };
+    })
+    .filter((exam) => exam.matchedWeakQuestionCount > 0)
+    .sort((a, b) => {
+      if (a.recommendationScore !== b.recommendationScore) {
+        return b.recommendationScore - a.recommendationScore;
+      }
+
+      if (a.matchedWeakQuestionCount !== b.matchedWeakQuestionCount) {
+        return b.matchedWeakQuestionCount - a.matchedWeakQuestionCount;
+      }
+
+      if (a.matchedWeakTopicCount !== b.matchedWeakTopicCount) {
+        return b.matchedWeakTopicCount - a.matchedWeakTopicCount;
+      }
+
+      if (a.wasAttemptedRecently !== b.wasAttemptedRecently) {
+        return a.wasAttemptedRecently ? 1 : -1;
+      }
+
+      if (a.durationMinutes !== b.durationMinutes) {
+        return a.durationMinutes - b.durationMinutes;
+      }
+
+      return a.title.localeCompare(b.title, 'vi');
+    })
+    .slice(0, MAX_RECOMMENDED_EXAMS)
+    .map((exam) => ({
+      examId: exam.examId,
+      title: exam.title,
+      durationMinutes: exam.durationMinutes,
+      matchedWeakTopicCount: exam.matchedWeakTopicCount,
+      matchedWeakQuestionCount: exam.matchedWeakQuestionCount,
+      reason: buildRecommendationReason({
+        primaryWeakTopic: exam.primaryWeakTopic,
+        matchedWeakQuestionCount: exam.matchedWeakQuestionCount,
+        matchedWeakTopicCount: exam.matchedWeakTopicCount,
+        wasAttemptedRecently: exam.wasAttemptedRecently,
+      }),
+    }));
+
+  if (rankedExams.length > 0) {
+    return {
+      weakTopics: weakTopics.map(({ weaknessScore, ...topic }) => topic),
+      recommendedExams: rankedExams,
+    };
+  }
+
+  return {
+    weakTopics: weakTopics.map(({ weaknessScore, ...topic }) => topic),
+    recommendedExams: exams.slice(0, MAX_RECOMMENDED_EXAMS).map((exam) => ({
+      examId: exam.id,
+      title: exam.title,
+      durationMinutes: exam.durationMinutes,
+      matchedWeakTopicCount: 0,
+      matchedWeakQuestionCount: 0,
+      reason:
+        'Chua tim thay de khop ro chuyen de yeu, hay bat dau voi de nay de tao them du lieu luyen tap.',
+    })),
+  };
+};
+
+export const getUserProgress = async (
+  userId: string,
+): Promise<UserProgressDto> => {
+  const attempts = await prisma.attempt.findMany({
+    where: {
+      userId,
+    },
+    orderBy: {
+      submittedAt: 'desc',
+    },
+    select: {
+      id: true,
+      examId: true,
+      score: true,
+      correctCount: true,
+      totalQuestions: true,
+      submittedAt: true,
+      exam: {
+        select: {
+          title: true,
+        },
+      },
+    },
+  });
+
+  if (attempts.length === 0) {
+    return {
+      summary: {
+        attemptCount: 0,
+        averageScore: 0,
+        bestScore: 0,
+        latestScore: null,
+      },
+      recentAttempts: [],
+      progressByAttempt: [],
+    };
+  }
+
+  const attemptCount = attempts.length;
+  const totalScore = attempts.reduce((sum, attempt) => sum + attempt.score, 0);
+  const averageScore = Math.round((totalScore / attemptCount) * 10) / 10;
+  const bestScore = attempts.reduce(
+    (maxScore, attempt) => Math.max(maxScore, attempt.score),
+    0,
+  );
+  const latestScore = attempts[0]?.score ?? null;
+
+  const recentAttempts: RecentAttemptDto[] = attempts
+    .slice(0, MAX_RECENT_ATTEMPTS)
+    .map((attempt) => ({
+      attemptId: attempt.id,
+      examId: attempt.examId,
+      examTitle: attempt.exam.title,
+      score: attempt.score,
+      correctCount: attempt.correctCount,
+      totalQuestions: attempt.totalQuestions,
+      submittedAt: attempt.submittedAt.toISOString(),
+    }));
+
+  const progressByAttempt: ProgressByAttemptDto[] = attempts
+    .slice(0, MAX_PROGRESS_ATTEMPTS)
+    .map((attempt) => ({
+      attemptId: attempt.id,
+      examTitle: attempt.exam.title,
+      score: attempt.score,
+      accuracy:
+        attempt.totalQuestions > 0
+          ? Math.round((attempt.correctCount / attempt.totalQuestions) * 100)
+          : 0,
+      submittedAt: attempt.submittedAt.toISOString(),
+    }))
+    .reverse();
+
+  return {
+    summary: {
+      attemptCount,
+      averageScore,
+      bestScore,
+      latestScore,
+    },
+    recentAttempts,
+    progressByAttempt,
+  };
 };

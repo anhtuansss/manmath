@@ -30,7 +30,7 @@ PostgreSQL
 - Lưu autosave bài làm bằng `localStorage`
 - Lưu kết quả submit tạm thời để hiển thị ở result page
 - Gửi JWT khi user đã đăng nhập
-- Render KaTeX và ảnh câu hỏi nếu `question.imageUrl` có dữ liệu
+- Render KaTeX, ảnh câu hỏi nếu `question.imageUrl` có dữ liệu, và ảnh đáp án nếu `optionImageUrls` có dữ liệu
 
 ### Backend
 
@@ -40,7 +40,7 @@ PostgreSQL
 - Ký và verify JWT
 - Chấm điểm bài thi
 - Lưu attempt, attempt answer, topic analytics
-- Expose `imageUrl` trong exam detail và attempt detail để frontend render ảnh câu hỏi
+- Expose `imageUrl` và `optionImageUrls` trong exam detail và attempt detail để frontend render ảnh câu hỏi/đáp án
 
 ### Database
 
@@ -66,7 +66,7 @@ Request
 ```text
 User vào /exam/[id]
 → Frontend gọi GET /api/exams/:id
-→ Render câu hỏi và ảnh minh họa nếu có
+→ Render câu hỏi, ảnh minh họa câu hỏi và ảnh minh họa đáp án nếu có
 → User chọn đáp án
 → Frontend autosave localStorage
 → User submit
@@ -92,7 +92,7 @@ User đã login
 → Frontend gọi GET /api/attempts/:attemptId
 → Backend dùng authMiddleware
 → Service kiểm tra owner
-→ Trả chi tiết attempt + answers + topicStats + imageUrl nếu câu có ảnh
+→ Trả chi tiết attempt + answers + topicStats + imageUrl/optionImageUrls nếu câu hoặc đáp án có ảnh
 ```
 
 ## Luồng topic analytics
@@ -122,4 +122,43 @@ GET /api/me/topic-stats
 → Backend lấy các attempt của user hiện tại
 → Tổng hợp theo topic
 → Trả topicStats đã sort
+```
+
+## Luồng recommendation MVP
+
+```text
+User đã login
+→ Frontend gọi GET /api/me/recommendations
+→ Backend lấy topicStats của user
+→ Xác định các chuyên đề yếu
+→ Tìm các đề có nhiều câu thuộc nhóm topic yếu
+→ Trả weakTopics + recommendedExams
+→ Frontend hiển thị card gợi ý ở Exam List / Profile
+```
+
+## Luồng analytics dashboard nhỏ
+
+```text
+User vào /analytics
+→ Frontend kiểm tra trạng thái đăng nhập
+→ Nếu có token, gọi GET /api/me/topic-stats
+→ Gọi thêm GET /api/me/progress để lấy summary + recent attempts + progress theo thời gian
+→ Nếu có recommendation API, gọi thêm GET /api/me/recommendations
+→ Render các block:
+  - tổng quan chuyên đề
+  - tiến độ gần đây
+  - chuyên đề yếu
+  - chuyên đề mạnh
+  - đề nên làm tiếp
+```
+
+## Luồng recent activity trong hồ sơ
+
+```text
+User vào /profile
+→ Frontend kiểm tra token
+→ Nếu đã login, gọi GET /api/auth/me
+→ Gọi thêm GET /api/me/progress
+→ Lấy `recentAttempts` để hiển thị block hoạt động gần đây
+→ Nếu có recommendation API, hiển thị CTA đề nên làm tiếp
 ```

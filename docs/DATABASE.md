@@ -48,13 +48,15 @@ Các field chính:
 - `question`
 - `imageUrl`
 - `options`
+- `optionImageUrls`
 - `correctAnswer`
 
 Ghi chú:
 
 - `imageUrl` là field optional dùng cho Question Image Support MVP
+- `optionImageUrls` là mảng string map theo index với `options`
 - Ảnh hiện được lưu dưới dạng static public path, ví dụ `/images/questions/sample-parabola.svg`
-- Ảnh trong đáp án chưa được hỗ trợ ở schema hiện tại
+- MVP hiện vẫn giữ `options: string[]`, chưa đổi sang object option model
 
 ### Topic
 
@@ -67,6 +69,22 @@ Các field chính:
 - `slug`
 - `description`
 - `order`
+
+Taxonomy MVP hiện tại dùng một bộ slug chính, ví dụ:
+
+- `ham-so`
+- `nguyen-ham-tich-phan`
+- `gioi-han`
+- `mu-logarit`
+- `xac-suat-to-hop`
+- `vector-toa-do`
+- `ma-tran`
+- `hinh-hoc-khong-gian`
+
+Ghi chú:
+
+- Analytics và recommendation đang phụ thuộc trực tiếp vào `Question -> Topic`
+- Vì vậy slug topic cần được giữ nhất quán giữa `mockExams`, seed và JSON import
 
 ### Attempt
 

@@ -37,6 +37,7 @@
 * [x] Legacy seed cleanup
 * [x] Route - Controller - Service architecture
 * [x] Backend smoke test checklist
+* [x] Frontend build không phụ thuộc Google Fonts
 * [x] Documentation update
 
 ---
@@ -90,6 +91,9 @@
 
 * [x] Hồ sơ người dùng tối thiểu
 * [x] Link tới hồ sơ người dùng sau khi login
+* [x] CTA từ hồ sơ sang analytics
+* [x] CTA đề nên làm tiếp trong hồ sơ
+* [x] Hoạt động gần đây trong hồ sơ
 * [ ] Thay đổi mật khẩu
 * [ ] Cập nhật thông tin cá nhân
 
@@ -139,7 +143,8 @@
 * [x] Mock data LaTeX để kiểm thử KaTeX
 * [x] Hỗ trợ hình ảnh trong câu hỏi
 * [x] Render ảnh câu hỏi ở màn làm bài, result review và attempt detail
-* [ ] Hỗ trợ hình ảnh trong đáp án
+* [x] Hỗ trợ hình ảnh trong đáp án
+* [x] Render ảnh đáp án ở màn làm bài, result review và attempt detail
 
 ---
 
@@ -147,7 +152,11 @@
 
 ### Import Questions
 
-* [ ] Import đề từ JSON
+* [x] Import đề từ JSON
+* [x] Sample JSON import
+* [x] Import JSON dry-run
+* [x] Import JSON validation/report lỗi rõ hơn
+* [x] Seed/import consistency cho demo workflow
 * [ ] Import đề từ Excel
 * [ ] Import đề từ Word
 
@@ -168,21 +177,24 @@
 * [x] Mapping Question -> Topic
 * [x] Attempt Detail có `topicStats`
 * [x] Result Page sau submit hiển thị `topicStats`
+* [x] Topic taxonomy cleanup MVP
 * [ ] Mapping Question -> Subtopic
 
 ### User Analytics
 
 * [x] Tính độ chính xác theo chuyên đề
 * [x] API `/api/me/topic-stats` tổng hợp topic analytics theo user
-* [ ] Tính độ chính xác theo thời gian
-* [ ] Theo dõi tiến bộ
+* [x] Analytics dashboard nhỏ tại `/analytics`
+* [x] Tính độ chính xác theo thời gian
+* [x] Theo dõi tiến bộ
 * [ ] Dashboard học tập
 
 ### Recommendation Engine (Không AI)
 
-* [ ] Xác định chuyên đề yếu
-* [ ] Gợi ý chuyên đề cần luyện
-* [ ] Gợi ý đề thi phù hợp
+* [x] Xác định chuyên đề yếu
+* [x] Gợi ý chuyên đề cần luyện
+* [x] Gợi ý đề thi phù hợp
+* [x] Recommendation rule improvement MVP
 
 ---
 
@@ -257,6 +269,14 @@
 * [x] Submit response trả `topicStats`
 * [x] Hiển thị topic stats ở result page sau submit nếu phù hợp
 * [x] Hoàn thiện Question Image Support MVP với `Question.imageUrl` và ảnh static path
+* [x] Hoàn thiện Option Image Support MVP với `options: string[]` + `optionImageUrls` map theo index
+* [x] Hoàn thiện Recommendation MVP với API `/api/me/recommendations`
+* [x] Chuẩn hóa topic taxonomy cho seed/mock/import và cải thiện rule recommendation MVP
+* [x] Tạo analytics dashboard nhỏ tại route `/analytics`
+* [x] Tạo script import đề từ JSON và sample file import
+* [x] Thêm dry-run và validation report rõ hơn cho import JSON
+* [x] Chạy smoke test tối thiểu sau khi fix frontend build fonts
+* [x] Làm rõ workflow `seed` / `seed:demo` / import JSON cho dữ liệu demo nhất quán
 
 ### Không làm lúc này
 

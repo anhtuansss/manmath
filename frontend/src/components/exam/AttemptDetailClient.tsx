@@ -9,6 +9,7 @@ import {
 } from '../../lib/authApi';
 import { subscribeAuthTokenChange } from '../../lib/authStorage';
 import { MathText } from './MathText';
+import { OptionImage } from './OptionImage';
 import { QuestionImage } from './QuestionImage';
 import type { ExamAttemptDetailDto } from './types';
 
@@ -324,8 +325,14 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
                 answer.selectedOptionIndex === null
                   ? 'Chưa chọn đáp án'
                   : answer.options[answer.selectedOptionIndex];
+              const selectedOptionImageUrl =
+                answer.selectedOptionIndex === null
+                  ? null
+                  : answer.optionImageUrls?.[answer.selectedOptionIndex] ?? null;
 
               const correctAnswer = answer.options[answer.correctOptionIndex];
+              const correctOptionImageUrl =
+                answer.optionImageUrls?.[answer.correctOptionIndex] ?? null;
 
               const isUnanswered = answer.selectedOptionIndex === null;
 
@@ -392,6 +399,11 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
                         text={selectedAnswer}
                         className="mt-2 text-sm font-medium leading-6 text-text-primary"
                       />
+                      <OptionImage
+                        imageUrl={selectedOptionImageUrl}
+                        alt={`Hình minh họa đáp án bạn chọn ở câu ${index + 1}`}
+                        className="mt-3"
+                      />
                     </div>
 
                     <div className="rounded-lg border border-border bg-background p-4">
@@ -402,6 +414,11 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
                         as="p"
                         text={correctAnswer}
                         className="mt-2 text-sm font-medium leading-6 text-text-primary"
+                      />
+                      <OptionImage
+                        imageUrl={correctOptionImageUrl}
+                        alt={`Hình minh họa đáp án đúng ở câu ${index + 1}`}
+                        className="mt-3"
                       />
                     </div>
                   </div>
