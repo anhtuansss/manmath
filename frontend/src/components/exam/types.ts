@@ -19,6 +19,11 @@ export type QuestionDto = {
   imageUrl?: string | null;
   options: string[];
   optionImageUrls?: (string | null)[];
+  subtopic?: {
+    id: string;
+    name: string;
+    slug: string;
+  } | null;
   correctAnswer: string;
 };
 
@@ -115,6 +120,11 @@ export type AttemptAnswerDetailDto = {
   imageUrl?: string | null;
   options: string[];
   optionImageUrls?: (string | null)[];
+  subtopic?: {
+    id: string;
+    name: string;
+    slug: string;
+  } | null;
   selectedOptionIndex: number | null;
   correctOptionIndex: number;
   isCorrect: boolean;
