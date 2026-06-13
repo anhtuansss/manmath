@@ -47,6 +47,20 @@ cd backend
 npm run import:exam -- ./src/data/import/sample-exam.json --dry-run
 ```
 
+### Batch import bang manifest
+
+```bash
+cd backend
+npm run import:exam -- ./src/data/import/manifest.json --batch
+```
+
+### Batch dry-run
+
+```bash
+cd backend
+npm run import:exam -- ./src/data/import/manifest.json --batch --dry-run
+```
+
 Dry-run se:
 
 - doc file JSON
@@ -64,6 +78,7 @@ Dry-run se:
 - ho tro `optionImageUrls`
 - ho tro `topic`
 - ho tro `subtopic`
+- ho tro manifest de import nhieu exam file trong mot lan chay
 
 Import lai cung `exam.id` se update, khong tao duplicate.
 
@@ -78,6 +93,17 @@ Dry-run hien in:
 - so subtopic detect duoc
 - so cau co `imageUrl`
 - so cau co `optionImageUrls`
+
+### Summary cua batch mode
+
+Batch mode hien in:
+
+- tong so file trong manifest
+- so file valid
+- so file loi
+- so exam se import
+- tong so question
+- danh sach loi theo tung file neu co
 
 ## JSON format day du
 
@@ -116,6 +142,24 @@ Dry-run hien in:
   ]
 }
 ```
+
+## Manifest format
+
+```json
+{
+  "exams": [
+    "./sample-exam.json",
+    "./sample-exam-02.json"
+  ]
+}
+```
+
+Ghi chu:
+
+- path trong manifest duoc tinh tu thu muc chua file manifest
+- batch dry-run validate tat ca file va khong ghi DB
+- batch import that hien tai validate toan bo truoc, sau do import tuan tu
+- neu gap loi runtime khi dang import that, script se dung ngay tai file loi
 
 ## Field bat buoc
 
@@ -165,6 +209,8 @@ Dry-run hien in:
 - `question.id` cung khong duoc trung voi question dang thuoc exam khac
 - neu co `subtopic` thi phai co `topic`
 - `subtopic` duoc import vao dung `topic`; khong co co che infer topic tu dong de tranh sai taxonomy
+- manifest phai co `exams` la mang khong rong
+- moi phan tu trong `manifest.exams` phai la duong dan string hop le
 
 ## Validation hien co
 
@@ -181,6 +227,8 @@ Script hien bao loi ro theo field/path, vi du:
 - `questions[0].topic.slug must contain only lowercase letters, numbers, and hyphens`
 - `questions[0].subtopic requires topic to be provided`
 - `questions contain duplicate id: 1001`
+- `Manifest.exams phai la mang khong rong`
+- `Manifest.exams[1] phai la duong dan string hop le`
 
 Neu file co nhieu loi, script se in toan bo danh sach loi.
 
@@ -233,3 +281,17 @@ Vi du dung:
 cd backend
 npm run import:exam -- ./src/data/import/sample-exam.json
 ```
+
+### Sai path trong manifest
+
+- kiem tra file `manifest.json`
+- duong dan phai relative theo thu muc chua manifest
+- vi du `./sample-exam-02.json` la hop le neu file nam cung thu muc voi `manifest.json`
+
+### Batch import co file loi
+
+Hanh vi hien tai:
+
+- `--batch --dry-run`: bao tat ca loi theo file, khong ghi DB
+- `--batch`: validate toan bo truoc; neu co file invalid thi dung truoc khi ghi DB
+- neu tat ca file deu valid nhung xay ra loi runtime trong luc import that, script se fail-fast tai file loi

@@ -1,6 +1,6 @@
-    # Hướng dẫn phát triển
+# Huong dan phat trien
 
-## Chạy local chi tiết
+## Chay local chi tiet
 
 ### Backend
 
@@ -30,7 +30,7 @@ npm run seed
 npm run seed:demo
 ```
 
-## Typecheck và build
+## Typecheck va build
 
 ### Backend
 
@@ -47,39 +47,56 @@ npx tsc --noEmit
 npm run build
 ```
 
-## Import đề từ JSON
+## Import de tu JSON
 
-Script import MVP hiện tại dùng để thêm hoặc cập nhật đề thi từ file JSON vào PostgreSQL.
+Script import MVP dung de them hoac cap nhat de thi tu file JSON vao PostgreSQL.
 
-Workflow chuẩn:
+Workflow chuan:
 
-- `npm run seed`: reset về dataset mock chuẩn
-- `npm run seed:demo`: reset dataset mock chuẩn và import thêm sample JSON exam
-- `npm run import:exam -- ./src/data/import/sample-exam.json`: import hoặc cập nhật riêng một đề JSON
-- `npm run import:exam -- ./src/data/import/sample-exam.json --dry-run`: validate và in summary, không ghi DB
+- `npm run seed`: reset ve dataset mock chuan
+- `npm run seed:demo`: reset dataset mock chuan va import them sample JSON exam
+- `npm run import:exam -- ./src/data/import/sample-exam.json`: import hoac cap nhat rieng mot de JSON
+- `npm run import:exam -- ./src/data/import/sample-exam.json --dry-run`: validate va in summary, khong ghi DB
+- `npm run import:exam -- ./src/data/import/manifest.json --batch`: import nhieu de qua manifest
+- `npm run import:exam -- ./src/data/import/manifest.json --batch --dry-run`: validate ca batch ma khong ghi DB
 
-Lệnh mẫu:
+Lenh mau:
 
 ```bash
 cd backend
 npm run import:exam -- ./src/data/import/sample-exam.json
 ```
 
-Dry-run mẫu:
+Dry-run mau:
 
 ```bash
 cd backend
 npm run import:exam -- ./src/data/import/sample-exam.json --dry-run
 ```
 
-Ghi chú:
+Batch import mau:
 
-- import lại cùng `exam.id` sẽ update thay vì tạo duplicate
-- `question.id` phải ổn định và không được trùng với exam khác
-- dry-run sẽ báo danh sách lỗi rõ theo field như `questions[3].correctAnswer must be one of options`
-- tài liệu chi tiết nằm ở [docs/IMPORT_JSON.md](./IMPORT_JSON.md)
+```bash
+cd backend
+npm run import:exam -- ./src/data/import/manifest.json --batch
+```
 
-## Smoke test tối thiểu
+Batch dry-run mau:
+
+```bash
+cd backend
+npm run import:exam -- ./src/data/import/manifest.json --batch --dry-run
+```
+
+Ghi chu:
+
+- import lai cung `exam.id` se update thay vi tao duplicate
+- `question.id` phai on dinh va khong duoc trung voi exam khac
+- dry-run se bao danh sach loi ro theo field, vi du `questions[3].correctAnswer must be one of options`
+- batch mode resolve path theo thu muc chua file manifest
+- tai lieu chi tiet nam o [docs/IMPORT_JSON.md](./IMPORT_JSON.md)
+
+## Smoke test toi thieu
 
 ### Backend
 
@@ -89,7 +106,8 @@ npx tsc --noEmit
 npx prisma validate
 npx prisma migrate status
 npm run seed:demo
-npm run import:exam -- ./src/data/import/sample-exam.json
+npm run import:exam -- ./src/data/import/sample-exam.json --dry-run
+npm run import:exam -- ./src/data/import/manifest.json --batch --dry-run
 ```
 
 ### Frontend
@@ -99,76 +117,69 @@ cd frontend
 npm run build
 ```
 
-## Git workflow gợi ý
+## Git workflow goi y
 
-- Tạo branch riêng cho từng task
-- Commit theo step nhỏ
-- Với thay đổi lớn, chia thành nhiều commit rõ mục tiêu
-- Tránh `git add .` khi đang có nhiều thay đổi lẫn nhau
-- Kiểm tra `git status` trước khi commit
+- Tao branch rieng cho tung task
+- Commit theo step nho
+- Voi thay doi lon, chia thanh nhieu commit ro muc tieu
+- Tranh `git add .` khi dang co nhieu thay doi lan nhau
+- Kiem tra `git status` truoc khi commit
 
 ## Troubleshooting
 
-### Thiếu `node_modules`
+### Thieu `node_modules`
 
-Triệu chứng:
+Trieu chung:
 
-- `npm run dev` hoặc `npm run build` báo thiếu package
+- `npm run dev` hoac `npm run build` bao thieu package
 
-Cách xử lý:
+Cach xu ly:
 
 ```bash
 npm install
 ```
 
-### Thiếu `.env`
+### Thieu `.env`
 
-Triệu chứng:
+Trieu chung:
 
-- backend fail fast vì thiếu `DATABASE_URL`, `GOOGLE_CLIENT_ID`, `JWT_SECRET`
-- frontend không gọi đúng API hoặc không hiện Google Login
+- backend fail fast vi thieu `DATABASE_URL`, `GOOGLE_CLIENT_ID`, `JWT_SECRET`
+- frontend khong goi dung API hoac khong hien Google Login
 
-Cách xử lý:
+Cach xu ly:
 
-- kiểm tra `backend/.env`
-- kiểm tra `frontend/.env.local`
+- kiem tra `backend/.env`
+- kiem tra `frontend/.env.local`
 
-### Prisma drift ở local
+### Prisma drift o local
 
-Triệu chứng:
+Trieu chung:
 
-- `prisma migrate dev` báo drift hoặc migration history lệch
+- `prisma migrate dev` bao drift hoac migration history lech
 
-Cách xử lý:
+Cach xu ly:
 
-- xác nhận đây là local dev database
-- nếu chấp nhận mất dữ liệu local, dùng `npx prisma migrate reset`
-- seed lại dữ liệu sau khi reset
+- xac nhan day la local dev database
+- neu chap nhan mat du lieu local, dung `npx prisma migrate reset`
+- seed lai du lieu sau khi reset
 
-### Frontend build và font
+### Frontend build va font
 
-Triệu chứng:
+Trang thai hien tai:
 
-- `npm run build` fail do lỗi font hoặc CSS
+- frontend da bo phu thuoc build-time vao `next/font/google`
+- build khong can tai Google Fonts tu internet
 
-Trạng thái hiện tại:
+Neu ai do them lai `next/font/google`, can kiem tra `src/app/layout.tsx`.
 
-- frontend đã bỏ phụ thuộc build-time vào `next/font/google`
-- build không còn cần tải Google Fonts từ internet
+### Cache Next.js hoac Tailwind
 
-Cách xử lý:
+Trieu chung:
 
-- kiểm tra lại `src/app/layout.tsx` nếu ai đó thêm lại `next/font/google`
-- kiểm tra cache local nếu build cũ vẫn đang giữ cấu hình trước đó
+- giao dien khong phan anh thay doi moi
 
-### Cache Next.js hoặc Tailwind
+Cach xu ly:
 
-Triệu chứng:
-
-- giao diện không phản ánh thay đổi mới
-
-Cách xử lý:
-
-- dừng dev server
-- chạy lại `npm run dev`
-- nếu cần, xóa cache build local trước khi chạy lại
+- dung dev server
+- chay lai `npm run dev`
+- neu can, xoa cache build local truoc khi chay lai

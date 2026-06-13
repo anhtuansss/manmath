@@ -156,6 +156,7 @@
 * [x] Sample JSON import
 * [x] Import JSON dry-run
 * [x] Import JSON validation/report lỗi rõ hơn
+* [x] Import JSON batch/manifest MVP
 * [x] Seed/import consistency cho demo workflow
 * [ ] Import đề từ Excel
 * [ ] Import đề từ Word
