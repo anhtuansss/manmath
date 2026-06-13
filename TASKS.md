@@ -37,6 +37,7 @@
 * [x] Legacy seed cleanup
 * [x] Route - Controller - Service architecture
 * [x] Backend smoke test checklist
+* [x] Frontend build không phụ thuộc Google Fonts
 * [x] Documentation update
 
 ---
@@ -266,6 +267,7 @@
 * [x] Hoàn thiện Recommendation MVP với API `/api/me/recommendations`
 * [x] Tạo analytics dashboard nhỏ tại route `/analytics`
 * [x] Tạo script import đề từ JSON và sample file import
+* [x] Chạy smoke test tối thiểu sau khi fix frontend build fonts
 
 ### Không làm lúc này
 

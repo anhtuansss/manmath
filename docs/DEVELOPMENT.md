@@ -63,6 +63,26 @@ Ghi chú:
 - `question.id` phải ổn định và không được trùng với exam khác
 - tài liệu chi tiết nằm ở [docs/IMPORT_JSON.md](./IMPORT_JSON.md)
 
+## Smoke test tối thiểu
+
+### Backend
+
+```bash
+cd backend
+npx tsc --noEmit
+npx prisma validate
+npx prisma migrate status
+npm run seed
+npm run import:exam -- ./src/data/import/sample-exam.json
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm run build
+```
+
 ## Git workflow gợi ý
 
 - Tạo branch riêng cho từng task
@@ -109,20 +129,21 @@ Cách xử lý:
 - nếu chấp nhận mất dữ liệu local, dùng `npx prisma migrate reset`
 - seed lại dữ liệu sau khi reset
 
-### Frontend build lỗi vì font Google
+### Frontend build và font
 
 Triệu chứng:
 
-- `npm run build` fail ở `next/font`
+- `npm run build` fail do lỗi font hoặc CSS
 
-Nguyên nhân thường gặp:
+Trạng thái hiện tại:
 
-- môi trường hiện tại không truy cập được Google Fonts
+- frontend đã bỏ phụ thuộc build-time vào `next/font/google`
+- build không còn cần tải Google Fonts từ internet
 
 Cách xử lý:
 
-- build ở môi trường có internet
-- hoặc chuyển sang self-host/local font nếu muốn build độc lập mạng
+- kiểm tra lại `src/app/layout.tsx` nếu ai đó thêm lại `next/font/google`
+- kiểm tra cache local nếu build cũ vẫn đang giữ cấu hình trước đó
 
 ### Cache Next.js hoặc Tailwind
 

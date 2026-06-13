@@ -123,3 +123,29 @@ GET /api/me/topic-stats
 → Tổng hợp theo topic
 → Trả topicStats đã sort
 ```
+
+## Luồng recommendation MVP
+
+```text
+User đã login
+→ Frontend gọi GET /api/me/recommendations
+→ Backend lấy topicStats của user
+→ Xác định các chuyên đề yếu
+→ Tìm các đề có nhiều câu thuộc nhóm topic yếu
+→ Trả weakTopics + recommendedExams
+→ Frontend hiển thị card gợi ý ở Exam List / Profile
+```
+
+## Luồng analytics dashboard nhỏ
+
+```text
+User vào /analytics
+→ Frontend kiểm tra trạng thái đăng nhập
+→ Nếu có token, gọi GET /api/me/topic-stats
+→ Nếu có recommendation API, gọi thêm GET /api/me/recommendations
+→ Render các block:
+  - tổng quan chuyên đề
+  - chuyên đề yếu
+  - chuyên đề mạnh
+  - đề nên làm tiếp
+```

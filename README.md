@@ -136,5 +136,5 @@ Ghi chú:
 - Cập nhật thông tin cá nhân
 - Upload và quản lý ảnh câu hỏi/đáp án
 - Dashboard analytics sâu hơn và theo dõi tiến bộ dài hạn
-- Import đề từ file
+- Mở rộng import đề ngoài JSON
 - AI feedback

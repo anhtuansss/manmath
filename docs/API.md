@@ -86,6 +86,7 @@ Ghi chú:
 - `optionImageUrls` dùng cho ảnh minh họa của đáp án và map theo index với `options`
 - Giá trị ảnh hiện là static public path, ví dụ `/images/questions/sample-unit-circle.svg`
 - MVP hiện vẫn giữ `options: string[]`, chưa đổi sang object option model
+- `POST /api/exam/submit` giữ response cũ và bổ sung `topicStats` theo hướng additive
 
 ## Auth APIs
 
