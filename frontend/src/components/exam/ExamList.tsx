@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Link from 'next/link';
 import { ExamCard } from './ExamCard';
 import { Logo } from './Logo';
@@ -75,6 +76,7 @@ export function ExamList({
   onSourceChange,
   onClearFilters,
 }: ExamListProps) {
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const recommendedExams = exams.slice(0, 3);
   const totalQuestions = exams.reduce((sum, exam) => sum + exam.totalQuestions, 0);
   const averageDuration =
@@ -319,7 +321,30 @@ export function ExamList({
                       />
                     </label>
 
-                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+                    <div className="md:hidden">
+                      <button
+                        type="button"
+                        onClick={() => setIsFilterOpen(!isFilterOpen)}
+                        className="inline-flex h-10 w-full items-center justify-center rounded-lg border border-border bg-surface px-4 text-sm font-semibold text-text-primary transition hover:bg-background-alt"
+                      >
+                        {hasActiveFilters ? 'Bộ lọc (đang áp dụng)' : 'Bộ lọc'}
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className={`ml-2 transition-transform ${isFilterOpen ? 'rotate-180' : ''}`}
+                        >
+                          <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    <div className={`grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3 ${isFilterOpen ? 'grid' : 'hidden md:grid'}`}>
                       <label className="flex min-w-0 flex-col gap-1.5">
                         <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
                           Chuyên đề
