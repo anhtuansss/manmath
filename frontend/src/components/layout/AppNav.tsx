@@ -25,7 +25,7 @@ export function AppNav() {
 
   return (
     <nav className="sticky top-0 z-40 w-full border-b border-border bg-surface/80 backdrop-blur-md">
-      <div className="mx-auto flex h-14 w-full max-w-6xl items-center gap-6 px-4 sm:px-6 lg:px-8 overflow-x-auto no-scrollbar">
+      <div className="mx-auto flex h-14 w-full max-w-7xl items-center gap-6 px-4 sm:px-6 lg:px-8 overflow-x-auto no-scrollbar">
         <Link href="/" className="group flex shrink-0 items-center gap-2" aria-label="ManMath Home">
           <Logo className="h-6 w-6 transition-transform group-hover:scale-105" />
           <span className="font-[family-name:var(--font-outfit)] font-bold text-text-primary transition-colors group-hover:text-primary">

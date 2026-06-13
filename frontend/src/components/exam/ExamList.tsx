@@ -171,21 +171,7 @@ export function ExamList({
 
             <div className="flex flex-col gap-8 pt-2 lg:flex-row lg:items-start lg:justify-between">
               <div className="min-w-0">
-                <Link
-                  href="/"
-                  aria-label="Về trang chủ"
-                  className="group flex cursor-pointer items-center gap-3 rounded-lg transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-                >
-                  <Logo className="h-11 w-11 transition-transform group-hover:scale-105" />
-                  <div>
-                    <p className="font-[family-name:var(--font-outfit)] text-lg font-bold tracking-tight text-text-primary transition-colors group-hover:text-primary">
-                      ManMath
-                    </p>
-                    <p className="text-xs font-medium text-primary">Nền tảng thi thử</p>
-                  </div>
-                </Link>
-
-                <div className="mt-8">
+                <div>
                   <p className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold text-primary">
                     Tuyển tập đề thi mới nhất
                   </p>
@@ -199,36 +185,6 @@ export function ExamList({
                 </div>
               </div>
 
-              <div className="flex flex-col gap-3 lg:w-[380px] lg:items-end">
-                <AuthButton />
-
-                {stats && stats.currentStreak > 0 ? (
-                  <div className="flex w-full max-w-[380px] items-center justify-between rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 shadow-sm">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
-                        <svg
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-amber-900">
-                          {stats.currentStreak} ngày liên tiếp!
-                        </p>
-                        <p className="text-xs text-amber-700">Giữ vững phong độ nhé.</p>
-                      </div>
-                    </div>
-                  </div>
-                ) : null}
-              </div>
             </div>
           </header>
 
@@ -528,6 +484,37 @@ export function ExamList({
             </div>
 
             <aside className="space-y-4 lg:sticky lg:top-6 lg:self-start">
+              <AuthButton />
+
+              {stats && stats.currentStreak > 0 ? (
+                <div className="flex w-full items-center justify-between rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-amber-900">
+                        {stats.currentStreak} ngày liên tiếp!
+                      </p>
+                      <p className="text-xs text-amber-700">Giữ vững phong độ nhé.</p>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+
+              <RecommendationCard />
+
               <section className="rounded-xl border border-border bg-surface p-5 shadow-card">
                 <div className="flex items-center gap-2">
                   <svg
@@ -590,58 +577,6 @@ export function ExamList({
                   </div>
                 </div>
               </section>
-
-              {stats && stats.examsCompleted > 0 && (
-                <section className="rounded-xl border border-border bg-surface p-5 shadow-card">
-                  <div className="flex items-center gap-2">
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="text-primary"
-                    >
-                      <path d="M12 20v-6M6 20V10M18 20V4" />
-                    </svg>
-                    <h2 className="font-[family-name:var(--font-outfit)] text-base font-semibold text-text-primary">
-                      Thống kê cá nhân
-                    </h2>
-                  </div>
-                  <div className="mt-4 grid grid-cols-2 gap-3">
-                    <div className="rounded-lg bg-background p-3">
-                      <p className="text-xs text-text-secondary">Đã hoàn thành</p>
-                      <p className="mt-1 text-lg font-bold text-text-primary">
-                        {stats.examsCompleted}{' '}
-                        <span className="text-sm font-medium text-text-secondary">đề</span>
-                      </p>
-                    </div>
-                    <div className="rounded-lg bg-background p-3">
-                      <p className="text-xs text-text-secondary">Điểm trung bình</p>
-                      <p className="mt-1 text-lg font-bold text-primary">
-                        {stats.averageScore.toFixed(1)}
-                      </p>
-                    </div>
-                    <div className="rounded-lg bg-background p-3">
-                      <p className="text-xs text-text-secondary">Điểm cao nhất</p>
-                      <p className="mt-1 text-lg font-bold text-emerald-600">
-                        {stats.bestScore.toFixed(1)}
-                      </p>
-                    </div>
-                    <div className="rounded-lg bg-background p-3">
-                      <p className="text-xs text-text-secondary">Số câu đã trả lời</p>
-                      <p className="mt-1 text-lg font-bold text-text-primary">
-                        {stats.totalQuestionsAnswered}
-                      </p>
-                    </div>
-                  </div>
-                </section>
-              )}
-
-              <RecommendationCard />
             </aside>
           </div>
         </div>
