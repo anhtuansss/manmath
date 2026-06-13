@@ -45,6 +45,13 @@ const difficultyLabels: Record<ExamListItem['difficulty'], string> = {
   hard: 'Kho',
 };
 
+const durationFilterLabels: Record<ExamDurationFilter, string> = {
+  all: 'Tat ca thoi luong',
+  short: '<= 45 phut',
+  standard: '46-90 phut',
+  long: '> 90 phut',
+};
+
 export function ExamList({
   exams,
   stats,
@@ -89,6 +96,8 @@ export function ExamList({
   const draftExam = draftExamId ? exams.find((e) => e.id === draftExamId) : null;
   const selectedTopicData = topics.find((topic) => topic.slug === selectedTopic) ?? null;
   const subtopicOptions = selectedTopicData?.subtopics ?? [];
+  const selectedSubtopicData =
+    subtopicOptions.find((subtopic) => subtopic.slug === selectedSubtopic) ?? null;
   const hasActiveFilters =
     searchInput.trim().length > 0 ||
     selectedTopic.length > 0 ||
@@ -97,6 +106,65 @@ export function ExamList({
     selectedDifficulty.length > 0 ||
     selectedYear.trim().length > 0 ||
     selectedSource.trim().length > 0;
+  const activeFilterChips = [
+    searchInput.trim().length > 0
+      ? {
+          key: 'search',
+          label: `Tim kiem: ${searchInput.trim()}`,
+          onRemove: () => onSearchChange(''),
+        }
+      : null,
+    selectedTopicData
+      ? {
+          key: 'topic',
+          label: selectedTopicData.name,
+          onRemove: () => onTopicChange(''),
+        }
+      : null,
+    selectedSubtopicData
+      ? {
+          key: 'subtopic',
+          label: selectedSubtopicData.name,
+          onRemove: () => onSubtopicChange(''),
+        }
+      : null,
+    selectedDuration !== 'all'
+      ? {
+          key: 'duration',
+          label: durationFilterLabels[selectedDuration],
+          onRemove: () => onDurationChange('all'),
+        }
+      : null,
+    selectedDifficulty
+      ? {
+          key: 'difficulty',
+          label: difficultyLabels[selectedDifficulty],
+          onRemove: () => onDifficultyChange(''),
+        }
+      : null,
+    selectedYear.trim().length > 0
+      ? {
+          key: 'year',
+          label: `Nam ${selectedYear.trim()}`,
+          onRemove: () => onYearChange(''),
+        }
+      : null,
+    selectedSource.trim().length > 0
+      ? {
+          key: 'source',
+          label: `Nguon: ${selectedSource.trim()}`,
+          onRemove: () => onSourceChange(''),
+        }
+      : null,
+  ].filter(
+    (
+      chip,
+    ): chip is {
+      key: string;
+      label: string;
+      onRemove: () => void;
+    } => chip !== null,
+  );
 
   return (
     <div className="flex min-h-[100dvh] flex-col">
@@ -246,144 +314,170 @@ export function ExamList({
                     </span>
                   </div>
 
-                  <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1.1fr)_minmax(150px,0.8fr)_minmax(150px,0.8fr)_minmax(150px,0.75fr)_minmax(150px,0.75fr)_minmax(120px,0.6fr)_minmax(160px,0.8fr)_auto]">
+                  <div className="mt-5 space-y-4">
                     <label className="flex flex-col gap-1.5">
                       <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
-                        Tu khoa
+                        Tim kiem
                       </span>
                       <input
                         type="text"
                         value={searchInput}
                         onChange={(event) => onSearchChange(event.target.value)}
-                        placeholder="Tim theo tieu de hoac mo ta"
+                        placeholder="Nhap ten de, chuyen de hoac nguon de..."
                         className="h-11 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
                       />
                     </label>
 
-                    <label className="flex flex-col gap-1.5">
-                      <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
-                        Chuyen de
-                      </span>
-                      <select
-                        value={selectedTopic}
-                        onChange={(event) => onTopicChange(event.target.value)}
-                        className="h-11 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
-                      >
-                        <option value="">Tat ca chuyen de</option>
-                        {topics.map((topic) => (
-                          <option key={topic.id} value={topic.slug}>
-                            {topic.name}
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+                      <label className="flex min-w-0 flex-col gap-1.5">
+                        <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                          Chuyen de
+                        </span>
+                        <select
+                          value={selectedTopic}
+                          onChange={(event) => onTopicChange(event.target.value)}
+                          className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+                        >
+                          <option value="">Tat ca chuyen de</option>
+                          {topics.map((topic) => (
+                            <option key={topic.id} value={topic.slug}>
+                              {topic.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+
+                      <label className="flex min-w-0 flex-col gap-1.5">
+                        <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                          Tieu chuyen de
+                        </span>
+                        <select
+                          value={selectedSubtopic}
+                          onChange={(event) => onSubtopicChange(event.target.value)}
+                          disabled={!selectedTopicData}
+                          className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none transition disabled:cursor-not-allowed disabled:opacity-60 focus:border-primary focus:ring-2 focus:ring-primary/15"
+                        >
+                          <option value="">
+                            {selectedTopicData
+                              ? 'Tat ca tieu chuyen de'
+                              : 'Chon chuyen de truoc'}
                           </option>
-                        ))}
-                      </select>
-                    </label>
+                          {subtopicOptions.map((subtopic) => (
+                            <option key={subtopic.id} value={subtopic.slug}>
+                              {subtopic.name}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
 
-                    <label className="flex flex-col gap-1.5">
-                      <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
-                        Tieu chuyen de
-                      </span>
-                      <select
-                        value={selectedSubtopic}
-                        onChange={(event) => onSubtopicChange(event.target.value)}
-                        disabled={!selectedTopicData}
-                        className="h-11 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none transition disabled:cursor-not-allowed disabled:opacity-60 focus:border-primary focus:ring-2 focus:ring-primary/15"
-                      >
-                        <option value="">
-                          {selectedTopicData
-                            ? 'Tat ca tieu chuyen de'
-                            : 'Chon chuyen de truoc'}
-                        </option>
-                        {subtopicOptions.map((subtopic) => (
-                          <option key={subtopic.id} value={subtopic.slug}>
-                            {subtopic.name}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
+                      <label className="flex min-w-0 flex-col gap-1.5">
+                        <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                          Thoi luong
+                        </span>
+                        <select
+                          value={selectedDuration}
+                          onChange={(event) =>
+                            onDurationChange(event.target.value as ExamDurationFilter)
+                          }
+                          className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+                        >
+                          <option value="all">Tat ca thoi luong</option>
+                          <option value="short">&lt;= 45 phut</option>
+                          <option value="standard">46-90 phut</option>
+                          <option value="long">&gt; 90 phut</option>
+                        </select>
+                      </label>
 
-                    <label className="flex flex-col gap-1.5">
-                      <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
-                        Thoi luong
-                      </span>
-                      <select
-                        value={selectedDuration}
-                        onChange={(event) =>
-                          onDurationChange(event.target.value as ExamDurationFilter)
-                        }
-                        className="h-11 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
-                      >
-                        <option value="all">Tat ca thoi luong</option>
-                        <option value="short">&lt;= 45 phut</option>
-                        <option value="standard">46-90 phut</option>
-                        <option value="long">&gt; 90 phut</option>
-                      </select>
-                    </label>
+                      <label className="flex min-w-0 flex-col gap-1.5">
+                        <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                          Do kho
+                        </span>
+                        <select
+                          value={selectedDifficulty}
+                          onChange={(event) =>
+                            onDifficultyChange(event.target.value as '' | ExamDifficulty)
+                          }
+                          className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+                        >
+                          <option value="">Tat ca do kho</option>
+                          <option value="easy">De</option>
+                          <option value="medium">Trung binh</option>
+                          <option value="hard">Kho</option>
+                        </select>
+                      </label>
 
-                    <label className="flex flex-col gap-1.5">
-                      <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
-                        Do kho
-                      </span>
-                      <select
-                        value={selectedDifficulty}
-                        onChange={(event) =>
-                          onDifficultyChange(event.target.value as '' | ExamDifficulty)
-                        }
-                        className="h-11 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
-                      >
-                        <option value="">Tat ca do kho</option>
-                        <option value="easy">De</option>
-                        <option value="medium">Trung binh</option>
-                        <option value="hard">Kho</option>
-                      </select>
-                    </label>
+                      <label className="flex min-w-0 flex-col gap-1.5">
+                        <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                          Nam
+                        </span>
+                        <input
+                          type="number"
+                          min={1900}
+                          max={2100}
+                          value={selectedYear}
+                          onChange={(event) => onYearChange(event.target.value)}
+                          placeholder="Nhap nam..."
+                          className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+                        />
+                      </label>
 
-                    <label className="flex flex-col gap-1.5">
-                      <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
-                        Nam
-                      </span>
-                      <input
-                        type="number"
-                        min={1900}
-                        max={2100}
-                        value={selectedYear}
-                        onChange={(event) => onYearChange(event.target.value)}
-                        placeholder="Vi du 2026"
-                        className="h-11 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
-                      />
-                    </label>
-
-                    <label className="flex flex-col gap-1.5">
-                      <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
-                        Nguon de
-                      </span>
-                      <input
-                        type="text"
-                        value={selectedSource}
-                        onChange={(event) => onSourceChange(event.target.value)}
-                        placeholder="Vi du ManMath"
-                        className="h-11 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
-                      />
-                    </label>
-
-                    <div className="flex items-end">
-                      <button
-                        type="button"
-                        onClick={onClearFilters}
-                        disabled={!hasActiveFilters}
-                        className="inline-flex h-11 w-full items-center justify-center rounded-lg border border-border bg-background px-4 text-sm font-semibold text-text-primary transition hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
-                      >
-                        Xoa bo loc
-                      </button>
+                      <label className="flex min-w-0 flex-col gap-1.5">
+                        <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                          Nguon de
+                        </span>
+                        <input
+                          type="text"
+                          value={selectedSource}
+                          onChange={(event) => onSourceChange(event.target.value)}
+                          placeholder="Nhap nguon de..."
+                          className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+                        />
+                      </label>
                     </div>
                   </div>
 
-                  <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-text-secondary">
-                  {isFiltering ? <span>Dang cap nhat danh sach de...</span> : null}
-                  {listError ? <span className="text-warning-dark">{listError}</span> : null}
-                  {topicsError ? <span className="text-warning-dark">{topicsError}</span> : null}
-                    {hasActiveFilters && !isFiltering ? (
-                      <span>Dang ap dung bo loc cho danh sach de.</span>
+                  <div className="mt-4 space-y-3">
+                    {hasActiveFilters ? (
+                      <div className="flex flex-col gap-3 rounded-lg border border-border bg-background px-3 py-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div className="min-w-0">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                            Dang loc
+                          </p>
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {activeFilterChips.map((chip) => (
+                              <span
+                                key={chip.key}
+                                className="inline-flex max-w-full items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-primary"
+                              >
+                                <span className="min-w-0 truncate">{chip.label}</span>
+                                <button
+                                  type="button"
+                                  onClick={chip.onRemove}
+                                  aria-label={`Xoa bo loc ${chip.label}`}
+                                  className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-primary transition hover:bg-primary/10"
+                                >
+                                  x
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={onClearFilters}
+                          className="inline-flex h-9 shrink-0 items-center justify-center rounded-lg border border-border bg-surface px-4 text-xs font-semibold text-text-primary transition hover:border-primary hover:text-primary"
+                        >
+                          Xoa bo loc
+                        </button>
+                      </div>
                     ) : null}
+
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-text-secondary">
+                      {isFiltering ? <span>Dang cap nhat danh sach de...</span> : null}
+                      {listError ? <span className="text-warning-dark">{listError}</span> : null}
+                      {topicsError ? <span className="text-warning-dark">{topicsError}</span> : null}
+                    </div>
                   </div>
                 </div>
 
@@ -391,11 +485,10 @@ export function ExamList({
                   <div className="px-5 py-10">
                     <div className="rounded-xl border border-dashed border-border bg-background px-6 py-8 text-center">
                       <h3 className="font-[family-name:var(--font-outfit)] text-lg font-semibold text-text-primary">
-                        Khong tim thay de phu hop
+                        Khong tim thay de phu hop voi bo loc hien tai
                       </h3>
                       <p className="mt-2 text-sm leading-6 text-text-secondary">
-                        Hay thu doi tu khoa hoac xoa bot bo loc chuyen de de xem nhieu
-                        de hon.
+                        Thu thay doi tu khoa, chuyen de hoac xoa bo loc de xem nhieu de hon.
                       </p>
                       <div className="mt-5">
                         <button
