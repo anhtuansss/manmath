@@ -9,6 +9,7 @@ MVP hien tai phu hop cho:
 - them de moi nhanh hon
 - chuan hoa du lieu truoc khi dua de that vao he thong
 - test image support, topic, subtopic va option image
+- test explanation tinh de phuc vu review va AI-ready flow
 
 Hien tai chua co admin UI va chua ho tro upload file qua web.
 
@@ -123,6 +124,7 @@ Batch mode hien in:
       "id": 1001,
       "question": "Cho ham so $y=x^2$. Do thi cua ham so la gi?",
       "imageUrl": "/images/questions/sample-parabola.svg",
+      "explanation": "Do thi cua ham so bac hai $y=x^2$ la mot parabol.",
       "options": [
         "A. Duong thang",
         "B. Parabol",
@@ -192,6 +194,7 @@ Ghi chu:
 ### Cap do question
 
 - `imageUrl`
+- `explanation`
 - `optionImageUrls`
 - `topic`
 - `subtopic`
@@ -207,6 +210,7 @@ Ghi chu:
 - `options` hien nen co dung 4 dap an
 - `optionImageUrls` map theo index voi `options`
 - `optionImageUrls[index] = ""` duoc hieu la dap an do khong co anh
+- `explanation` neu co thi phai la string
 - `question.id` khong duoc trung trong cung file import
 - `question.id` cung khong duoc trung voi question dang thuoc exam khac
 - neu co `subtopic` thi phai co `topic`
@@ -227,6 +231,7 @@ Script hien bao loi ro theo field/path, vi du:
 - `questions[1].options must contain exactly 4 items`
 - `questions[3].correctAnswer must be one of options`
 - `questions[0].optionImageUrls must be an array of strings`
+- `questions[0].explanation must be a string`
 - `questions[0].topic.slug must contain only lowercase letters, numbers, and hyphens`
 - `questions[0].subtopic requires topic to be provided`
 - `questions contain duplicate id: 1001`
@@ -245,6 +250,7 @@ Neu file co nhieu loi, script se in toan bo danh sach loi.
 - chua co upload anh
 - chua co admin UI
 - image support hien dung static public path
+- explanation hien la noi dung tinh, chua co AI runtime
 - topic/subtopic taxonomy hien van la MVP, chua co taxonomy manager
 
 ## Troubleshooting

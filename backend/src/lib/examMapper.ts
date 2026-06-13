@@ -23,6 +23,7 @@ type QuestionDbRecord = {
   id: number;
   question: string;
   imageUrl: string | null;
+  explanation: string | null;
   options: string[];
   optionImageUrls: string[];
   subtopic: {
@@ -93,6 +94,7 @@ export const mapExamRecordToDetailDto = (
       id: question.id,
       question: question.question,
       imageUrl: question.imageUrl,
+      explanation: question.explanation,
       options: question.options,
       optionImageUrls: normalizeOptionImageUrls(
         question.options,

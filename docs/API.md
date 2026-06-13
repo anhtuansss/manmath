@@ -63,6 +63,7 @@ Neu `durationMin`, `durationMax`, `difficulty` hoac `year` khong hop le, API tra
     id: number;
     question: string;
     imageUrl: string | null;
+    explanation: string | null;
     options: string[];
     optionImageUrls: Array<string | null>;
     subtopic: {
@@ -118,6 +119,7 @@ Neu `durationMin`, `durationMax`, `difficulty` hoac `year` khong hop le, API tra
     id: number;
     question: string;
     imageUrl: string | null;
+    explanation: string | null;
     options: string[];
     optionImageUrls: Array<string | null>;
     subtopic: {
@@ -167,6 +169,7 @@ Neu `durationMin`, `durationMax`, `difficulty` hoac `year` khong hop le, API tra
     questionId: number;
     question: string;
     imageUrl: string | null;
+    explanation: string | null;
     options: string[];
     optionImageUrls: Array<string | null>;
     subtopic: {
@@ -185,6 +188,7 @@ Neu `durationMin`, `durationMax`, `difficulty` hoac `year` khong hop le, API tra
 ### Ghi chu
 
 - `imageUrl` dung cho anh cau hoi
+- `explanation` la loi giai tinh cua cau hoi, co the chua KaTeX
 - `optionImageUrls` map theo index voi `options`
 - `subtopic` la metadata bo sung cho taxonomy MVP
 - `POST /api/exam/submit` giu response cu va bo sung `topicStats` theo huong additive

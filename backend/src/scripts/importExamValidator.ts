@@ -14,6 +14,7 @@ export type NormalizedQuestionInput = {
   id: number;
   question: string;
   imageUrl: string | null;
+  explanation: string | null;
   options: string[];
   optionImageUrls: string[];
   correctAnswer: string;
@@ -273,6 +274,11 @@ const normalizeQuestion = (
   const id = readPositiveInteger(value.id, `${path}.id`, issues);
   const question = readRequiredString(value.question, `${path}.question`, issues);
   const imageUrl = readOptionalString(value.imageUrl, `${path}.imageUrl`, issues);
+  const explanation = readOptionalString(
+    value.explanation,
+    `${path}.explanation`,
+    issues,
+  );
   const options = readStringArray(value.options, `${path}.options`, issues);
   const correctAnswer = readRequiredString(
     value.correctAnswer,
@@ -318,6 +324,7 @@ const normalizeQuestion = (
     id,
     question,
     imageUrl,
+    explanation,
     options,
     optionImageUrls,
     correctAnswer,

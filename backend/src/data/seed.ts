@@ -90,6 +90,7 @@ export async function seedMockData(): Promise<void> {
               : undefined,
             question: question.question,
             imageUrl: question.imageUrl ?? null,
+            explanation: question.explanation ?? null,
             options: question.options,
             optionImageUrls: question.optionImageUrls ?? [],
             correctAnswer: question.correctAnswer,

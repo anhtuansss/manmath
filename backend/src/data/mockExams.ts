@@ -19,11 +19,12 @@ import type {
 
 export type MockQuestion = Omit<
   QuestionDto,
-  'imageUrl' | 'optionImageUrls' | 'subtopic'
+  'imageUrl' | 'optionImageUrls' | 'subtopic' | 'explanation'
 > & {
   topicSlug: string;
   subtopicSlug?: string;
   imageUrl?: string;
+  explanation?: string;
   optionImageUrls?: string[];
 };
 
@@ -57,6 +58,8 @@ export const mockExams: ExamMock[] = [
         topicSlug: 'ham-so',
         subtopicSlug: 'phuong-trinh-bac-nhat',
         question: 'Giải phương trình $2x - 4 = 0$. Nghiệm của phương trình là:',
+        explanation:
+          'Từ $2x - 4 = 0$ suy ra $2x = 4$, nên $x = 2$. Vì vậy đáp án đúng là A.',
         options: ['A. $x=2$', 'B. $x=4$', 'C. $x=0$', 'D. $x=1$'],
         correctAnswer: 'A. $x=2$',
       },
@@ -78,6 +81,8 @@ export const mockExams: ExamMock[] = [
         topicSlug: 'nguyen-ham-tich-phan',
         subtopicSlug: 'tich-phan-co-ban',
         question: 'Tính tích phân $$\\int_0^1 x^2\\,dx$$',
+        explanation:
+          'Ta có $$\\int x^2\\,dx = \\frac{x^3}{3} + C$$ nên $$\\int_0^1 x^2\\,dx = \\left[\\frac{x^3}{3}\\right]_0^1 = \\frac{1}{3}.$$',
         options: ['A. $\\frac{1}{2}$', 'B. $\\frac{1}{3}$', 'C. $1$', 'D. $0$'],
         correctAnswer: 'B. $\\frac{1}{3}$',
       },
@@ -87,6 +92,8 @@ export const mockExams: ExamMock[] = [
         subtopicSlug: 'gioi-han-luong-giac',
         imageUrl: '/images/questions/sample-unit-circle.svg',
         question: 'Tính giới hạn $\\lim_{x\\to 0}\\frac{\\sin x}{x}$.',
+        explanation:
+          'Đây là giới hạn lượng giác cơ bản: $\\lim_{x\\to 0}\\frac{\\sin x}{x} = 1$. Do đó chọn đáp án B.',
         options: ['A. $0$', 'B. $1$', 'C. $+\\infty$', 'D. $-1$'],
         correctAnswer: 'B. $1$',
       },
@@ -219,6 +226,8 @@ export const mockExams: ExamMock[] = [
         subtopicSlug: 'do-thi-ham-so',
         imageUrl: '/images/questions/sample-parabola.svg',
         question: 'Tiếp tuyến của đồ thị $y=x^2$ tại điểm có hoành độ $x=1$ là:',
+        explanation:
+          'Đạo hàm của $y=x^2$ là $y\\,\\!\' = 2x$. Tại $x=1$ hệ số góc tiếp tuyến là $2$. Điểm tiếp xúc là $(1,1)$ nên phương trình tiếp tuyến là $y - 1 = 2(x - 1)$, tương đương $y = 2x - 1$.',
         options: ['A. $y=x+1$', 'B. $y=2x-1$', 'C. $y=2x+1$', 'D. $y=x-1$'],
         correctAnswer: 'B. $y=2x-1$',
       },
@@ -361,6 +370,8 @@ export const mockExams: ExamMock[] = [
         topicSlug: 'ma-tran',
         subtopicSlug: 'dinh-thuc-ma-tran',
         question: 'Tính định thức $$\\begin{vmatrix}1&2\\\\3&4\\end{vmatrix}$$',
+        explanation:
+          'Với ma trận cấp hai, định thức bằng $ad-bc$. Ở đây ta có $1\\cdot4 - 2\\cdot3 = 4 - 6 = -2$, nên đáp án đúng là A.',
         options: ['A. $-2$', 'B. $2$', 'C. $10$', 'D. $-10$'],
         optionImageUrls: ['/images/questions/option-determinant-a.svg', '', '', ''],
         correctAnswer: 'A. $-2$',

@@ -294,6 +294,7 @@ export const getPracticeByTopicSlug = async (
           id: true,
           question: true,
           imageUrl: true,
+          explanation: true,
           options: true,
           optionImageUrls: true,
           subtopic: {
@@ -329,6 +330,7 @@ export const getPracticeByTopicSlug = async (
       id: question.id,
       question: question.question,
       imageUrl: question.imageUrl,
+      explanation: question.explanation,
       options: question.options,
       optionImageUrls: normalizeOptionImageUrls(
         question.options,
@@ -365,6 +367,7 @@ export const getExamDetailById = async (
           id: true,
           question: true,
           imageUrl: true,
+          explanation: true,
           options: true,
           optionImageUrls: true,
           subtopic: {
@@ -466,6 +469,7 @@ export const getAttemptDetailById = async (
               id: true,
               question: true,
               imageUrl: true,
+              explanation: true,
               options: true,
               optionImageUrls: true,
               subtopic: {
@@ -582,6 +586,7 @@ export const getAttemptDetailById = async (
         questionId: question.id,
         question: question.question,
         imageUrl: question.imageUrl,
+        explanation: question.explanation,
         options: question.options,
         optionImageUrls: normalizeOptionImageUrls(
           question.options,

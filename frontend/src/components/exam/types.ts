@@ -17,6 +17,7 @@ export type QuestionDto = {
   id: number;
   question: string;
   imageUrl?: string | null;
+  explanation?: string | null;
   options: string[];
   optionImageUrls?: (string | null)[];
   subtopic?: {
@@ -155,6 +156,7 @@ export type AttemptAnswerDetailDto = {
   questionId: number;
   question: string;
   imageUrl?: string | null;
+  explanation?: string | null;
   options: string[];
   optionImageUrls?: (string | null)[];
   subtopic?: {

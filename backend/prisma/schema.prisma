@@ -83,6 +83,7 @@ model Question {
   subtopic      Subtopic? @relation(fields: [subtopicId], references: [id], onDelete: SetNull)
   question      String
   imageUrl      String?
+  explanation   String?
   options       String[]
   optionImageUrls String[] @default([])
   correctAnswer String

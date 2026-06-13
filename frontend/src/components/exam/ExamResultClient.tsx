@@ -665,6 +665,19 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
                         />
                       </div>
                     </div>
+
+                    {question.explanation ? (
+                      <div className="mt-5 rounded-lg border border-border bg-background p-4">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                          Lời giải
+                        </p>
+                        <MathText
+                          as="div"
+                          text={question.explanation}
+                          className="mt-2 text-sm leading-6 text-text-primary"
+                        />
+                      </div>
+                    ) : null}
                   </div>
                 </article>
               );

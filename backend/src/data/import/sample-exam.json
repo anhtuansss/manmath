@@ -13,6 +13,7 @@
       "id": 1001,
       "question": "Cho hàm số $y=x^2$. Đồ thị của hàm số là gì?",
       "imageUrl": "/images/questions/sample-parabola.svg",
+      "explanation": "Đồ thị của hàm số bậc hai $y=x^2$ là một parabol có đỉnh tại gốc tọa độ, nên đáp án đúng là B.",
       "options": [
         "A. Đường thẳng",
         "B. Parabol",
@@ -33,6 +34,7 @@
     {
       "id": 1002,
       "question": "Tính tích phân $$\\int_0^1 x^2\\,dx$$",
+      "explanation": "Ta có $$\\int x^2\\,dx = \\frac{x^3}{3} + C$$ nên $$\\int_0^1 x^2\\,dx = \\left[\\frac{x^3}{3}\\right]_0^1 = \\frac{1}{3}.$$",
       "options": [
         "A. $\\frac{1}{2}$",
         "B. $\\frac{1}{3}$",

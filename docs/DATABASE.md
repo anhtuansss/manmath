@@ -92,6 +92,7 @@ Field chinh:
 - `subtopicId`
 - `question`
 - `imageUrl`
+- `explanation`
 - `options`
 - `optionImageUrls`
 - `correctAnswer`
@@ -99,10 +100,12 @@ Field chinh:
 Ghi chu:
 
 - `imageUrl` la field optional cho Question Image Support
+- `explanation` la field optional cho Explanation MVP, luu loi giai tinh co the chua KaTeX
 - `optionImageUrls` la mang string map theo index voi `options`
 - `subtopicId` la field optional cho Subtopic Mapping MVP
 - Anh hien tai duoc luu dang static public path, vi du `/images/questions/sample-parabola.svg`
 - MVP van giu `options: string[]`, chua doi sang object option model
+- Explanation hien chi duoc render o result review va attempt detail, khong hien thi trong luc dang lam bai
 
 ### Attempt
 

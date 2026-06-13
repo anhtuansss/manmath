@@ -155,6 +155,8 @@
 * [x] Render ảnh câu hỏi ở màn làm bài, result review và attempt detail
 * [x] Hỗ trợ hình ảnh trong đáp án
 * [x] Render ảnh đáp án ở màn làm bài, result review và attempt detail
+* [x] Explanation MVP cho review kết quả
+* [x] AI-ready explanation storage cho câu hỏi
 
 ---
 

@@ -12,6 +12,7 @@
     {
       "id": 1101,
       "question": "Cho ham so $f(x)=x^3-3x$. Nghiem cua phuong trinh $f'(x)=0$ la gi?",
+      "explanation": "Ta có $f'(x)=3x^2-3=3(x^2-1)$. Giải $f'(x)=0$ được $x^2=1$, suy ra $x=\\pm 1$.",
       "options": [
         "A. $x=0$",
         "B. $x=1$",
