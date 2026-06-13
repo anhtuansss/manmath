@@ -268,6 +268,7 @@
 * [x] Tạo analytics dashboard nhỏ tại route `/analytics`
 * [x] Tạo script import đề từ JSON và sample file import
 * [x] Chạy smoke test tối thiểu sau khi fix frontend build fonts
+* [x] Làm rõ workflow `seed` / `seed:demo` / import JSON cho dữ liệu demo nhất quán
 
 ### Không làm lúc này
 

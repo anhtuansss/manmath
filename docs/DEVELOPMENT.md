@@ -27,6 +27,7 @@ npx prisma migrate dev
 npx prisma migrate status
 npx prisma studio
 npm run seed
+npm run seed:demo
 ```
 
 ## Typecheck và build
@@ -50,6 +51,12 @@ npm run build
 
 Script import MVP hiện tại dùng để thêm hoặc cập nhật đề thi từ file JSON vào PostgreSQL.
 
+Workflow chuẩn:
+
+- `npm run seed`: reset về dataset mock chuẩn
+- `npm run seed:demo`: reset dataset mock chuẩn và import thêm sample JSON exam
+- `npm run import:exam -- ./src/data/import/sample-exam.json`: import hoặc cập nhật riêng một đề JSON
+
 Lệnh mẫu:
 
 ```bash
@@ -72,7 +79,7 @@ cd backend
 npx tsc --noEmit
 npx prisma validate
 npx prisma migrate status
-npm run seed
+npm run seed:demo
 npm run import:exam -- ./src/data/import/sample-exam.json
 ```
 

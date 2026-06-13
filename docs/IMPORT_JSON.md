@@ -10,6 +10,31 @@ Import JSON dùng để thêm hoặc cập nhật đề thi vào PostgreSQL mà 
 
 Hiện tại tính năng này chạy qua backend script, chưa có admin UI và chưa hỗ trợ upload file từ web.
 
+## Workflow khuyến nghị
+
+### Khi cần reset dữ liệu mock chuẩn
+
+```bash
+cd backend
+npm run seed
+```
+
+Lệnh này chỉ tạo lại các đề mock chuẩn trong `mockExams`.
+
+### Khi cần setup demo đầy đủ
+
+```bash
+cd backend
+npm run seed:demo
+```
+
+Lệnh này sẽ:
+
+- chạy `seed` để tạo lại dữ liệu mock chuẩn
+- import thêm `sample-json-exam-01` từ file JSON mẫu
+
+Nếu bạn muốn có ngay cả đề mock và đề JSON mẫu để mở trên web, đây là lệnh nên dùng.
+
 ## Lệnh chạy import
 
 ```bash

@@ -57,8 +57,8 @@ type NormalizedExamInput = {
   questions: NormalizedQuestionInput[];
 };
 
-const DEFAULT_DESCRIPTION = 'Đề import từ JSON';
-const DEFAULT_SUBJECT = 'Toán';
+const DEFAULT_DESCRIPTION = 'De import tu JSON';
+const DEFAULT_SUBJECT = 'Toan';
 const DEFAULT_DIFFICULTY: ExamDifficulty = 'medium';
 const DEFAULT_STATUS_LABEL = 'Imported JSON';
 const EXPECTED_OPTION_COUNT = 4;
@@ -74,10 +74,7 @@ const ensurePlainObject = (
   return value as Record<string, unknown>;
 };
 
-const getRequiredString = (
-  value: unknown,
-  message: string,
-): string => {
+const getRequiredString = (value: unknown, message: string): string => {
   if (typeof value !== 'string' || value.trim().length === 0) {
     throw new Error(message);
   }
@@ -91,17 +88,14 @@ const getOptionalString = (value: unknown): string | null => {
   }
 
   if (typeof value !== 'string') {
-    throw new Error('Giá trị string không hợp lệ');
+    throw new Error('Gia tri string khong hop le');
   }
 
   const normalized = value.trim();
   return normalized.length > 0 ? normalized : null;
 };
 
-const getPositiveInteger = (
-  value: unknown,
-  message: string,
-): number => {
+const getPositiveInteger = (value: unknown, message: string): number => {
   if (typeof value !== 'number' || !Number.isInteger(value) || value <= 0) {
     throw new Error(message);
   }
@@ -115,7 +109,7 @@ const getOptionalInteger = (value: unknown): number | null => {
   }
 
   if (typeof value !== 'number' || !Number.isInteger(value)) {
-    throw new Error('Giá trị số nguyên không hợp lệ');
+    throw new Error('Gia tri so nguyen khong hop le');
   }
 
   return value;
@@ -130,13 +124,10 @@ const getDifficulty = (value: unknown): ExamDifficulty => {
     return value;
   }
 
-  throw new Error('difficulty phải là easy, medium hoặc hard');
+  throw new Error('difficulty phai la easy, medium hoac hard');
 };
 
-const getStringArray = (
-  value: unknown,
-  message: string,
-): string[] => {
+const getStringArray = (value: unknown, message: string): string[] => {
   if (!Array.isArray(value)) {
     throw new Error(message);
   }
@@ -160,17 +151,17 @@ const normalizeTopic = (
 
   const topicRecord = ensurePlainObject(
     value,
-    `question ${questionId}: topic phải là object nếu có`,
+    `question ${questionId}: topic phai la object neu co`,
   );
 
   return {
     name: getRequiredString(
       topicRecord.name,
-      `question ${questionId}: topic.name là bắt buộc`,
+      `question ${questionId}: topic.name la bat buoc`,
     ),
     slug: getRequiredString(
       topicRecord.slug,
-      `question ${questionId}: topic.slug là bắt buộc`,
+      `question ${questionId}: topic.slug la bat buoc`,
     ),
   };
 };
@@ -181,46 +172,46 @@ const normalizeQuestion = (
 ): NormalizedQuestionInput => {
   const questionRecord = ensurePlainObject(
     value,
-    `question ở vị trí ${index + 1} phải là object hợp lệ`,
+    `question o vi tri ${index + 1} phai la object hop le`,
   );
 
   if (
     typeof questionRecord.id !== 'number' ||
     !Number.isInteger(questionRecord.id)
   ) {
-    throw new Error(`question ở vị trí ${index + 1}: id phải là số nguyên`);
+    throw new Error(`question o vi tri ${index + 1}: id phai la so nguyen`);
   }
 
   const questionId = questionRecord.id;
   const questionText = getRequiredString(
     questionRecord.question,
-    `question ${questionId}: nội dung câu hỏi là bắt buộc`,
+    `question ${questionId}: noi dung cau hoi la bat buoc`,
   );
   const options = getStringArray(
     questionRecord.options,
-    `question ${questionId}: options phải là mảng string`,
+    `question ${questionId}: options phai la mang string`,
   );
 
   if (options.length !== EXPECTED_OPTION_COUNT) {
     throw new Error(
-      `question ${questionId}: options phải có đúng ${EXPECTED_OPTION_COUNT} phần tử`,
+      `question ${questionId}: options phai co dung ${EXPECTED_OPTION_COUNT} phan tu`,
     );
   }
 
   if (options.some((option) => option.length === 0)) {
     throw new Error(
-      `question ${questionId}: mỗi options phải là string không rỗng`,
+      `question ${questionId}: moi option phai la string khong rong`,
     );
   }
 
   const correctAnswer = getRequiredString(
     questionRecord.correctAnswer,
-    `question ${questionId}: correctAnswer là bắt buộc`,
+    `question ${questionId}: correctAnswer la bat buoc`,
   );
 
   if (!options.includes(correctAnswer)) {
     throw new Error(
-      `question ${questionId}: correctAnswer phải nằm trong options`,
+      `question ${questionId}: correctAnswer phai nam trong options`,
     );
   }
 
@@ -229,12 +220,12 @@ const normalizeQuestion = (
       ? []
       : getStringArray(
           questionRecord.optionImageUrls,
-          `question ${questionId}: optionImageUrls phải là mảng string`,
+          `question ${questionId}: optionImageUrls phai la mang string`,
         );
 
   if (optionImageUrls.length > EXPECTED_OPTION_COUNT) {
     throw new Error(
-      `question ${questionId}: optionImageUrls không được dài hơn ${EXPECTED_OPTION_COUNT} phần tử`,
+      `question ${questionId}: optionImageUrls khong duoc dai hon ${EXPECTED_OPTION_COUNT} phan tu`,
     );
   }
 
@@ -242,7 +233,7 @@ const normalizeQuestion = (
   try {
     imageUrl = getOptionalString(questionRecord.imageUrl);
   } catch {
-    throw new Error(`question ${questionId}: imageUrl phải là string nếu có`);
+    throw new Error(`question ${questionId}: imageUrl phai la string neu co`);
   }
 
   return {
@@ -257,17 +248,17 @@ const normalizeQuestion = (
 };
 
 const normalizeExam = (rawValue: unknown): NormalizedExamInput => {
-  const examRecord = ensurePlainObject(rawValue, 'JSON đề thi phải là object hợp lệ');
+  const examRecord = ensurePlainObject(rawValue, 'JSON de thi phai la object hop le');
 
-  const id = getRequiredString(examRecord.id, 'exam id là bắt buộc');
-  const title = getRequiredString(examRecord.title, 'exam title là bắt buộc');
+  const id = getRequiredString(examRecord.id, 'exam id la bat buoc');
+  const title = getRequiredString(examRecord.title, 'exam title la bat buoc');
   const durationMinutes = getPositiveInteger(
     examRecord.durationMinutes,
-    'durationMinutes phải là số nguyên lớn hơn 0',
+    'durationMinutes phai la so nguyen lon hon 0',
   );
 
   if (!Array.isArray(examRecord.questions) || examRecord.questions.length === 0) {
-    throw new Error('questions phải là mảng không rỗng');
+    throw new Error('questions phai la mang khong rong');
   }
 
   const questions = examRecord.questions.map((question, index) =>
@@ -277,7 +268,7 @@ const normalizeExam = (rawValue: unknown): NormalizedExamInput => {
   const questionIds = new Set<number>();
   for (const question of questions) {
     if (questionIds.has(question.id)) {
-      throw new Error(`question id ${question.id} bị trùng trong cùng file import`);
+      throw new Error(`question id ${question.id} bi trung trong cung file import`);
     }
 
     questionIds.add(question.id);
@@ -287,7 +278,7 @@ const normalizeExam = (rawValue: unknown): NormalizedExamInput => {
   try {
     year = getOptionalInteger(examRecord.year);
   } catch {
-    throw new Error('year phải là số nguyên nếu có');
+    throw new Error('year phai la so nguyen neu co');
   }
 
   return {
@@ -338,7 +329,9 @@ const upsertTopic = async (
   return upsertedTopic.id;
 };
 
-const importExam = async (exam: NormalizedExamInput): Promise<void> => {
+export const importNormalizedExam = async (
+  exam: NormalizedExamInput,
+): Promise<void> => {
   await prisma.$transaction(async (tx) => {
     const incomingQuestionIds = exam.questions.map((question) => question.id);
     const existingQuestions = await tx.question.findMany({
@@ -356,7 +349,7 @@ const importExam = async (exam: NormalizedExamInput): Promise<void> => {
     for (const existingQuestion of existingQuestions) {
       if (existingQuestion.examId !== exam.id) {
         throw new Error(
-          `question id ${existingQuestion.id} đang thuộc exam ${existingQuestion.examId}, không thể import sang exam ${exam.id}`,
+          `question id ${existingQuestion.id} dang thuoc exam ${existingQuestion.examId}, khong the import sang exam ${exam.id}`,
         );
       }
     }
@@ -419,12 +412,10 @@ const importExam = async (exam: NormalizedExamInput): Promise<void> => {
   });
 };
 
-async function main(): Promise<void> {
-  const inputPath = process.argv[2];
-
-  if (typeof inputPath !== 'string' || inputPath.trim().length === 0) {
+export const importExamFromFile = async (inputPath: string): Promise<void> => {
+  if (inputPath.trim().length === 0) {
     throw new Error(
-      'Thiếu đường dẫn file JSON. Ví dụ: npm run import:exam -- ./src/data/import/sample-exam.json',
+      'Thieu duong dan file JSON. Vi du: npm run import:exam -- ./src/data/import/sample-exam.json',
     );
   }
 
@@ -436,22 +427,28 @@ async function main(): Promise<void> {
   try {
     parsedJson = JSON.parse(rawContent);
   } catch {
-    throw new Error(`File JSON không hợp lệ: ${resolvedPath}`);
+    throw new Error(`File JSON khong hop le: ${resolvedPath}`);
   }
 
   const normalizedExam = normalizeExam(parsedJson);
-  await importExam(normalizedExam);
+  await importNormalizedExam(normalizedExam);
 
   console.log(
     `Imported exam ${normalizedExam.id} with ${normalizedExam.questions.length} questions from ${resolvedPath}.`,
   );
+};
+
+async function main(): Promise<void> {
+  await importExamFromFile(process.argv[2] ?? '');
 }
 
-main()
-  .catch((error) => {
-    console.error('Import failed:', error instanceof Error ? error.message : error);
-    process.exitCode = 1;
-  })
-  .finally(async () => {
-    await disconnectPrisma();
-  });
+if (require.main === module) {
+  main()
+    .catch((error) => {
+      console.error('Import failed:', error instanceof Error ? error.message : error);
+      process.exitCode = 1;
+    })
+    .finally(async () => {
+      await disconnectPrisma();
+    });
+}
