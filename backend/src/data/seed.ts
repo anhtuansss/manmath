@@ -48,6 +48,7 @@ async function main(): Promise<void> {
                         question: question.question,
                         imageUrl: question.imageUrl ?? null,
                         options: question.options,
+                        optionImageUrls: question.optionImageUrls ?? [],
                         correctAnswer: question.correctAnswer,
                     })),
                 },

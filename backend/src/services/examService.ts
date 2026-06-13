@@ -2,6 +2,7 @@ import { prisma } from '../lib/prisma';
 import {
   mapExamRecordToDetailDto,
   mapExamRecordToSummaryDto,
+  normalizeOptionImageUrls,
 } from '../lib/examMapper';
 import type {
   ExamAttemptDetailDto,
@@ -155,6 +156,7 @@ export const getExamDetailById = async (
           question: true,
           imageUrl: true,
           options: true,
+          optionImageUrls: true,
           correctAnswer: true,
         },
       },
@@ -248,6 +250,7 @@ export const getAttemptDetailById = async (
               question: true,
               imageUrl: true,
               options: true,
+              optionImageUrls: true,
               topic: {
                 select: {
                   id: true,
@@ -356,6 +359,10 @@ export const getAttemptDetailById = async (
         question: question.question,
         imageUrl: question.imageUrl,
         options: question.options,
+        optionImageUrls: normalizeOptionImageUrls(
+          question.options,
+          question.optionImageUrls,
+        ),
         selectedOptionIndex: answer.selectedOptionIndex,
         correctOptionIndex: answer.correctOptionIndex,
         isCorrect: answer.isCorrect,

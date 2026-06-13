@@ -18,9 +18,10 @@ import type {
   QuestionDto,
 } from '../types/exam';
 
-export type MockQuestion = Omit<QuestionDto, 'imageUrl'> & {
+export type MockQuestion = Omit<QuestionDto, 'imageUrl' | 'optionImageUrls'> & {
   topicSlug: string;
   imageUrl?: string;
+  optionImageUrls?: string[];
 };
 
 export type Question = MockQuestion;
@@ -95,6 +96,7 @@ export const mockExams: ExamMock[] = [
           'C. $10\\sqrt{5}$',
           'D. $2\\sqrt{5}$',
         ],
+        optionImageUrls: ['/images/questions/option-sqrt-a.svg', '', '', ''],
         correctAnswer: 'A. $5\\sqrt{2}$',
       },
       {
@@ -181,6 +183,7 @@ export const mockExams: ExamMock[] = [
         topicSlug: 'gioi-han',
         question: 'Tính giới hạn $\\lim_{x\\to +\\infty}\\frac{2x+1}{x-1}$.',
         options: ['A. $1$', 'B. $2$', 'C. $-1$', 'D. $+\\infty$'],
+        optionImageUrls: ['', '/images/questions/option-limit-b.svg', '', ''],
         correctAnswer: 'B. $2$',
       },
       {
@@ -328,6 +331,7 @@ export const mockExams: ExamMock[] = [
         topicSlug: 'ma-tran',
         question: 'Tính định thức $$\\begin{vmatrix}1&2\\\\3&4\\end{vmatrix}$$',
         options: ['A. $-2$', 'B. $2$', 'C. $10$', 'D. $-10$'],
+        optionImageUrls: ['/images/questions/option-determinant-a.svg', '', '', ''],
         correctAnswer: 'A. $-2$',
       },
       {
