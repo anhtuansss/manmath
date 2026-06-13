@@ -27,6 +27,7 @@
     question: string;
     imageUrl: string | null;
     options: string[];
+    optionImageUrls: Array<string | null>;
     correctAnswer: string;
   }>;
 }
@@ -70,6 +71,7 @@
     question: string;
     imageUrl: string | null;
     options: string[];
+    optionImageUrls: Array<string | null>;
     selectedOptionIndex: number | null;
     correctOptionIndex: number;
     isCorrect: boolean;
@@ -80,9 +82,10 @@
 
 Ghi chú:
 
-- Question Image Support MVP hiện chỉ dùng `question.imageUrl`
-- Giá trị `imageUrl` hiện là static public path, ví dụ `/images/questions/sample-unit-circle.svg`
-- Ảnh trong đáp án chưa được hỗ trợ ở giai đoạn này
+- `question.imageUrl` dùng cho ảnh minh họa của câu hỏi
+- `optionImageUrls` dùng cho ảnh minh họa của đáp án và map theo index với `options`
+- Giá trị ảnh hiện là static public path, ví dụ `/images/questions/sample-unit-circle.svg`
+- MVP hiện vẫn giữ `options: string[]`, chưa đổi sang object option model
 
 ## Auth APIs
 

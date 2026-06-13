@@ -139,7 +139,8 @@
 * [x] Mock data LaTeX để kiểm thử KaTeX
 * [x] Hỗ trợ hình ảnh trong câu hỏi
 * [x] Render ảnh câu hỏi ở màn làm bài, result review và attempt detail
-* [ ] Hỗ trợ hình ảnh trong đáp án
+* [x] Hỗ trợ hình ảnh trong đáp án
+* [x] Render ảnh đáp án ở màn làm bài, result review và attempt detail
 
 ---
 
@@ -257,6 +258,7 @@
 * [x] Submit response trả `topicStats`
 * [x] Hiển thị topic stats ở result page sau submit nếu phù hợp
 * [x] Hoàn thiện Question Image Support MVP với `Question.imageUrl` và ảnh static path
+* [x] Hoàn thiện Option Image Support MVP với `options: string[]` + `optionImageUrls` map theo index
 
 ### Không làm lúc này
 

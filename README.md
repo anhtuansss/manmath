@@ -15,6 +15,7 @@ Project hiện hỗ trợ chọn đề, làm bài trắc nghiệm, nộp bài, x
 - [x] Google Login + JWT
 - [x] Topic analytics
 - [x] KaTeX math rendering
+- [x] Hỗ trợ ảnh câu hỏi và ảnh đáp án bằng static public path
 
 ## Tech Stack
 
@@ -130,7 +131,7 @@ Ghi chú:
 - Refresh Token
 - Email/password login
 - Cập nhật thông tin cá nhân
-- Hỗ trợ hình ảnh trong câu hỏi/đáp án
+- Upload và quản lý ảnh câu hỏi/đáp án
 - Dashboard analytics sâu hơn
 - Import đề từ file
 - AI feedback

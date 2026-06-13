@@ -48,13 +48,15 @@ Các field chính:
 - `question`
 - `imageUrl`
 - `options`
+- `optionImageUrls`
 - `correctAnswer`
 
 Ghi chú:
 
 - `imageUrl` là field optional dùng cho Question Image Support MVP
+- `optionImageUrls` là mảng string map theo index với `options`
 - Ảnh hiện được lưu dưới dạng static public path, ví dụ `/images/questions/sample-parabola.svg`
-- Ảnh trong đáp án chưa được hỗ trợ ở schema hiện tại
+- MVP hiện vẫn giữ `options: string[]`, chưa đổi sang object option model
 
 ### Topic
 

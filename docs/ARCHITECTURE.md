@@ -30,7 +30,7 @@ PostgreSQL
 - Lưu autosave bài làm bằng `localStorage`
 - Lưu kết quả submit tạm thời để hiển thị ở result page
 - Gửi JWT khi user đã đăng nhập
-- Render KaTeX và ảnh câu hỏi nếu `question.imageUrl` có dữ liệu
+- Render KaTeX, ảnh câu hỏi nếu `question.imageUrl` có dữ liệu, và ảnh đáp án nếu `optionImageUrls` có dữ liệu
 
 ### Backend
 
@@ -40,7 +40,7 @@ PostgreSQL
 - Ký và verify JWT
 - Chấm điểm bài thi
 - Lưu attempt, attempt answer, topic analytics
-- Expose `imageUrl` trong exam detail và attempt detail để frontend render ảnh câu hỏi
+- Expose `imageUrl` và `optionImageUrls` trong exam detail và attempt detail để frontend render ảnh câu hỏi/đáp án
 
 ### Database
 
@@ -66,7 +66,7 @@ Request
 ```text
 User vào /exam/[id]
 → Frontend gọi GET /api/exams/:id
-→ Render câu hỏi và ảnh minh họa nếu có
+→ Render câu hỏi, ảnh minh họa câu hỏi và ảnh minh họa đáp án nếu có
 → User chọn đáp án
 → Frontend autosave localStorage
 → User submit
@@ -92,7 +92,7 @@ User đã login
 → Frontend gọi GET /api/attempts/:attemptId
 → Backend dùng authMiddleware
 → Service kiểm tra owner
-→ Trả chi tiết attempt + answers + topicStats + imageUrl nếu câu có ảnh
+→ Trả chi tiết attempt + answers + topicStats + imageUrl/optionImageUrls nếu câu hoặc đáp án có ảnh
 ```
 
 ## Luồng topic analytics
