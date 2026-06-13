@@ -182,6 +182,18 @@ export function HistoryClient() {
             >
               Quay về danh sách đề
             </Link>
+            <Link
+              href="/profile"
+              className="inline-flex h-10 cursor-pointer items-center justify-center rounded-lg border border-border bg-surface px-4 text-sm font-semibold text-text-primary transition-colors duration-200 hover:bg-background-alt focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            >
+              Hồ sơ
+            </Link>
+            <Link
+              href="/analytics"
+              className="inline-flex h-10 cursor-pointer items-center justify-center rounded-lg border border-border bg-surface px-4 text-sm font-semibold text-text-primary transition-colors duration-200 hover:bg-background-alt focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            >
+              Phân tích học tập
+            </Link>
 
             {status === 'ready' && user ? (
               <button
