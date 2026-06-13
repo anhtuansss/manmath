@@ -11,6 +11,7 @@ import { subscribeAuthTokenChange } from '../../lib/authStorage';
 import { MathText } from './MathText';
 import { OptionImage } from './OptionImage';
 import { QuestionImage } from './QuestionImage';
+import { ReviewQuestionNavigator, type ReviewNavigatorItem } from './ReviewQuestionNavigator';
 import type { ExamAttemptDetailDto } from './types';
 
 type AttemptDetailClientProps = {
@@ -184,6 +185,16 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
     attempt.totalQuestions - attempt.correctCount - attempt.unansweredCount;
   const durationLabel = formatDurationSeconds(attempt.durationSeconds);
 
+  const navigatorItems: ReviewNavigatorItem[] = answers.map((answer, index) => {
+    const isUnanswered = answer.selectedOptionIndex === null;
+    const status = isUnanswered ? 'unanswered' : answer.isCorrect ? 'correct' : 'incorrect';
+    return {
+      id: answer.questionId,
+      label: (index + 1).toString(),
+      status,
+    };
+  });
+
   return (
     <main className="min-h-[100dvh] bg-background px-4 py-6 text-text-primary sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-6xl animate-fade-in flex-col gap-6">
@@ -319,8 +330,9 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
             </p>
           </div>
 
-          <div className="space-y-3">
-            {answers.map((answer, index) => {
+          <div className="mt-6 flex flex-col-reverse items-start gap-6 lg:flex-row">
+            <div className="min-w-0 flex-1 space-y-4">
+              {answers.map((answer, index) => {
               const selectedAnswer =
                 answer.selectedOptionIndex === null
                   ? 'Chưa chọn đáp án'
@@ -362,6 +374,7 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
 
               return (
                 <article
+                  id={`question-${answer.questionId}`}
                   key={answer.questionId}
                   className={`rounded-xl border border-border border-l-4 bg-surface p-5 shadow-card ${statusAccentClass}`}
                 >
@@ -438,6 +451,11 @@ export function AttemptDetailClient({ attemptId }: AttemptDetailClientProps) {
                 </article>
               );
             })}
+            </div>
+
+            <aside className="w-full shrink-0 lg:sticky lg:top-6 lg:w-80">
+              <ReviewQuestionNavigator items={navigatorItems} />
+            </aside>
           </div>
         </section>
       </div>
