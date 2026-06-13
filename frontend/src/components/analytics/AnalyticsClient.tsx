@@ -40,12 +40,59 @@ type RecommendationsResponse = {
   recommendedExams: RecommendedExam[];
 };
 
+type ProgressSummary = {
+  attemptCount: number;
+  averageScore: number;
+  bestScore: number;
+  latestScore: number | null;
+};
+
+type RecentAttempt = {
+  attemptId: string;
+  examId: string;
+  examTitle: string;
+  score: number;
+  correctCount: number;
+  totalQuestions: number;
+  submittedAt: string;
+};
+
+type ProgressByAttempt = {
+  attemptId: string;
+  examTitle: string;
+  score: number;
+  accuracy: number;
+  submittedAt: string;
+};
+
+type ProgressResponse = {
+  summary: ProgressSummary;
+  recentAttempts: RecentAttempt[];
+  progressByAttempt: ProgressByAttempt[];
+};
+
 type AnalyticsStatus = 'loading' | 'unauthorized' | 'ready' | 'error';
 
 const MAX_VISIBLE_TOPICS = 5;
+const EMPTY_PROGRESS_SUMMARY: ProgressSummary = {
+  attemptCount: 0,
+  averageScore: 0,
+  bestScore: 0,
+  latestScore: null,
+};
 
 const clampAccuracy = (accuracy: number): number => {
   return Math.min(Math.max(accuracy, 0), 100);
+};
+
+const formatSubmittedAt = (submittedAt: string): string => {
+  return new Date(submittedAt).toLocaleString('vi-VN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
 };
 
 const sortWeakTopics = (topicStats: TopicStatDto[]): TopicStatDto[] => {
@@ -86,6 +133,12 @@ export function AnalyticsClient() {
   const [status, setStatus] = useState<AnalyticsStatus>('loading');
   const [user, setUser] = useState<AuthUser | null>(null);
   const [topicStats, setTopicStats] = useState<TopicStatDto[]>([]);
+  const [progressSummary, setProgressSummary] =
+    useState<ProgressSummary>(EMPTY_PROGRESS_SUMMARY);
+  const [recentAttempts, setRecentAttempts] = useState<RecentAttempt[]>([]);
+  const [progressByAttempt, setProgressByAttempt] = useState<ProgressByAttempt[]>(
+    [],
+  );
   const [recommendedExams, setRecommendedExams] = useState<RecommendedExam[]>([]);
   const [recommendationWeakTopics, setRecommendationWeakTopics] = useState<
     RecommendationWeakTopic[]
@@ -94,6 +147,15 @@ export function AnalyticsClient() {
 
   useEffect(() => {
     let isMounted = true;
+
+    const resetAnalytics = () => {
+      setTopicStats([]);
+      setProgressSummary(EMPTY_PROGRESS_SUMMARY);
+      setRecentAttempts([]);
+      setProgressByAttempt([]);
+      setRecommendedExams([]);
+      setRecommendationWeakTopics([]);
+    };
 
     const loadAnalytics = async () => {
       try {
@@ -108,37 +170,35 @@ export function AnalyticsClient() {
 
         if (!currentUser) {
           setUser(null);
-          setTopicStats([]);
-          setRecommendedExams([]);
-          setRecommendationWeakTopics([]);
+          resetAnalytics();
           setStatus('unauthorized');
           return;
         }
 
         setUser(currentUser);
 
-        const topicStatsPromise =
-          fetchProtectedJson<TopicStatsResponse>('/api/me/topic-stats');
-        const recommendationPromise =
-          fetchProtectedJson<RecommendationsResponse>('/api/me/recommendations');
-
-        const [topicStatsResult, recommendationResult] = await Promise.allSettled([
-          topicStatsPromise,
-          recommendationPromise,
-        ]);
+        const [topicStatsResult, progressResult, recommendationResult] =
+          await Promise.allSettled([
+            fetchProtectedJson<TopicStatsResponse>('/api/me/topic-stats'),
+            fetchProtectedJson<ProgressResponse>('/api/me/progress'),
+            fetchProtectedJson<RecommendationsResponse>('/api/me/recommendations'),
+          ]);
 
         if (!isMounted) {
           return;
         }
 
-        if (
-          topicStatsResult.status === 'rejected' &&
-          isUnauthorizedError(topicStatsResult.reason)
-        ) {
+        const hasUnauthorized =
+          (topicStatsResult.status === 'rejected' &&
+            isUnauthorizedError(topicStatsResult.reason)) ||
+          (progressResult.status === 'rejected' &&
+            isUnauthorizedError(progressResult.reason)) ||
+          (recommendationResult.status === 'rejected' &&
+            isUnauthorizedError(recommendationResult.reason));
+
+        if (hasUnauthorized) {
           setUser(null);
-          setTopicStats([]);
-          setRecommendedExams([]);
-          setRecommendationWeakTopics([]);
+          resetAnalytics();
           setStatus('unauthorized');
           return;
         }
@@ -147,11 +207,26 @@ export function AnalyticsClient() {
           throw topicStatsResult.reason;
         }
 
-        const nextTopicStats = Array.isArray(topicStatsResult.value.topicStats)
-          ? topicStatsResult.value.topicStats
-          : [];
+        if (progressResult.status === 'rejected') {
+          throw progressResult.reason;
+        }
 
-        setTopicStats(nextTopicStats);
+        setTopicStats(
+          Array.isArray(topicStatsResult.value.topicStats)
+            ? topicStatsResult.value.topicStats
+            : [],
+        );
+        setProgressSummary(progressResult.value.summary ?? EMPTY_PROGRESS_SUMMARY);
+        setRecentAttempts(
+          Array.isArray(progressResult.value.recentAttempts)
+            ? progressResult.value.recentAttempts
+            : [],
+        );
+        setProgressByAttempt(
+          Array.isArray(progressResult.value.progressByAttempt)
+            ? progressResult.value.progressByAttempt
+            : [],
+        );
 
         if (recommendationResult.status === 'fulfilled') {
           setRecommendedExams(
@@ -164,15 +239,6 @@ export function AnalyticsClient() {
               ? recommendationResult.value.weakTopics
               : [],
           );
-        } else if (
-          isUnauthorizedError(recommendationResult.reason)
-        ) {
-          setUser(null);
-          setTopicStats([]);
-          setRecommendedExams([]);
-          setRecommendationWeakTopics([]);
-          setStatus('unauthorized');
-          return;
         } else {
           setRecommendedExams([]);
           setRecommendationWeakTopics([]);
@@ -186,9 +252,7 @@ export function AnalyticsClient() {
 
         if (isUnauthorizedError(error)) {
           setUser(null);
-          setTopicStats([]);
-          setRecommendedExams([]);
-          setRecommendationWeakTopics([]);
+          resetAnalytics();
           setStatus('unauthorized');
           setErrorMessage(null);
           return;
@@ -210,12 +274,6 @@ export function AnalyticsClient() {
     };
   }, []);
 
-  const practicedTopicCount = topicStats.filter((topic) => topic.total > 0).length;
-  const totalCorrect = topicStats.reduce((sum, topic) => sum + topic.correct, 0);
-  const totalAnswered = topicStats.reduce((sum, topic) => sum + topic.total, 0);
-  const averageAccuracy =
-    totalAnswered > 0 ? Math.round((totalCorrect / totalAnswered) * 100) : 0;
-
   const weakTopics = useMemo(() => {
     if (recommendationWeakTopics.length > 0) {
       return recommendationWeakTopics.slice(0, MAX_VISIBLE_TOPICS);
@@ -230,12 +288,17 @@ export function AnalyticsClient() {
   const strongTopics = useMemo(() => sortStrongTopics(topicStats), [topicStats]);
 
   const hasAnalyticsData =
-    topicStats.some((topic) => topic.total > 0) || recommendedExams.length > 0;
+    progressSummary.attemptCount > 0 ||
+    topicStats.some((topic) => topic.total > 0) ||
+    recommendedExams.length > 0;
 
   const handleLogout = () => {
     clearAuthToken();
     setUser(null);
     setTopicStats([]);
+    setProgressSummary(EMPTY_PROGRESS_SUMMARY);
+    setRecentAttempts([]);
+    setProgressByAttempt([]);
     setRecommendedExams([]);
     setRecommendationWeakTopics([]);
     setStatus('unauthorized');
@@ -263,8 +326,8 @@ export function AnalyticsClient() {
               Phân tích học tập
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-text-secondary">
-              Theo dõi các chuyên đề bạn đang mạnh, đang yếu và chọn đề tiếp theo
-              phù hợp hơn với tiến độ hiện tại.
+              Theo dõi các chuyên đề bạn đang mạnh, đang yếu và xem lại tiến độ
+              gần đây để biết mình có đang tiến bộ hay không.
             </p>
           </div>
 
@@ -347,7 +410,7 @@ export function AnalyticsClient() {
             </h2>
             <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-text-secondary">
               Hãy đăng nhập bằng Google ở trang danh sách đề để xem chuyên đề mạnh,
-              chuyên đề yếu và các đề phù hợp tiếp theo.
+              chuyên đề yếu, đề gợi ý tiếp theo và tiến độ làm bài gần đây.
             </p>
             <Link
               href="/"
@@ -374,34 +437,36 @@ export function AnalyticsClient() {
             <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <div className="rounded-xl border border-border border-t-[3px] border-t-primary bg-surface p-5 shadow-card">
                 <p className="text-xs font-semibold text-text-secondary">
-                  Tài khoản
+                  Tổng số lần làm
                 </p>
-                <p className="mt-2 truncate text-lg font-bold text-text-primary">
-                  {user?.fullName ?? user?.email ?? 'Người dùng'}
+                <p className="mt-2 text-3xl font-bold text-primary">
+                  {progressSummary.attemptCount}
                 </p>
               </div>
               <div className="rounded-xl border border-border border-t-[3px] border-t-primary bg-surface p-5 shadow-card">
                 <p className="text-xs font-semibold text-text-secondary">
-                  Chuyên đề đã làm
+                  Điểm trung bình
                 </p>
                 <p className="mt-2 text-3xl font-bold text-primary">
-                  {practicedTopicCount}
+                  {progressSummary.averageScore.toFixed(1)}
                 </p>
               </div>
               <div className="rounded-xl border border-border border-t-[3px] border-t-success bg-surface p-5 shadow-card">
                 <p className="text-xs font-semibold text-text-secondary">
-                  Accuracy trung bình
+                  Điểm tốt nhất
                 </p>
                 <p className="mt-2 text-3xl font-bold text-success">
-                  {averageAccuracy}%
+                  {progressSummary.bestScore.toFixed(1)}
                 </p>
               </div>
               <div className="rounded-xl border border-border border-t-[3px] border-t-accent bg-surface p-5 shadow-card">
                 <p className="text-xs font-semibold text-text-secondary">
-                  Đề gợi ý
+                  Điểm gần nhất
                 </p>
                 <p className="mt-2 text-3xl font-bold text-accent">
-                  {recommendedExams.length}
+                  {progressSummary.latestScore !== null
+                    ? progressSummary.latestScore.toFixed(1)
+                    : '--'}
                 </p>
               </div>
             </section>
@@ -413,9 +478,111 @@ export function AnalyticsClient() {
                 </h2>
                 <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-text-secondary">
                   Hãy làm một đề để bắt đầu phân tích. Khi đã có dữ liệu, ManMath sẽ
-                  hiển thị chuyên đề mạnh, chuyên đề yếu và gợi ý đề nên làm tiếp.
+                  hiển thị tiến độ theo thời gian, chuyên đề mạnh, chuyên đề yếu và
+                  đề nên làm tiếp.
                 </p>
               </section>
+            )}
+
+            {progressSummary.attemptCount > 0 && (
+              <div className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+                <section className="rounded-xl border border-border bg-surface p-5 shadow-card">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <h2 className="font-[family-name:var(--font-outfit)] text-lg font-semibold text-text-primary">
+                        Tiến độ gần đây
+                      </h2>
+                      <p className="mt-1 text-sm text-text-secondary">
+                        Theo dõi 10 lần làm gần nhất để xem mức độ ổn định.
+                      </p>
+                    </div>
+                    <span className="rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold text-text-secondary">
+                      {progressByAttempt.length} lần
+                    </span>
+                  </div>
+
+                  <div className="mt-4 space-y-3">
+                    {progressByAttempt.map((attempt, index) => (
+                      <div
+                        key={attempt.attemptId}
+                        className="rounded-lg border border-border bg-background p-3"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold text-text-primary">
+                              Lần {index + 1} · {attempt.examTitle}
+                            </p>
+                            <p className="mt-1 text-xs text-text-secondary">
+                              {formatSubmittedAt(attempt.submittedAt)}
+                            </p>
+                          </div>
+
+                          <div className="shrink-0 text-right">
+                            <p className="text-sm font-semibold text-text-primary">
+                              {attempt.score.toFixed(1)} điểm
+                            </p>
+                            <p className="mt-1 text-xs text-text-secondary">
+                              {attempt.accuracy}% đúng
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="mt-3 h-2 overflow-hidden rounded-full bg-background-alt">
+                          <div
+                            className="h-full rounded-full bg-primary"
+                            style={{ width: `${clampAccuracy(attempt.accuracy)}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+
+                <section className="rounded-xl border border-border bg-surface p-5 shadow-card">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <h2 className="font-[family-name:var(--font-outfit)] text-lg font-semibold text-text-primary">
+                        Các lần làm gần nhất
+                      </h2>
+                      <p className="mt-1 text-sm text-text-secondary">
+                        Mở nhanh từng bài đã làm để xem lại kết quả chi tiết.
+                      </p>
+                    </div>
+                    <span className="rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold text-text-secondary">
+                      {recentAttempts.length} lần
+                    </span>
+                  </div>
+
+                  <div className="mt-4 space-y-3">
+                    {recentAttempts.map((attempt) => (
+                      <Link
+                        key={attempt.attemptId}
+                        href={`/attempts/${attempt.attemptId}`}
+                        className="block rounded-lg border border-border bg-background p-3 transition-colors duration-200 hover:border-primary/30 hover:bg-primary-50/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold text-text-primary">
+                              {attempt.examTitle}
+                            </p>
+                            <p className="mt-1 text-xs text-text-secondary">
+                              {formatSubmittedAt(attempt.submittedAt)}
+                            </p>
+                          </div>
+
+                          <span className="shrink-0 rounded-full border border-border bg-surface px-2.5 py-1 text-xs font-semibold text-text-secondary">
+                            {attempt.score.toFixed(1)} điểm
+                          </span>
+                        </div>
+
+                        <p className="mt-3 text-xs leading-5 text-text-secondary">
+                          {attempt.correctCount}/{attempt.totalQuestions} câu đúng
+                        </p>
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              </div>
             )}
 
             <div className="grid gap-6 lg:grid-cols-2">
@@ -470,11 +637,9 @@ export function AnalyticsClient() {
                             />
                           </div>
 
-                          {'reason' in topic ? (
-                            <p className="mt-3 text-xs leading-5 text-text-secondary">
-                              {topic.reason}
-                            </p>
-                          ) : null}
+                          <p className="mt-3 text-xs leading-5 text-text-secondary">
+                            {topic.reason}
+                          </p>
                         </div>
                       );
                     })}

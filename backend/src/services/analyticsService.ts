@@ -32,8 +32,41 @@ export type UserRecommendationsDto = {
   recommendedExams: RecommendedExamDto[];
 };
 
+export type ProgressSummaryDto = {
+  attemptCount: number;
+  averageScore: number;
+  bestScore: number;
+  latestScore: number | null;
+};
+
+export type RecentAttemptDto = {
+  attemptId: string;
+  examId: string;
+  examTitle: string;
+  score: number;
+  correctCount: number;
+  totalQuestions: number;
+  submittedAt: string;
+};
+
+export type ProgressByAttemptDto = {
+  attemptId: string;
+  examTitle: string;
+  score: number;
+  accuracy: number;
+  submittedAt: string;
+};
+
+export type UserProgressDto = {
+  summary: ProgressSummaryDto;
+  recentAttempts: RecentAttemptDto[];
+  progressByAttempt: ProgressByAttemptDto[];
+};
+
 const MAX_WEAK_TOPICS = 3;
 const MAX_RECOMMENDED_EXAMS = 3;
+const MAX_RECENT_ATTEMPTS = 5;
+const MAX_PROGRESS_ATTEMPTS = 10;
 
 const buildWeakTopicReason = (topicStat: TopicStatDto): string => {
   if (topicStat.accuracy < 40) {
@@ -272,5 +305,90 @@ export const getUserRecommendations = async (
       matchedWeakQuestionCount: 0,
       reason: 'Chưa tìm thấy đề khớp rõ chuyên đề yếu, hãy bắt đầu với đề này để tạo thêm dữ liệu.',
     })),
+  };
+};
+
+export const getUserProgress = async (
+  userId: string,
+): Promise<UserProgressDto> => {
+  const attempts = await prisma.attempt.findMany({
+    where: {
+      userId,
+    },
+    orderBy: {
+      submittedAt: 'desc',
+    },
+    select: {
+      id: true,
+      examId: true,
+      score: true,
+      correctCount: true,
+      totalQuestions: true,
+      submittedAt: true,
+      exam: {
+        select: {
+          title: true,
+        },
+      },
+    },
+  });
+
+  if (attempts.length === 0) {
+    return {
+      summary: {
+        attemptCount: 0,
+        averageScore: 0,
+        bestScore: 0,
+        latestScore: null,
+      },
+      recentAttempts: [],
+      progressByAttempt: [],
+    };
+  }
+
+  const attemptCount = attempts.length;
+  const totalScore = attempts.reduce((sum, attempt) => sum + attempt.score, 0);
+  const averageScore = Math.round((totalScore / attemptCount) * 10) / 10;
+  const bestScore = attempts.reduce(
+    (maxScore, attempt) => Math.max(maxScore, attempt.score),
+    0,
+  );
+  const latestScore = attempts[0]?.score ?? null;
+
+  const recentAttempts: RecentAttemptDto[] = attempts
+    .slice(0, MAX_RECENT_ATTEMPTS)
+    .map((attempt) => ({
+      attemptId: attempt.id,
+      examId: attempt.examId,
+      examTitle: attempt.exam.title,
+      score: attempt.score,
+      correctCount: attempt.correctCount,
+      totalQuestions: attempt.totalQuestions,
+      submittedAt: attempt.submittedAt.toISOString(),
+    }));
+
+  const progressByAttempt: ProgressByAttemptDto[] = attempts
+    .slice(0, MAX_PROGRESS_ATTEMPTS)
+    .map((attempt) => ({
+      attemptId: attempt.id,
+      examTitle: attempt.exam.title,
+      score: attempt.score,
+      accuracy:
+        attempt.totalQuestions > 0
+          ? Math.round((attempt.correctCount / attempt.totalQuestions) * 100)
+          : 0,
+      submittedAt: attempt.submittedAt.toISOString(),
+    }))
+    .reverse();
+
+  return {
+    summary: {
+      attemptCount,
+      averageScore,
+      bestScore,
+      latestScore,
+    },
+    recentAttempts,
+    progressByAttempt,
   };
 };

@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
 import {
+  getUserProgress,
   getUserRecommendations,
   getUserTopicStats,
 } from '../services/analyticsService';
@@ -40,6 +41,25 @@ export const getMyRecommendations = async (
     res.json(recommendations);
   } catch (error) {
     console.error('Failed to load user recommendations:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+export const getMyProgress = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    if (!req.user) {
+      res.status(401).json({ message: 'Unauthorized' });
+      return;
+    }
+
+    const progress = await getUserProgress(req.user.userId);
+
+    res.json(progress);
+  } catch (error) {
+    console.error('Failed to load user progress:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
