@@ -11,7 +11,7 @@
 | Method | Endpoint | Auth | Muc dich |
 | --- | --- | --- | --- |
 | `GET` | `/api/health` | Public | Kiem tra backend con hoat dong |
-| `GET` | `/api/exams` | Public | Lay danh sach de, ho tro tim kiem va loc theo topic/subtopic |
+| `GET` | `/api/exams` | Public | Lay danh sach de, ho tro tim kiem va loc theo topic/subtopic/thoi luong/do kho |
 | `GET` | `/api/exams/:id` | Public | Lay chi tiet mot de |
 | `GET` | `/api/topics` | Public | Lay danh sach topic va subtopic de filter exam list |
 | `POST` | `/api/exam/submit` | Optional JWT | Nop bai, cham diem, luu attempt va tra ket qua |
@@ -23,6 +23,9 @@
 - `search`: tim theo `title` va `description`
 - `topic`: loc theo `Topic.slug`
 - `subtopic`: loc theo `Subtopic.slug`
+- `durationMin`: loc de co `durationMinutes >= durationMin`
+- `durationMax`: loc de co `durationMinutes <= durationMax`
+- `difficulty`: loc theo `easy | medium | hard`
 
 Vi du:
 
@@ -30,9 +33,13 @@ Vi du:
 /api/exams?search=ham
 /api/exams?topic=ham-so
 /api/exams?topic=ham-so&subtopic=cuc-tri
+/api/exams?durationMin=60&durationMax=90
+/api/exams?difficulty=easy
 ```
 
 Neu khong truyen query param, response giu shape cu.
+
+Neu `durationMin`, `durationMax` hoac `difficulty` khong hop le, API tra `400`.
 
 ### Exam detail response shape
 

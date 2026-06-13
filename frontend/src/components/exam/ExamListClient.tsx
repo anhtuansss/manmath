@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ExamList } from './ExamList';
 import type {
+  ExamDifficulty,
+  ExamDurationFilter,
   ExamListApiItem,
   ExamListItem,
   TopicFilterDto,
@@ -252,6 +254,10 @@ export function ExamListClient() {
   const [searchInput, setSearchInput] = useState('');
   const [selectedTopic, setSelectedTopic] = useState('');
   const [selectedSubtopic, setSelectedSubtopic] = useState('');
+  const [selectedDuration, setSelectedDuration] =
+    useState<ExamDurationFilter>('all');
+  const [selectedDifficulty, setSelectedDifficulty] =
+    useState<'' | ExamDifficulty>('');
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
   const selectedTopicData = useMemo(
@@ -285,6 +291,9 @@ export function ExamListClient() {
     search?: string;
     topic?: string;
     subtopic?: string;
+    durationMin?: number;
+    durationMax?: number;
+    difficulty?: '' | ExamDifficulty;
     initialLoad?: boolean;
   }) => {
     const isInitialLoad = params?.initialLoad ?? false;
@@ -310,6 +319,18 @@ export function ExamListClient() {
 
       if (params?.subtopic?.trim()) {
         searchParams.set('subtopic', params.subtopic.trim());
+      }
+
+      if (typeof params?.durationMin === 'number') {
+        searchParams.set('durationMin', params.durationMin.toString());
+      }
+
+      if (typeof params?.durationMax === 'number') {
+        searchParams.set('durationMax', params.durationMax.toString());
+      }
+
+      if (params?.difficulty) {
+        searchParams.set('difficulty', params.difficulty);
       }
 
       const queryString = searchParams.toString();
@@ -374,22 +395,63 @@ export function ExamListClient() {
       return;
     }
 
+    const getDurationRange = (): { durationMin?: number; durationMax?: number } => {
+      if (selectedDuration === 'short') {
+        return { durationMax: 45 };
+      }
+
+      if (selectedDuration === 'standard') {
+        return { durationMin: 46, durationMax: 90 };
+      }
+
+      if (selectedDuration === 'long') {
+        return { durationMin: 91 };
+      }
+
+      return {};
+    };
+
     const timeoutId = window.setTimeout(() => {
+      const durationRange = getDurationRange();
+
       void fetchExams({
         search: searchInput,
         topic: selectedTopic,
         subtopic: selectedSubtopic,
+        durationMin: durationRange.durationMin,
+        durationMax: durationRange.durationMax,
+        difficulty: selectedDifficulty,
       });
     }, 250);
 
     return () => window.clearTimeout(timeoutId);
-  }, [hasLoadedOnce, searchInput, selectedTopic, selectedSubtopic]);
+  }, [
+    hasLoadedOnce,
+    searchInput,
+    selectedTopic,
+    selectedSubtopic,
+    selectedDuration,
+    selectedDifficulty,
+  ]);
 
   const handleRetry = () => {
     void fetchExams({
       search: searchInput,
       topic: selectedTopic,
       subtopic: selectedSubtopic,
+      durationMin:
+        selectedDuration === 'standard'
+          ? 46
+          : selectedDuration === 'long'
+            ? 91
+            : undefined,
+      durationMax:
+        selectedDuration === 'short'
+          ? 45
+          : selectedDuration === 'standard'
+            ? 90
+            : undefined,
+      difficulty: selectedDifficulty,
       initialLoad: !hasLoadedOnce,
     });
   };
@@ -398,6 +460,8 @@ export function ExamListClient() {
     setSearchInput('');
     setSelectedTopic('');
     setSelectedSubtopic('');
+    setSelectedDuration('all');
+    setSelectedDifficulty('');
   };
 
   if (loading) {
@@ -408,7 +472,14 @@ export function ExamListClient() {
     return <ExamListError message={error} onRetry={handleRetry} />;
   }
 
-  if (exams.length === 0 && !searchInput && !selectedTopic && !selectedSubtopic) {
+  if (
+    exams.length === 0 &&
+    !searchInput &&
+    !selectedTopic &&
+    !selectedSubtopic &&
+    selectedDuration === 'all' &&
+    !selectedDifficulty
+  ) {
     return <ExamListEmpty onRetry={handleRetry} />;
   }
 
@@ -420,6 +491,8 @@ export function ExamListClient() {
       searchInput={searchInput}
       selectedTopic={selectedTopic}
       selectedSubtopic={selectedSubtopic}
+      selectedDuration={selectedDuration}
+      selectedDifficulty={selectedDifficulty}
       topics={topics}
       listError={error}
       topicsError={topicsError}
@@ -430,6 +503,8 @@ export function ExamListClient() {
         setSelectedSubtopic('');
       }}
       onSubtopicChange={setSelectedSubtopic}
+      onDurationChange={setSelectedDuration}
+      onDifficultyChange={setSelectedDifficulty}
       onClearFilters={handleClearFilters}
     />
   );

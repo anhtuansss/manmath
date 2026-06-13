@@ -59,6 +59,12 @@ export type SubmitResult = SubmitExamResultDto;
 
 export type ExamDifficulty = 'easy' | 'medium' | 'hard';
 
+export type ExamDurationFilter =
+  | 'all'
+  | 'short'
+  | 'standard'
+  | 'long';
+
 export type ExamSummaryDto = {
   id: string;
   title: string;

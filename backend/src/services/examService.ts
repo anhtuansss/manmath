@@ -6,6 +6,7 @@ import {
   normalizeOptionImageUrls,
 } from '../lib/examMapper';
 import type {
+  ExamDifficulty,
   ExamAttemptDetailDto,
   ExamAttemptSummaryDto,
   ExamDetailDto,
@@ -18,6 +19,9 @@ export type GetExamSummariesFilters = {
   search?: string;
   topic?: string;
   subtopic?: string;
+  durationMin?: number;
+  durationMax?: number;
+  difficulty?: ExamDifficulty;
 };
 
 export type SubmitExamRequestDto = {
@@ -131,6 +135,9 @@ export const getExamSummaries = async (
   const normalizedSearch = filters?.search?.trim();
   const normalizedTopic = filters?.topic?.trim();
   const normalizedSubtopic = filters?.subtopic?.trim();
+  const durationMin = filters?.durationMin;
+  const durationMax = filters?.durationMax;
+  const difficulty = filters?.difficulty;
   const whereConditions: Prisma.ExamWhereInput[] = [];
 
   if (normalizedTopic) {
@@ -154,6 +161,21 @@ export const getExamSummaries = async (
           },
         },
       },
+    });
+  }
+
+  if (typeof durationMin === 'number' || typeof durationMax === 'number') {
+    whereConditions.push({
+      durationMinutes: {
+        gte: durationMin,
+        lte: durationMax,
+      },
+    });
+  }
+
+  if (difficulty) {
+    whereConditions.push({
+      difficulty,
     });
   }
 

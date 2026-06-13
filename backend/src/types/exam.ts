@@ -1,5 +1,7 @@
 export type ExamDifficulty = 'easy' | 'medium' | 'hard';
 
+export const examDifficulties: ExamDifficulty[] = ['easy', 'medium', 'hard'];
+
 export type SubtopicDto = {
   id: string;
   name: string;

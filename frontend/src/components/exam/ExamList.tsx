@@ -4,7 +4,12 @@ import { Logo } from './Logo';
 import { TypewriterText } from './TypewriterText';
 import { RecommendationCard } from './RecommendationCard';
 import { UserTopicStatsCard } from './UserTopicStatsCard';
-import type { ExamListItem, TopicFilterDto } from './types';
+import type {
+  ExamDifficulty,
+  ExamDurationFilter,
+  ExamListItem,
+  TopicFilterDto,
+} from './types';
 import type { UserStats } from '../../lib/userStats';
 import { Footer } from './Footer';
 import { AuthButton } from '../auth/AuthButton';
@@ -16,6 +21,8 @@ type ExamListProps = {
   searchInput: string;
   selectedTopic: string;
   selectedSubtopic: string;
+  selectedDuration: ExamDurationFilter;
+  selectedDifficulty: '' | ExamDifficulty;
   topics: TopicFilterDto[];
   listError?: string | null;
   topicsError?: string | null;
@@ -23,6 +30,8 @@ type ExamListProps = {
   onSearchChange: (value: string) => void;
   onTopicChange: (value: string) => void;
   onSubtopicChange: (value: string) => void;
+  onDurationChange: (value: ExamDurationFilter) => void;
+  onDifficultyChange: (value: '' | ExamDifficulty) => void;
   onClearFilters: () => void;
 };
 
@@ -39,6 +48,8 @@ export function ExamList({
   searchInput,
   selectedTopic,
   selectedSubtopic,
+  selectedDuration,
+  selectedDifficulty,
   topics,
   listError,
   topicsError,
@@ -46,6 +57,8 @@ export function ExamList({
   onSearchChange,
   onTopicChange,
   onSubtopicChange,
+  onDurationChange,
+  onDifficultyChange,
   onClearFilters,
 }: ExamListProps) {
   const recommendedExams = exams.slice(0, 3);
@@ -69,7 +82,11 @@ export function ExamList({
   const selectedTopicData = topics.find((topic) => topic.slug === selectedTopic) ?? null;
   const subtopicOptions = selectedTopicData?.subtopics ?? [];
   const hasActiveFilters =
-    searchInput.trim().length > 0 || selectedTopic.length > 0 || selectedSubtopic.length > 0;
+    searchInput.trim().length > 0 ||
+    selectedTopic.length > 0 ||
+    selectedSubtopic.length > 0 ||
+    selectedDuration !== 'all' ||
+    selectedDifficulty.length > 0;
 
   return (
     <div className="flex min-h-[100dvh] flex-col">
@@ -219,7 +236,7 @@ export function ExamList({
                     </span>
                   </div>
 
-                  <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1.3fr)_minmax(180px,0.8fr)_minmax(180px,0.8fr)_auto]">
+                  <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(0,1.2fr)_minmax(160px,0.8fr)_minmax(160px,0.8fr)_minmax(160px,0.75fr)_minmax(160px,0.75fr)_auto]">
                     <label className="flex flex-col gap-1.5">
                       <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
                         Tu khoa
@@ -271,6 +288,42 @@ export function ExamList({
                             {subtopic.name}
                           </option>
                         ))}
+                      </select>
+                    </label>
+
+                    <label className="flex flex-col gap-1.5">
+                      <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                        Thoi luong
+                      </span>
+                      <select
+                        value={selectedDuration}
+                        onChange={(event) =>
+                          onDurationChange(event.target.value as ExamDurationFilter)
+                        }
+                        className="h-11 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+                      >
+                        <option value="all">Tat ca thoi luong</option>
+                        <option value="short">&lt;= 45 phut</option>
+                        <option value="standard">46-90 phut</option>
+                        <option value="long">&gt; 90 phut</option>
+                      </select>
+                    </label>
+
+                    <label className="flex flex-col gap-1.5">
+                      <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                        Do kho
+                      </span>
+                      <select
+                        value={selectedDifficulty}
+                        onChange={(event) =>
+                          onDifficultyChange(event.target.value as '' | ExamDifficulty)
+                        }
+                        className="h-11 rounded-lg border border-border bg-background px-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+                      >
+                        <option value="">Tat ca do kho</option>
+                        <option value="easy">De</option>
+                        <option value="medium">Trung binh</option>
+                        <option value="hard">Kho</option>
                       </select>
                     </label>
 

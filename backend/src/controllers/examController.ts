@@ -7,6 +7,47 @@ import {
   getTopicFilters,
   submitExam,
 } from '../services/examService';
+import { examDifficulties, type ExamDifficulty } from '../types/exam';
+
+const parseOptionalInteger = (
+  rawValue: unknown,
+): number | null | 'invalid' => {
+  if (rawValue === undefined) {
+    return null;
+  }
+
+  if (typeof rawValue !== 'string' || rawValue.trim().length === 0) {
+    return 'invalid';
+  }
+
+  const parsedValue = Number(rawValue);
+
+  if (!Number.isInteger(parsedValue) || parsedValue < 0) {
+    return 'invalid';
+  }
+
+  return parsedValue;
+};
+
+const parseOptionalDifficulty = (
+  rawValue: unknown,
+): ExamDifficulty | null | 'invalid' => {
+  if (rawValue === undefined) {
+    return null;
+  }
+
+  if (typeof rawValue !== 'string') {
+    return 'invalid';
+  }
+
+  const normalizedValue = rawValue.trim() as ExamDifficulty;
+
+  if (!examDifficulties.includes(normalizedValue)) {
+    return 'invalid';
+  }
+
+  return normalizedValue;
+};
 
 // Endpoint kiểm tra sức khỏe của API
 export const getHealth = (req: Request, res: Response): void => {
@@ -25,7 +66,37 @@ export const getExamList = async (
       typeof req.query.topic === 'string' ? req.query.topic : undefined;
     const subtopic =
       typeof req.query.subtopic === 'string' ? req.query.subtopic : undefined;
-    const examSummaries = await getExamSummaries({ search, topic, subtopic });
+    const durationMin = parseOptionalInteger(req.query.durationMin);
+    const durationMax = parseOptionalInteger(req.query.durationMax);
+    const difficulty = parseOptionalDifficulty(req.query.difficulty);
+
+    if (durationMin === 'invalid' || durationMax === 'invalid') {
+      res.status(400).json({ message: 'Bo loc thoi luong khong hop le' });
+      return;
+    }
+
+    if (
+      typeof durationMin === 'number' &&
+      typeof durationMax === 'number' &&
+      durationMin > durationMax
+    ) {
+      res.status(400).json({ message: 'durationMin khong duoc lon hon durationMax' });
+      return;
+    }
+
+    if (difficulty === 'invalid') {
+      res.status(400).json({ message: 'Bo loc do kho khong hop le' });
+      return;
+    }
+
+    const examSummaries = await getExamSummaries({
+      search,
+      topic,
+      subtopic,
+      durationMin: durationMin === null ? undefined : durationMin,
+      durationMax: durationMax === null ? undefined : durationMax,
+      difficulty: difficulty === null ? undefined : difficulty,
+    });
 
     res.json(examSummaries);
   } catch (error) {
