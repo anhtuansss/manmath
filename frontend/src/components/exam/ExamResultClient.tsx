@@ -22,6 +22,7 @@ import { MathText } from './MathText';
 import { Logo } from './Logo';
 import { OptionImage } from './OptionImage';
 import { QuestionImage } from './QuestionImage';
+import { ResultQuestionNavigator } from './ResultQuestionNavigator';
 import type { ExamDetailDto, ExamResultSession, QuestionDto } from './types';
 import { API_BASE_URL } from '../../config/api';
 import {
@@ -572,8 +573,9 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
             </div>
           )}
 
-          <div className="space-y-4">
-            {exam?.questions.map((question, index) => {
+          <div className="mt-6 flex flex-col-reverse items-start gap-6 lg:flex-row">
+            <div className="min-w-0 flex-1 space-y-4">
+              {exam?.questions.map((question, index) => {
               const selectedOptionIndex = resultSession.answers[question.id];
               const selectedAnswer =
                 selectedOptionIndex !== undefined
@@ -592,6 +594,7 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
 
               return (
                 <article
+                  id={`question-${question.id}`}
                   key={question.id}
                   className={`overflow-hidden rounded-xl border border-border bg-surface shadow-card ${reviewAccentClass[status]}`}
                 >
@@ -682,6 +685,16 @@ export function ExamResultClient({ examId }: ExamResultClientProps) {
                 </article>
               );
             })}
+            </div>
+
+            {exam && (
+              <aside className="w-full shrink-0 lg:sticky lg:top-6 lg:w-80">
+                <ResultQuestionNavigator
+                  questions={exam.questions}
+                  answers={resultSession.answers}
+                />
+              </aside>
+            )}
           </div>
         </section>
       </div>
