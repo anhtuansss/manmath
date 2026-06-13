@@ -153,6 +153,8 @@
 
 * [x] Import đề từ JSON
 * [x] Sample JSON import
+* [x] Import JSON dry-run
+* [x] Import JSON validation/report lỗi rõ hơn
 * [ ] Import đề từ Excel
 * [ ] Import đề từ Word
 
@@ -267,6 +269,7 @@
 * [x] Hoàn thiện Recommendation MVP với API `/api/me/recommendations`
 * [x] Tạo analytics dashboard nhỏ tại route `/analytics`
 * [x] Tạo script import đề từ JSON và sample file import
+* [x] Thêm dry-run và validation report rõ hơn cho import JSON
 * [x] Chạy smoke test tối thiểu sau khi fix frontend build fonts
 * [x] Làm rõ workflow `seed` / `seed:demo` / import JSON cho dữ liệu demo nhất quán
 

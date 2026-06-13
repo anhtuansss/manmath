@@ -42,16 +42,33 @@ cd backend
 npm run import:exam -- ./src/data/import/sample-exam.json
 ```
 
+### Dry-run mode
+
+```bash
+cd backend
+npm run import:exam -- ./src/data/import/sample-exam.json --dry-run
+```
+
 Script hiện tại:
 
 - đọc file JSON từ đường dẫn truyền vào
-- validate dữ liệu cơ bản
+- validate dữ liệu trước khi ghi DB
+- hỗ trợ `--dry-run` để kiểm tra file mà không ghi database
 - upsert `Exam`
 - upsert `Topic` theo `slug` nếu có
 - upsert `Question` theo `id`
 - hỗ trợ cả `imageUrl` và `optionImageUrls` nếu file JSON có cung cấp
 
 Nếu import lại cùng một file hoặc cùng `exam.id`, dữ liệu sẽ được cập nhật thay vì tạo duplicate.
+
+Với `--dry-run`, script sẽ in summary:
+
+- `exam id`
+- `title`
+- số câu hỏi
+- số topic detect được
+- số câu có `imageUrl`
+- số câu có `optionImageUrls`
 
 ## JSON format đầy đủ
 
@@ -136,6 +153,23 @@ Lưu ý: object `topic` là optional, nhưng nếu đã có `topic` thì cả `n
 - `question.id` không được trùng trong cùng file import
 - `question.id` cũng không được “mượn” từ exam khác; script sẽ chặn nếu câu hỏi đó đã thuộc một đề khác
 
+## Validation report hiện có
+
+Script hiện đã báo lỗi rõ theo field/path, ví dụ:
+
+- `id is required`
+- `durationMinutes must be a positive integer`
+- `questions must be a non-empty array`
+- `questions[2].id must be a positive integer`
+- `questions[3].question is required`
+- `questions[1].options must contain exactly 4 items`
+- `questions[3].correctAnswer must be one of options`
+- `questions[0].optionImageUrls must be an array of strings`
+- `questions[4].topic.slug must contain only lowercase letters, numbers, and hyphens`
+- `questions contain duplicate id: 1001`
+
+Nếu file có nhiều lỗi, script sẽ in toàn bộ danh sách lỗi thay vì dừng ngay ở lỗi đầu tiên.
+
 ## Giới hạn hiện tại của MVP
 
 - chưa import Word
@@ -211,6 +245,19 @@ Cách xử lý:
 - kiểm tra chính xác chuỗi trong `correctAnswer`
 - chuỗi này phải khớp một phần tử trong `options`
 
+### Dry-run pass nhưng import thật vẫn fail
+
+Triệu chứng:
+
+- validation pass
+- nhưng import thật báo lỗi `question id ... dang thuoc exam ...`
+
+Cách xử lý:
+
+- kiểm tra `question.id` có đang được dùng bởi một đề khác trong DB không
+- nếu đây là đề mới, đổi sang dải `question.id` chưa dùng
+- nếu đây là cập nhật đề cũ, xác nhận `exam.id` đang đúng
+
 ### Đường dẫn file JSON sai
 
 Triệu chứng:
@@ -227,6 +274,13 @@ Ví dụ đúng:
 ```bash
 cd backend
 npm run import:exam -- ./src/data/import/sample-exam.json
+```
+
+Ví dụ dry-run:
+
+```bash
+cd backend
+npm run import:exam -- ./src/data/import/sample-exam.json --dry-run
 ```
 
 ### `question.id` bị trùng với đề khác

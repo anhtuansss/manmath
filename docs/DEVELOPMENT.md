@@ -56,6 +56,7 @@ Workflow chuẩn:
 - `npm run seed`: reset về dataset mock chuẩn
 - `npm run seed:demo`: reset dataset mock chuẩn và import thêm sample JSON exam
 - `npm run import:exam -- ./src/data/import/sample-exam.json`: import hoặc cập nhật riêng một đề JSON
+- `npm run import:exam -- ./src/data/import/sample-exam.json --dry-run`: validate và in summary, không ghi DB
 
 Lệnh mẫu:
 
@@ -64,10 +65,18 @@ cd backend
 npm run import:exam -- ./src/data/import/sample-exam.json
 ```
 
+Dry-run mẫu:
+
+```bash
+cd backend
+npm run import:exam -- ./src/data/import/sample-exam.json --dry-run
+```
+
 Ghi chú:
 
 - import lại cùng `exam.id` sẽ update thay vì tạo duplicate
 - `question.id` phải ổn định và không được trùng với exam khác
+- dry-run sẽ báo danh sách lỗi rõ theo field như `questions[3].correctAnswer must be one of options`
 - tài liệu chi tiết nằm ở [docs/IMPORT_JSON.md](./IMPORT_JSON.md)
 
 ## Smoke test tối thiểu
