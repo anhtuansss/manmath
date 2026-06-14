@@ -11,6 +11,7 @@ He thong hien dung Next.js o frontend, Express o backend, PostgreSQL + Prisma ch
 - [x] Danh sach de thi va route `/exams`
 - [x] Lam bai, autosave, submit, result page, review dap an
 - [x] Search/filter de theo keyword, topic, subtopic, thoi luong, do kho, nam, nguon
+- [x] App navigation, mobile filter collapse va active filter chips
 - [x] Global history `/history`, attempt detail va profile `/profile`
 - [x] Google Login + JWT + protect history/analytics theo user
 - [x] Topic analytics, recommendation MVP, analytics dashboard `/analytics`

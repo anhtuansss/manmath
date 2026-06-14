@@ -75,8 +75,10 @@ Dry-run se:
 - upsert `Topic` theo `slug`
 - upsert `Subtopic` theo `slug` neu co
 - upsert `Question` theo `id`
+- ho tro metadata exam `difficulty`, `source`, `year`
 - ho tro `imageUrl`
 - ho tro `optionImageUrls`
+- ho tro `explanation`
 - ho tro `topic`
 - ho tro `subtopic`
 - ho tro manifest de import nhieu exam file trong mot lan chay
@@ -211,6 +213,9 @@ Ghi chu:
 - `optionImageUrls` map theo index voi `options`
 - `optionImageUrls[index] = ""` duoc hieu la dap an do khong co anh
 - `explanation` neu co thi phai la string
+- `difficulty` neu co phai nam trong `easy | medium | hard`
+- `source` neu co phai la string
+- `year` neu co phai nam trong khoang hop le
 - `question.id` khong duoc trung trong cung file import
 - `question.id` cung khong duoc trung voi question dang thuoc exam khac
 - neu co `subtopic` thi phai co `topic`
@@ -232,6 +237,7 @@ Script hien bao loi ro theo field/path, vi du:
 - `questions[3].correctAnswer must be one of options`
 - `questions[0].optionImageUrls must be an array of strings`
 - `questions[0].explanation must be a string`
+- `difficulty must be one of easy, medium, hard`
 - `questions[0].topic.slug must contain only lowercase letters, numbers, and hyphens`
 - `questions[0].subtopic requires topic to be provided`
 - `questions contain duplicate id: 1001`

@@ -2,6 +2,8 @@
 
 ## Chay local chi tiet
 
+Repo co `backend/` va `frontend/` package rieng. Root `package.json` chi la manifest nho, khong chua script dev/build chinh.
+
 ### Backend
 
 ```bash
@@ -90,6 +92,7 @@ npm run import:exam -- ./src/data/import/manifest.json --batch --dry-run
 
 Ghi chu:
 
+- `npm run seed` va `npm run seed:demo` se reset du lieu exam/question/topic va xoa attempt local; chi chay khi dang dung DB dev/demo
 - import lai cung `exam.id` se update thay vi tao duplicate
 - `question.id` phai on dinh va khong duoc trung voi exam khac
 - dry-run se bao danh sach loi ro theo field, vi du `questions[3].correctAnswer must be one of options`
@@ -117,6 +120,16 @@ cd frontend
 npm run build
 ```
 
+Manual QA nen kiem tra them:
+
+- `/exams`: search/filter, active chips, filter collapse tren mobile, sidebar recommendation
+- `/exam/[id]`: timer, autosave, question image, option image
+- `/exam/[id]/result`: result question navigator, review, explanation
+- `/exam/[id]/attempts` va `/attempts/[attemptId]`: protected state va review navigation
+- `/history`, `/profile`, `/analytics`
+- `/practice/topic/[topicSlug]`
+- Google login/logout voi credential that neu co
+
 ## Git workflow goi y
 
 - Tao branch rieng cho tung task
@@ -124,6 +137,7 @@ npm run build
 - Voi thay doi lon, chia thanh nhieu commit ro muc tieu
 - Tranh `git add .` khi dang co nhieu thay doi lan nhau
 - Kiem tra `git status` truoc khi commit
+- Khong commit `.env`, `.env.local`, `.next`, `node_modules`, file build/cache local
 
 ## Troubleshooting
 

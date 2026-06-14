@@ -21,8 +21,14 @@
 * [x] Filter đề theo độ khó
 * [x] Filter đề theo năm và nguồn
 * [x] UI filter đề thi responsive + active filter chips
+* [x] Collapse filter trên mobile
 * [x] Sidebar Exam List gọn hơn, ưu tiên auth + recommendation
+* [x] App shell/top navigation nhẹ
+* [x] Cross navigation giữa exam list, profile, history, analytics và practice
+* [x] Result question navigator
+* [x] Attempt review navigation
 * [x] Loading / Error / Empty states
+* [x] Vietnamese copy polish
 * [x] UI polish theo Concept 2
 
 ### Backend MVP
