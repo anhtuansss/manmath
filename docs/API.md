@@ -76,6 +76,23 @@ Neu `durationMin`, `durationMax`, `difficulty` hoac `year` khong hop le, API tra
 }
 ```
 
+### Exam list response shape
+
+```ts
+Array<{
+  id: string;
+  title: string;
+  description: string;
+  durationMinutes: number;
+  totalQuestions: number;
+  subject: string;
+  difficulty: "easy" | "medium" | "hard";
+  source: string | null;
+  year?: number;
+  statusLabel: string;
+}>
+```
+
 ### Topics response shape
 
 ```ts
@@ -140,6 +157,7 @@ Neu `durationMin`, `durationMax`, `difficulty` hoac `year` khong hop le, API tra
 
 - practice payload duoc tao dong theo `topicSlug`
 - KaTeX, `imageUrl` va `optionImageUrls` van di qua contract nay
+- `explanation` va `subtopic` van duoc giu trong practice payload de frontend co the reuse review UI
 - MVP hien chi cham diem local o frontend
 - practice flow khong tao `Attempt` va khong di vao history
 
@@ -325,6 +343,8 @@ Neu `durationMin`, `durationMax`, `difficulty` hoac `year` khong hop le, API tra
 - Recommendation hien van la rule-based MVP
 - `reason` co the nhac them subtopic neu de goi y co nhieu cau thuoc mot nhom con cu the
 - Analytics hien van giu trong tam o level `Topic`; `Subtopic` moi la metadata bo sung
+- `/api/me/progress` la nen du lieu cho dashboard `/analytics` va recent activity trong `/profile`
+- `/api/me/attempts` la nen du lieu cho global history page `/history`
 
 ## Import script noi bo
 

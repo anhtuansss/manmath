@@ -1,28 +1,27 @@
 # ManMath
 
-## Giới thiệu
+## Gioi thieu
 
-ManMath là web luyện đề Toán THPT, tập trung vào trải nghiệm làm bài rõ ràng, ít gây mỏi mắt và gần với một môi trường thi thật.
+ManMath la web luyen de Toan THPT theo huong MVP gon, de hoc va de demo. Nguoi dung co the chon de, lam bai, nop bai, xem ket qua, review dap an, xem lich su, theo doi analytics va nhan goi y luyen tap.
 
-Project hiện hỗ trợ chọn đề, làm bài trắc nghiệm, nộp bài, xem kết quả, xem lịch sử làm bài và theo dõi phân tích theo chuyên đề. Hệ thống dùng PostgreSQL + Prisma ở backend và Next.js ở frontend.
+He thong hien dung Next.js o frontend, Express o backend, PostgreSQL + Prisma cho du lieu, va Google Login + JWT cho tai khoan.
 
-## Tính năng chính
+## Tinh nang chinh
 
-- [x] Luyện đề Toán THPT
-- [x] Làm bài trắc nghiệm theo đề
-- [x] Chấm điểm, result page, review đáp án
-- [x] Lịch sử làm bài và chi tiết attempt
-- [x] Google Login + JWT
-- [x] Topic analytics
-- [x] Recommendation MVP và analytics dashboard nhỏ
-- [x] Theo dõi tiến độ và hoạt động gần đây của người dùng
+- [x] Danh sach de thi va route `/exams`
+- [x] Lam bai, autosave, submit, result page, review dap an
+- [x] Search/filter de theo keyword, topic, subtopic, thoi luong, do kho, nam, nguon
+- [x] Global history `/history`, attempt detail va profile `/profile`
+- [x] Google Login + JWT + protect history/analytics theo user
+- [x] Topic analytics, recommendation MVP, analytics dashboard `/analytics`
+- [x] Practice by weak topic MVP
 - [x] KaTeX math rendering
-- [x] Hỗ trợ ảnh câu hỏi và ảnh đáp án bằng static public path
-- [x] Import đề từ JSON qua backend script
+- [x] Question image, option image va explanation MVP
+- [x] Import de tu JSON qua backend script
 
 ## Tech Stack
 
-| Thành phần | Công nghệ |
+| Thanh phan | Cong nghe |
 | --- | --- |
 | Frontend | Next.js App Router, React, TypeScript, Tailwind CSS |
 | Backend | Express, TypeScript |
@@ -31,7 +30,7 @@ Project hiện hỗ trợ chọn đề, làm bài trắc nghiệm, nộp bài, x
 | Auth | Google Login, JWT |
 | Math rendering | KaTeX |
 
-## Kiến trúc tổng quan
+## Kien truc tong quan
 
 ```text
 Browser
@@ -45,63 +44,23 @@ Prisma ORM
 PostgreSQL
 ```
 
-## Chạy local
-
-### 1. Cài backend
+## Chay local
 
 ```bash
 cd backend
 npm install
-```
-
-### 2. Cài frontend
-
-```bash
-cd frontend
-npm install
-```
-
-### 3. Tạo env
-
-`backend/.env`
-
-```env
-DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/manmath_db"
-GOOGLE_CLIENT_ID="your-google-client-id.apps.googleusercontent.com"
-JWT_SECRET="your-dev-secret-at-least-32-characters"
-JWT_EXPIRES_IN="7d"
-```
-
-`frontend/.env.local`
-
-```env
-NEXT_PUBLIC_API_BASE_URL="http://localhost:5000"
-NEXT_PUBLIC_GOOGLE_CLIENT_ID="your-google-client-id.apps.googleusercontent.com"
-```
-
-### 4. Migrate và seed
-
-```bash
-cd backend
 npx prisma migrate dev
-npm run seed
-```
-
-### 5. Chạy backend
-
-```bash
-cd backend
+npm run seed:demo
 npm run dev
 ```
-
-### 6. Chạy frontend
 
 ```bash
 cd frontend
+npm install
 npm run dev
 ```
 
-## Env chính
+## Env chinh
 
 ### Backend
 
@@ -115,27 +74,27 @@ npm run dev
 - `NEXT_PUBLIC_API_BASE_URL`
 - `NEXT_PUBLIC_GOOGLE_CLIENT_ID`
 
-Ghi chú:
+Ghi chu:
 
-- Không commit `.env` hoặc `.env.local`
-- `JWT_SECRET` chỉ dùng ở backend
-- Các biến `NEXT_PUBLIC_*` là public env cho browser
+- Khong commit `.env` hoac `.env.local`
+- `JWT_SECRET` chi dung o backend
+- Bien `NEXT_PUBLIC_*` la public env cho browser
 
-## Docs chi tiết
+## Docs chi tiet
 
-- [Kiến trúc hệ thống](docs/ARCHITECTURE.md)
-- [API hiện có](docs/API.md)
+- [Kien truc he thong](docs/ARCHITECTURE.md)
+- [API hien co](docs/API.md)
 - [Auth flow](docs/AUTH.md)
-- [Database và Prisma](docs/DATABASE.md)
-- [Hướng dẫn phát triển](docs/DEVELOPMENT.md)
-- [Import đề từ JSON](docs/IMPORT_JSON.md)
+- [Database va Prisma](docs/DATABASE.md)
+- [Huong dan phat trien](docs/DEVELOPMENT.md)
+- [Import de tu JSON](docs/IMPORT_JSON.md)
 
-## Roadmap ngắn
+## Roadmap ngan
 
 - Refresh Token
 - Email/password login
-- Cập nhật thông tin cá nhân
-- Upload và quản lý ảnh câu hỏi/đáp án
-- Dashboard analytics sâu hơn và theo dõi tiến bộ dài hạn
-- Mở rộng import đề ngoài JSON
-- AI feedback
+- Cap nhat thong tin ca nhan
+- Upload va quan ly anh cau hoi/dap an
+- Analytics sau hon va theo doi tien bo dai han
+- Mo rong import de ngoai JSON
+- AI feedback / explanation runtime

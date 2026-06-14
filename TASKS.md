@@ -20,6 +20,8 @@
 * [x] Filter đề theo thời lượng
 * [x] Filter đề theo độ khó
 * [x] Filter đề theo năm và nguồn
+* [x] UI filter đề thi responsive + active filter chips
+* [x] Sidebar Exam List gọn hơn, ưu tiên auth + recommendation
 * [x] Loading / Error / Empty states
 * [x] UI polish theo Concept 2
 
@@ -248,53 +250,12 @@
 
 ## Current Focus
 
-### Sprint hiện tại
+### Uu tien tiep theo
 
-* [x] Tạo schema Attempt / AttemptAnswer
-* [x] Lưu attempt khi submit bài
-* [x] Giữ response submit không đổi
-* [x] Lưu thời gian làm bài
-* [x] Tạo API đọc lịch sử làm bài
-* [x] Tạo API chi tiết một lần làm bài
-* [x] Tạo giao diện xem lịch sử làm bài
-* [x] Tạo giao diện xem chi tiết một lần làm bài
-* [x] Tạo User schema và migration cho Google Auth
-* [x] Tạo JWT helper và backend auth endpoint
-* [x] Tạo auth middleware và optional auth middleware
-* [x] Gắn `Attempt.userId` khi submit có token hợp lệ
-* [x] Tạo API `/api/auth/me`
-* [x] Smoke test backend Google Auth foundation
-* [x] Tạo frontend auth config/storage/API helper
-* [x] Cài Google OAuth package cho frontend
-* [x] Tạo Google Provider và Google Login button
-* [x] Frontend lưu JWT ManMath sau khi login
-* [x] Frontend gửi `Authorization` header khi submit/history/detail có token
-* [x] Tạo route `/profile` hiển thị hồ sơ người dùng tối thiểu
-* [x] Thêm link tới `/profile` trong user card sau khi login
-* [x] Smoke test auth flow cơ bản
-* [x] Protect `GET /api/exams/:id/attempts` theo user
-* [x] Protect `GET /api/attempts/:attemptId` theo owner
-* [x] Tạo API `GET /api/me/attempts` cho lịch sử làm bài toàn cục
-* [x] Tạo route `/history` hiển thị lịch sử làm bài toàn cục
-* [x] Frontend xử lý 401 Unauthorized cho history/attempt detail
-* [x] Tạo schema Topic
-* [x] Mapping `Question -> Topic`
-* [x] Seed topic và gắn `Question.topicId`
-* [x] Kiểm tra dữ liệu topic trong PostgreSQL
-* [x] API attempt detail trả `topicStats` theo chuyên đề
-* [x] Frontend hiển thị `topicStats` trong trang chi tiết lần làm
-* [x] API `/api/me/topic-stats` tổng hợp topic analytics theo user
-* [x] Submit response trả `topicStats`
-* [x] Hiển thị topic stats ở result page sau submit nếu phù hợp
-* [x] Hoàn thiện Question Image Support MVP với `Question.imageUrl` và ảnh static path
-* [x] Hoàn thiện Option Image Support MVP với `options: string[]` + `optionImageUrls` map theo index
-* [x] Hoàn thiện Recommendation MVP với API `/api/me/recommendations`
-* [x] Chuẩn hóa topic taxonomy cho seed/mock/import và cải thiện rule recommendation MVP
-* [x] Tạo analytics dashboard nhỏ tại route `/analytics`
-* [x] Tạo script import đề từ JSON và sample file import
-* [x] Thêm dry-run và validation report rõ hơn cho import JSON
-* [x] Chạy smoke test tối thiểu sau khi fix frontend build fonts
-* [x] Làm rõ workflow `seed` / `seed:demo` / import JSON cho dữ liệu demo nhất quán
+* [ ] Nang cap subtopic analytics / recommendation thay vi chi dung topic-level
+* [ ] Mo rong content pipeline vuot qua JSON MVP
+* [ ] Dashboard hoc tap sau hon va theo doi dai han
+* [ ] AI feedback / explanation runtime sau khi content va analytics on dinh
 
 ### Không làm lúc này
 

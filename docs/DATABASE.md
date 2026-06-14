@@ -42,6 +42,7 @@ Ghi chu:
 - `difficulty` hien dung enum `easy | medium | hard`
 - `source` la metadata string optional cho nguon de
 - `year` la metadata number optional cho nam thi
+- metadata nay duoc expose ra exam list, exam detail va exam filter
 
 ### Topic
 
@@ -106,6 +107,7 @@ Ghi chu:
 - Anh hien tai duoc luu dang static public path, vi du `/images/questions/sample-parabola.svg`
 - MVP van giu `options: string[]`, chua doi sang object option model
 - Explanation hien chi duoc render o result review va attempt detail, khong hien thi trong luc dang lam bai
+- Question DTO / practice payload / attempt detail hien deu co the expose `imageUrl`, `optionImageUrls`, `explanation` va `subtopic`
 
 ### Attempt
 
